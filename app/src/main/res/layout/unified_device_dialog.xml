@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/scanningText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Paired devices"
+        android:paddingBottom="8dp" />
+
+    <ListView
+        android:id="@+id/deviceListView"
+        android:layout_width="match_parent"
+        android:layout_height="150dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Or enter MAC address:"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp" />
+
+    <EditText
+        android:id="@+id/macInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="XX:XX:XX:XX:XX:XX"
+        android:inputType="textCapCharacters" />
+
+    <Button
+        android:id="@+id/refreshButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Refresh Devices"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

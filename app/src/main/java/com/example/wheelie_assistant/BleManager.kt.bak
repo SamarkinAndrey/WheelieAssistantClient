@@ -1,0 +1,418 @@
+package com.app.wheelie_assistant
+
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattCharacteristic
+import android.content.Context
+import android.util.Log
+import no.nordicsemi.android.ble.BleManager
+import java.util.*
+import no.nordicsemi.android.ble.data.Data
+import android.app.AlertDialog
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanResult
+import android.os.Handler
+import android.os.Looper
+import android.view.LayoutInflater
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.ListView
+import android.widget.TextView
+import android.widget.Toast
+import no.nordicsemi.android.ble.observer.ConnectionObserver
+
+class BleManager(context: Context) : BleManager(context) {
+
+  companion object {
+    val SERVICE_UUID = UUID.fromString("00002B01-0000-1000-8000-00805F9B34FB")
+    val RX_CHARACTERISTIC_UUID = UUID.fromString("00002B02-0000-1000-8000-00805F9B34FB")
+    val TX_CHARACTERISTIC_UUID = UUID.fromString("00002B03-0000-1000-8000-00805F9B34FB")
+
+    private const val TAG = "BleManager"
+  }
+
+  private var dataCallback: ((String) -> Unit)? = null
+  private var connectionCallback: ((String) -> Unit)? = null
+  private var writeErrorCallback: ((String) -> Unit)? = null
+
+  private var rxCharacteristic: BluetoothGattCharacteristic? = null
+  private var txCharacteristic: BluetoothGattCharacteristic? = null
+
+  private var isScanning = false
+  private var scanHandler: Handler? = null
+  private val SCAN_TIMEOUT = 10000L
+
+  private var isManualDisconnect =false;
+//  private var isFirstCall =false;
+
+  init {
+    setConnectionObserver(object : ConnectionObserver {
+      override fun onDeviceConnecting(device: BluetoothDevice) {
+        log(Log.DEBUG, "Device connecting: ${device.address}")
+        connectionCallback?.invoke("CONNECTING")
+      }
+
+      override fun onDeviceConnected(device: BluetoothDevice) {
+        log(Log.DEBUG, "Device connected: ${device.address}")
+        connectionCallback?.invoke("CONNECTING")
+      }
+
+      override fun onDeviceFailedToConnect(device: BluetoothDevice, reason: Int) {
+        log(Log.ERROR, "Failed to connect: ${device.address}, reason: $reason")
+        connectionCallback?.invoke("DISCONNECTED")
+      }
+
+      override fun onDeviceReady(device: BluetoothDevice) {
+        log(Log.DEBUG, "Device ready: ${device.address}")
+        connectionCallback?.invoke("READY")
+      }
+
+      override fun onDeviceDisconnecting(device: BluetoothDevice) {
+        log(Log.DEBUG, "Device disconnecting: ${device.address}")
+//        connectionCallback?.invoke("DISCONNECTED")
+      }
+
+      override fun onDeviceDisconnected(device: BluetoothDevice, reason: Int) {
+        log(Log.DEBUG, "Device disconnected: ${device.address}, reason: $reason")
+//        if (isManualDisconnect || isFirstCall) {
+//          connectionCallback?.invoke("DISCONNECTED")
+//          isManualDisconnect = false;
+//          isFirstCall = false;
+        if (isManualDisconnect) {
+          connectionCallback?.invoke("DISCONNECTED")
+          isManualDisconnect = false;
+        } else {
+          connectionCallback?.invoke("CONNECTION_LOST")
+        }
+      }
+    })
+  }
+
+  override fun log(priority: Int, message: String) {
+    Log.println(priority, TAG, message)
+  }
+
+  override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
+    log(Log.DEBUG, "Checking required services...")
+
+    val service = gatt.getService(SERVICE_UUID)
+    rxCharacteristic = service?.getCharacteristic(RX_CHARACTERISTIC_UUID)
+    txCharacteristic = service?.getCharacteristic(TX_CHARACTERISTIC_UUID)
+
+    val isSupported = rxCharacteristic != null && txCharacteristic != null
+    log(Log.DEBUG, "Required services supported: $isSupported")
+
+    return isSupported
+  }
+
+  override fun initialize() {
+    log(Log.DEBUG, "Initializing BLE connection...")
+
+    requestMtu(247)
+      .with { device, mtu ->
+        log(Log.DEBUG, "MTU set to: $mtu")
+      }
+      .enqueue()
+
+    enableTxNotifications()
+  }
+
+  override fun onServicesInvalidated() {
+    log(Log.DEBUG, "Services invalidated")
+    rxCharacteristic = null
+    txCharacteristic = null
+  }
+
+  private fun enableTxNotifications() {
+    setNotificationCallback(txCharacteristic).with { device: BluetoothDevice, data ->
+      if (data.value != null) {
+        val value = data.getStringValue(0) ?: ""
+        log(Log.DEBUG, "Received data: $value")
+        dataCallback?.invoke(value)
+      }
+    }
+
+    enableNotifications(txCharacteristic)
+      .done {
+        log(Log.DEBUG, "TX notifications enabled")
+      }
+      .fail { device: BluetoothDevice, status: Int ->
+        log(Log.ERROR, "Failed to enable TX notifications: $status")
+      }
+      .enqueue()
+  }
+
+  fun writeData(data: String) {
+    if (rxCharacteristic != null) {
+      val dataBytes = Data.from(data)
+      writeCharacteristic(
+        rxCharacteristic,
+        dataBytes,
+        BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+      )
+        .done {
+          log(Log.DEBUG, "Data written successfully: $data")
+        }
+        .fail { device: BluetoothDevice, status: Int ->
+          log(Log.ERROR, "Failed to write data: $status")
+          writeErrorCallback?.invoke("Failed to send data: error $status")
+        }
+        .enqueue()
+    } else {
+      log(Log.ERROR, "RX characteristic not available")
+      writeErrorCallback?.invoke("RX characteristic not available")
+    }
+  }
+
+  fun connectWithAutoReconnect(device: BluetoothDevice) {
+//    isFirstCall = true;
+    connect(device)
+      .useAutoConnect(true)
+//      .retry(3, 100)
+//      .timeout(30000)
+      .enqueue()
+  }
+
+  fun disconnectDevice() {
+    isManualDisconnect = true;
+    cancelQueue()
+    disconnect().enqueue()
+  }
+
+  fun setDataCallback(callback: (String) -> Unit) {
+    dataCallback = callback
+  }
+
+  fun setConnectionCallback(callback: (String) -> Unit) {
+    connectionCallback = callback
+  }
+
+  fun setWriteErrorCallback(callback: (String) -> Unit) {
+    writeErrorCallback = callback
+  }
+
+  fun showBluetoothDevicesDialog(
+    context: Context,
+    bluetoothAdapter: BluetoothAdapter?,
+    hasAllPermissions: () -> Boolean,
+    isCompatibleDevice: (BluetoothDevice) -> Boolean,
+    onDeviceSelected: (BluetoothDevice) -> Unit,
+    onManualConnectRequested: () -> Unit
+  ) {
+    if (!hasAllPermissions()) {
+      Toast.makeText(context, "Need Bluetooth permissions", Toast.LENGTH_LONG).show()
+      return
+    }
+
+    if (bluetoothAdapter == null) {
+      AlertDialog.Builder(context)
+        .setTitle("Error")
+        .setMessage("Bluetooth not available")
+        .setPositiveButton("OK", null)
+        .show()
+      return
+    }
+
+    if (!bluetoothAdapter.isEnabled) {
+      AlertDialog.Builder(context)
+        .setTitle("Bluetooth Off")
+        .setMessage("Please enable Bluetooth")
+        .setPositiveButton("OK", null)
+        .show()
+      return
+    }
+
+    val leScanner = bluetoothAdapter.bluetoothLeScanner
+    if (leScanner == null) {
+      AlertDialog.Builder(context)
+        .setTitle("Error")
+        .setMessage("BLE not supported")
+        .setPositiveButton("OK", null)
+        .show()
+      return
+    }
+
+    val inflater = LayoutInflater.from(context)
+    val dialogView = inflater.inflate(R.layout.ble_scan_dialog, null)
+    val deviceListView = dialogView.findViewById<ListView>(R.id.deviceListView)
+    val scanningText = dialogView.findViewById<TextView>(R.id.scanningText)
+    val refreshButton = dialogView.findViewById<Button>(R.id.refreshButton)
+    val manualConnectButton = dialogView.findViewById<Button>(R.id.manualConnectButton)
+
+    val devicesList = mutableListOf<BluetoothDevice>()
+    val deviceMap = mutableMapOf<String, BluetoothDevice>()
+    val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, mutableListOf<String>())
+    deviceListView.adapter = adapter
+
+    val handler = Handler(Looper.getMainLooper())
+    scanHandler = handler
+
+    fun addDeviceToList(device: BluetoothDevice, source: String) {
+      if (!deviceMap.containsKey(device.address)) {
+        deviceMap[device.address] = device
+        devicesList.add(device)
+        handler.post {
+          val deviceName = device.name ?: "Unknown"
+          val deviceInfo = "$deviceName (${device.address}) [$source]"
+          adapter.add(deviceInfo)
+          scanningText.text = "Found ${devicesList.size} device(s)"
+          adapter.notifyDataSetChanged()
+        }
+      }
+    }
+
+    fun showBondedDevices() {
+      try {
+        val bondedDevices = bluetoothAdapter.bondedDevices
+        bondedDevices?.forEach { device ->
+          addDeviceToList(device, "Paired")
+        }
+      } catch (e: SecurityException) {
+        Log.e("BleManager", "No permission to access bonded devices")
+      }
+    }
+
+    val scanCallback = object : ScanCallback() {
+      override fun onScanResult(callbackType: Int, result: ScanResult) {
+        val device = result.device
+        // Важно: не фильтруем устройства на этапе сканирования
+        addDeviceToList(device, "BLE Scan")
+      }
+
+      override fun onScanFailed(errorCode: Int) {
+        super.onScanFailed(errorCode)
+        handler.post {
+          isScanning = false
+          scanningText.text = when (errorCode) {
+            ScanCallback.SCAN_FAILED_ALREADY_STARTED -> "Scan already started"
+            ScanCallback.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED -> "App registration failed"
+            ScanCallback.SCAN_FAILED_INTERNAL_ERROR -> "Internal error"
+            ScanCallback.SCAN_FAILED_FEATURE_UNSUPPORTED -> "Feature unsupported"
+            else -> "Scan failed: $errorCode"
+          }
+        }
+      }
+    }
+
+    fun stopScanning() {
+      if (!isScanning) return
+
+      try {
+        leScanner.stopScan(scanCallback)
+        isScanning = false
+        scanHandler?.removeCallbacksAndMessages(null)
+      } catch (e: SecurityException) {
+        Log.e("BleManager", "Security exception when stopping scan: ${e.message}")
+      } catch (e: Exception) {
+        Log.e("BleManager", "Exception when stopping scan: ${e.message}")
+      }
+    }
+
+    fun startScanning() {
+      if (isScanning) {
+        stopScanning()
+      }
+
+      devicesList.clear()
+      deviceMap.clear()
+      adapter.clear()
+
+      // Показываем спаренные устройства
+      showBondedDevices()
+
+      scanningText.text = "Scanning..."
+
+      try {
+        // Ключевое изменение: используем startScan без фильтров
+        leScanner.startScan(scanCallback)
+        isScanning = true
+
+        handler.postDelayed({
+          stopScanning()
+          scanningText.text = "Scan finished. Found ${devicesList.size} device(s)"
+
+          // Показываем подсказку если ничего не найдено
+          if (devicesList.isEmpty() || devicesList.all { it.name == null }) {
+            Toast.makeText(context,
+              "No devices found. Make sure:\n" +
+                "• BLE device is powered on\n" +
+                "• Device is in pairing mode\n" +
+                "• Location is enabled",
+              Toast.LENGTH_LONG).show()
+          }
+        }, SCAN_TIMEOUT)
+
+      } catch (e: SecurityException) {
+        scanningText.text = "Permission denied for scanning"
+        Log.e("BleManager", "BLE scan permission denied", e)
+      } catch (e: Exception) {
+        scanningText.text = "Scan error: ${e.message}"
+        Log.e("BleManager", "BLE scan error", e)
+      }
+    }
+
+    val dialog = AlertDialog.Builder(context)
+      .setTitle("Select BLE Device")
+      .setView(dialogView)
+      .setNegativeButton("Cancel") { _, _ ->
+        stopScanning()
+      }
+      .setOnDismissListener {
+        stopScanning()
+        scanHandler?.removeCallbacksAndMessages(null)
+        scanHandler = null
+      }
+      .create()
+
+    deviceListView.setOnItemClickListener { _, _, position, _ ->
+      if (position < devicesList.size) {
+        val selectedDevice = devicesList[position]
+        stopScanning()
+        dialog.dismiss()
+        onDeviceSelected(selectedDevice)
+      }
+    }
+
+    refreshButton.setOnClickListener {
+      startScanning()
+    }
+
+    manualConnectButton.setOnClickListener {
+      stopScanning()
+      dialog.dismiss()
+      onManualConnectRequested()
+    }
+
+    startScanning()
+    dialog.show()
+  }
+
+  fun showManualConnectionDialog(
+    context: Context,
+    lastMacAddress: String?,
+    onConnectRequested: (String) -> Unit
+  ) {
+    val inflater = LayoutInflater.from(context)
+    val dialogView = inflater.inflate(R.layout.unified_device_dialog, null)
+    val macInput = dialogView.findViewById<TextView>(R.id.macInput)
+
+    lastMacAddress?.let { lastMac ->
+      macInput.setText(lastMac)
+    }
+
+    AlertDialog.Builder(context)
+      .setTitle("Manual Connection")
+      .setView(dialogView)
+      .setPositiveButton("Connect") { _, _ ->
+        val selectedMac = macInput.text.toString().trim()
+        if (selectedMac.isNotEmpty() && selectedMac.length >= 12) {
+          onConnectRequested(selectedMac)
+        } else {
+          Toast.makeText(context, "Invalid MAC address", Toast.LENGTH_SHORT).show()
+        }
+      }
+      .setNegativeButton("Cancel", null)
+      .show()
+  }
+}
