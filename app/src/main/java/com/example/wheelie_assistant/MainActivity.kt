@@ -63,9 +63,6 @@ class MainActivity : AppCompatActivity() {
   private lateinit var positionCard: MaterialCardView
   private lateinit var voltageCard: MaterialCardView
 
-//  private lateinit var progressThrottleIn: LinearProgressIndicator
-//  private lateinit var progressThrottleOut: LinearProgressIndicator
-
   private lateinit var progressThrottleIn: ProgressBar
   private lateinit var progressThrottleOut: ProgressBar
 
@@ -80,6 +77,9 @@ class MainActivity : AppCompatActivity() {
 
   private val PREFS_NAME = "BluetoothPrefs"
   private val KEY_LAST_MAC = "last_mac_address"
+
+  private var settingsLoaded = false;
+  private var settingsRequested = false;
 
   private var controllerIsEnabled: Boolean = false
     set(value) {
@@ -318,7 +318,12 @@ class MainActivity : AppCompatActivity() {
 
   private fun setupSettings() {
     settingsButton.setOnClickListener {
-      sendBluetoothCommands("${B_GET_SETTINGS.value}=1")
+      if (settingsLoaded)
+        openSettings()
+      else {
+        sendBluetoothCommands("${B_GET_SETTINGS.value}=1")
+        settingsRequested = true
+      }
 //      showToast("Settings requested")
     }
     SettingsActivity.setSendCallback { commands ->
@@ -442,6 +447,36 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
+  fun updateWheelieIndicator() {
+    if (wheelieMode) {
+      val settings = SettingsManager.currentSettings
+
+      val alpha = calculateAlpha(
+        settings.target_pitch - settings.exit_threshold,
+        settings.target_pitch,
+        settings.target_pitch + settings.emerg_threshold,
+        pitch
+      )
+
+      wheelieIndicator.alpha = alpha
+    }
+  }
+
+  fun calculateAlpha(min: Float, mid: Float, max: Float, cur: Float): Float {
+    return when {
+      cur <= min -> 0f  // полная прозрачность
+      cur >= max -> 0f  // полная прозрачность
+      cur <= mid -> {
+        // Возрастание от min к mid: от 0.0 до 1.0
+        (cur - min) / (mid - min)
+      }
+      else -> {
+        // Убывание от mid к max: от 1.0 до 0.0
+        1f - (cur - mid) / (max - mid)
+      }
+    }
+  }
+
   private fun requestBluetoothPermissions() {
     if (hasAllPermissions()) return
     ActivityCompat.requestPermissions(this, bluetoothPermissions, PERMISSION_REQUEST_CODE)
@@ -525,6 +560,8 @@ class MainActivity : AppCompatActivity() {
     clearValues()
     clearVoltage()
     unlockScreen()
+
+    settingsLoaded = false;
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -546,7 +583,7 @@ class MainActivity : AppCompatActivity() {
     lockScreen()
     connectionState = ConnectionState.CONNECTED
 
-    sendBluetoothCommands("${B_GET_ENABLED.value}=1,${B_GET_VOLTAGE.value}=1")
+    sendBluetoothCommands("${B_GET_ENABLED.value}=1,${B_GET_VOLTAGE.value}=1, ${B_GET_SETTINGS.value}=1")
   }
 
   private fun onConnecting() {
@@ -655,10 +692,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     if (parser.getInt(B_SETTINGS, 0) == 1) {
-      if (SettingsManager.updateFromParser(parser))
-        openSettings()
-      else
+      if (SettingsManager.updateFromParser(parser)) {
+        settingsLoaded = true;
+
+        if (settingsRequested)
+          openSettings()
+      } else
         showToast("Ошибка загрузки настроек")
+
+      settingsRequested = false;
     }
 
     if (parser.getInt(B_RESET_VOLTAGE, 0) == 1)
@@ -696,6 +738,7 @@ class MainActivity : AppCompatActivity() {
 
     updateAttitudeView()
     updateVoltageDisplays()
+    updateWheelieIndicator()
   }
 
   private fun openSettings() {
