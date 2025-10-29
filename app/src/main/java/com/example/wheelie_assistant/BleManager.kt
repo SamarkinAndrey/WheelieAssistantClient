@@ -185,6 +185,7 @@ class BleManager(context: Context) : BleManager(context) {
 
       override fun onScanFailed(errorCode: Int) {
         super.onScanFailed(errorCode)
+        connectionCallback?.invoke("DISCONNECT")
         log(Log.ERROR, "Scan failed: $errorCode")
       }
     }
@@ -201,6 +202,7 @@ class BleManager(context: Context) : BleManager(context) {
         .build()
 
       leScanner.startScan(scanFilters, scanSettings, scanCallback!!)
+      connectionCallback?.invoke("CONNECTING")
 
       log(Log.DEBUG, "BLE scan started for service: $SERVICE_UUID")
     } catch (e: SecurityException) {
@@ -231,6 +233,7 @@ class BleManager(context: Context) : BleManager(context) {
         leScanner?.stopScan(callback)
       }
       scanCallback = null
+      connectionCallback?.invoke("DISCONNECTED")
 
       log(Log.DEBUG, "BLE scan stopped")
     } catch (e: SecurityException) {
