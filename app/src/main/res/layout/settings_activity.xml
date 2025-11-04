@@ -307,6 +307,7 @@
                                 android:checked="false"
                                 android:paddingStart="8dp"
                                 android:paddingEnd="8dp"
+                                android:contentDescription="@string/pitch_switch_description"
                                 android:thumb="@drawable/thumb_selector"
                                 app:track="@drawable/track_selector" />
                         </LinearLayout>
@@ -332,6 +333,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:checked="false"
+                                android:contentDescription="@string/roll_switch_description"
                                 android:paddingStart="8dp"
                                 android:paddingEnd="8dp"
                                 android:thumb="@drawable/thumb_selector"
