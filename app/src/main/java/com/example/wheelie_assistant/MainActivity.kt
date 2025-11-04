@@ -178,7 +178,8 @@ class MainActivity : AppCompatActivity() {
     initProgressBars()
     setupBluetooth()
     setupBleManager()
-    clearValues()
+    clearAttitudeValues()
+    clearVoltageValues()
     clearVoltage()
 
     if (hasAllPermissions())
@@ -209,16 +210,20 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  private fun clearValues(updateView: Boolean = true) {
+  private fun clearAttitudeValues(updateView: Boolean = true) {
     roll = 0f
     pitch = 0f
+
+    if (updateView)
+      updateAttitudeView()
+  }
+
+  private fun clearVoltageValues(updateView: Boolean = true) {
     voltageIn = 0f
     voltageOut = 0f
 
-    if (updateView) {
-      updateAttitudeView()
+    if (updateView)
       updateVoltageDisplays()
-    }
   }
 
   private fun clearVoltage() {
@@ -464,14 +469,12 @@ class MainActivity : AppCompatActivity() {
 
   fun calculateAlpha(min: Float, mid: Float, max: Float, cur: Float): Float {
     return when {
-      cur <= min -> 0f  // полная прозрачность
-      cur >= max -> 0f  // полная прозрачность
+      cur <= min -> 0f
+      cur >= max -> 0f
       cur <= mid -> {
-        // Возрастание от min к mid: от 0.0 до 1.0
         (cur - min) / (mid - min)
       }
       else -> {
-        // Убывание от mid к max: от 1.0 до 0.0
         1f - (cur - mid) / (max - mid)
       }
     }
@@ -557,7 +560,8 @@ class MainActivity : AppCompatActivity() {
 
     progressFinish()
 
-    clearValues()
+    clearAttitudeValues()
+    clearVoltageValues()
     clearVoltage()
     unlockScreen()
 
@@ -583,7 +587,7 @@ class MainActivity : AppCompatActivity() {
     lockScreen()
     connectionState = ConnectionState.CONNECTED
 
-    sendBluetoothCommands("${B_GET_ENABLED.value}=1,${B_GET_VOLTAGE.value}=1, ${B_GET_SETTINGS.value}=1")
+    sendBluetoothCommands("${B_CONNECTED.value}=1")
   }
 
   private fun onConnecting() {
@@ -684,11 +688,10 @@ class MainActivity : AppCompatActivity() {
       controllerIsEnabled = parser.getInt(B_ENABLED) == 1
 
     if (!progressIsShowing()) {
-      pitch = round(parser.getFloat(B_PITCH, pitch) * 10) / 10.0f
-      roll = round(parser.getFloat(B_ROLL, roll) * 10) / 10.0f
-
-      voltageIn = round(parser.getFloat(B_VOLTAGE_IN, voltageIn) * 100) / 100.0f
-      voltageOut = round(parser.getFloat(B_VOLTAGE_OUT, voltageOut) * 100) / 100.0f
+      pitch = round(parser.getFloat(B_PITCH, pitch) * 10) / 10;
+      roll = round(parser.getFloat(B_ROLL, roll) * 10) / 10;
+      voltageIn = parser.getFloat(B_VOLTAGE_IN, voltageIn)
+      voltageOut = parser.getFloat(B_VOLTAGE_OUT, voltageOut)
     }
 
     if (parser.getInt(B_SETTINGS, 0) == 1) {
@@ -716,10 +719,13 @@ class MainActivity : AppCompatActivity() {
       val value = parser.getInt(B_CALIBRATE_GYRO)
 
       if (value == 1) {
-        clearValues(false)
+        clearAttitudeValues()
+
         progressStart(this, "Калибровка гироскопа...", 1000 * 20)
       } else {
         progressFinish()
+
+        sendBluetoothCommands("${B_GET_POSITION.value}=1")
 
         if (value == -1)
           showToast("Gyroscope calibration failed")
