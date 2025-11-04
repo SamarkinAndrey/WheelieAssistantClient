@@ -8,8 +8,8 @@ data class Settings(
     var system_tick: Int = 0,
     var prediction_horizont: Int = 0,
     var gyro_hysteresis: Float = 0f,
-    var reversed_pitch: Int = 0,
-    var reversed_roll: Int = 0,
+    var reversed_pitch: Boolean = false,
+    var reversed_roll: Boolean = false,
     var target_pitch: Float = 0f,
     var dead_zone: Float = 0f,
     var exit_threshold: Float = 0f,
@@ -32,8 +32,8 @@ object SettingsManager {
                 system_tick = parser.getInt(B_SYSTEM_TICK, 0),
                 prediction_horizont = parser.getInt(B_PREDICTION_HORIZONT, 0),
                 gyro_hysteresis = parser.getFloat(B_GYRO_HYSTERESIS, 0f),
-                reversed_pitch = parser.getInt(B_REVERSED_PITCH, 0),
-                reversed_roll = parser.getInt(B_REVERSED_ROLL, 0),
+                reversed_pitch = parser.getBoolean(B_REVERSED_PITCH, false),
+                reversed_roll = parser.getBoolean(B_REVERSED_ROLL, false),
                 target_pitch = parser.getFloat(B_TARGET_PITCH, 0f),
                 dead_zone = parser.getFloat(B_DEAD_ZONE, 0f),
                 exit_threshold = parser.getFloat(B_EXIT_THRESHOLD, 0f),
@@ -78,8 +78,8 @@ object SettingsManager {
         return (settings.system_tick in 5..100) &&
             (settings.prediction_horizont in settings.system_tick..250) &&
             (settings.gyro_hysteresis in 0.0f..5.0f) &&
-            (settings.reversed_pitch in 0..1) &&
-            (settings.reversed_roll in 0..1) &&
+            (settings.reversed_pitch in false..true) &&
+            (settings.reversed_roll in false..true) &&
             (settings.target_pitch in 15.0f..65.0f) &&
             (settings.dead_zone in 0.0f..5.0f) &&
             (settings.exit_threshold in 0.0f..10.0f) &&

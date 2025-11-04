@@ -10,6 +10,7 @@ import com.google.android.material.slider.RangeSlider
 import androidx.appcompat.widget.AppCompatImageButton
 import android.widget.LinearLayout
 import kotlin.math.max
+import androidx.appcompat.widget.SwitchCompat
 
 class SettingsActivity : AppCompatActivity() {
   companion object {
@@ -51,6 +52,9 @@ class SettingsActivity : AppCompatActivity() {
   private lateinit var trendDurationSlider: Slider
   private lateinit var stableDurationSlider: Slider
 
+  private lateinit var reversedPitchValue: SwitchCompat
+  private lateinit var reversedRollValue: SwitchCompat
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.settings_activity)
@@ -89,6 +93,9 @@ class SettingsActivity : AppCompatActivity() {
     maxSpeedSlider = findViewById(R.id.max_speed_slider)
     trendDurationSlider = findViewById(R.id.trend_duration_slider)
     stableDurationSlider = findViewById(R.id.stable_duration_slider)
+
+    reversedPitchValue = findViewById(R.id.reversed_pitch_value)
+    reversedRollValue = findViewById(R.id.reversed_roll_value)
 
     saveButton = findViewById(R.id.save_button)
     backButton = findViewById(R.id.back_button)
@@ -226,6 +233,8 @@ class SettingsActivity : AppCompatActivity() {
     maxSpeedSlider.value = settings.max_speed.toFloat()
     trendDurationSlider.value = settings.trend_duration.toFloat()
     stableDurationSlider.value = settings.stable_duration.toFloat()
+    reversedPitchValue.isChecked = settings.reversed_pitch
+    reversedRollValue.isChecked = settings.reversed_roll
 
     updateAllTextValues()
   }
@@ -245,7 +254,9 @@ class SettingsActivity : AppCompatActivity() {
       hysteresis = hysteresisSlider.value,
       max_speed = maxSpeedSlider.value.toInt(),
       trend_duration = trendDurationSlider.value.toInt(),
-      stable_duration = stableDurationSlider.value.toInt()
+      stable_duration = stableDurationSlider.value.toInt(),
+      reversed_pitch = reversedPitchValue.isChecked,
+      reversed_roll = reversedRollValue.isChecked
     )
 
     if (!SettingsManager.validate(settings)) {

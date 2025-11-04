@@ -304,20 +304,11 @@
                                 android:id="@+id/reversed_pitch_value"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:checked="true"
-                                android:elevation="0dp"
+                                android:checked="false"
                                 android:paddingStart="8dp"
                                 android:paddingEnd="8dp"
-                                app:haloColor="#E02828"
-                                app:labelBehavior="gone"
-                                app:thumbColor="#E02828"
-                                app:thumbElevation="0dp"
-                                app:thumbStrokeColor="#FFFFFF"
-                                app:thumbStrokeWidth="1dp"
-                                app:thumbTint="#E02828"
-                                app:trackColorActive="#E02828"
-                                app:trackColorInactive="#666666"
-                                app:trackTint="#E02828" />
+                                android:thumb="@drawable/thumb_selector"
+                                app:track="@drawable/track_selector" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -336,22 +327,15 @@
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
-                            <com.google.android.material.switchmaterial.SwitchMaterial
+                            <androidx.appcompat.widget.SwitchCompat
                                 android:id="@+id/reversed_roll_value"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:elevation="0dp"
+                                android:checked="false"
                                 android:paddingStart="8dp"
                                 android:paddingEnd="8dp"
-                                app:haloColor="#E02828"
-                                app:labelBehavior="gone"
-                                app:thumbColor="#E02828"
-                                app:thumbElevation="0dp"
-                                app:thumbStrokeColor="#FFFFFF"
-                                app:thumbStrokeWidth="1dp"
-                                app:tickVisible="false"
-                                app:trackColorActive="#E02828"
-                                app:trackColorInactive="#666666" />
+                                android:thumb="@drawable/thumb_selector"
+                                app:track="@drawable/track_selector" />
                         </LinearLayout>
 
                     </LinearLayout>
