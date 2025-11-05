@@ -295,7 +295,7 @@
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
                                 android:paddingStart="8dp"
-                                android:text="Инвертировать горизонталь"
+                                android:text="Инвертировать ось X"
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
@@ -325,7 +325,7 @@
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
                                 android:paddingStart="8dp"
-                                android:text="Инвертировать вертикаль"
+                                android:text="Инвертировать ось Y"
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
