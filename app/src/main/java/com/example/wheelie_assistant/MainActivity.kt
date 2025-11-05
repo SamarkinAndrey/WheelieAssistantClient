@@ -738,9 +738,8 @@ class MainActivity : AppCompatActivity() {
     if (parser.getInt(B_SET_SETTINGS, 0) == 1)
       showToast("Настройки сохранены")
 
-    if (parser.hasParam(B_WHEELIE)) {
+    if (parser.hasParam(B_WHEELIE))
       wheelieMode = parser.getInt(B_WHEELIE) == 1
-    }
 
     updateAttitudeView()
     updateVoltageDisplays()

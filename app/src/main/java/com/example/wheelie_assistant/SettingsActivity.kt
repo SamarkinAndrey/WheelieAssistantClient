@@ -120,7 +120,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     backButton.setOnClickListener {
-      loadSettings(SettingsManager.currentSettings)
       finish()
     }
   }
