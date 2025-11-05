@@ -41,6 +41,9 @@ android {
 
             applicationVariants.all {
                 val variant = this
+
+                val customOutputDir = File("C:/Users/samar/Documents/PlatformIO/Projects/WheelieAssistantBinary/")
+
                 variant.outputs
                     .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
                     .forEach { output ->
@@ -48,6 +51,17 @@ android {
                         val outputFileName = "WheelieAssistant_v${variant.versionName}.apk"
                         output.outputFileName = outputFileName
                     }
+
+                variant.assembleProvider.get().doLast {
+                    variant.outputs.forEach { output ->
+                        val sourceFile = output.outputFile
+                        if (sourceFile.exists()) {
+                            val destFile = File(customOutputDir, sourceFile.name)
+                            sourceFile.copyTo(destFile, overwrite = true)
+                            println("APK copied to: ${destFile.absolutePath}")
+                        }
+                    }
+                }
             }
         }
     }
