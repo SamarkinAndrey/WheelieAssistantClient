@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import android.widget.LinearLayout
 import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
 import androidx.appcompat.widget.SwitchCompat
 import kotlin.math.max
 
-class BasicSettingsFragment : Fragment() {
+class BasicSettingsFragment : BaseSettingsFragment() {
 
   private lateinit var systemTickValue: MaterialTextView
   private lateinit var predictionHorizontValue: MaterialTextView
@@ -30,6 +30,23 @@ class BasicSettingsFragment : Fragment() {
 
     initViews(view)
     setupSliders()
+    setSettings(SettingsManager.currentSettings)
+
+    val scrollLayout = view.findViewById<LinearLayout>(R.id.scroll_layout)
+    val activity = SettingsActivity.getInstance()
+
+    activity?.let {
+      val saveLayout = it.getSaveLayout()
+
+      saveLayout.post {
+        scrollLayout.setPadding(
+          scrollLayout.paddingLeft,
+          scrollLayout.paddingTop,
+          scrollLayout.paddingRight,
+          saveLayout.height
+        )
+      }
+    }
 
     return view
   }
@@ -70,7 +87,7 @@ class BasicSettingsFragment : Fragment() {
     predictionHorizontSlider.valueFrom = valueFrom
   }
 
-  fun loadSettings(settings: Settings) {
+  override fun setSettings(settings: Settings) {
     systemTickSlider.value = settings.system_tick.toFloat()
     predictionHorizontSlider.valueFrom = settings.system_tick.toFloat()
     predictionHorizontSlider.value = max(settings.prediction_horizont.toFloat(), settings.system_tick.toFloat())
@@ -87,32 +104,11 @@ class BasicSettingsFragment : Fragment() {
     gyroHysteresisValue.text = "${"%.1f".format(gyroHysteresisSlider.value)}°"
   }
 
-  fun getSettings(): SettingsPart {
-    return SettingsPart(
-      system_tick = systemTickSlider.value.toInt(),
-      prediction_horizont = predictionHorizontSlider.value.toInt(),
-      gyro_hysteresis = gyroHysteresisSlider.value,
-      reversed_pitch = reversedPitchValue.isChecked,
-      reversed_roll = reversedRollValue.isChecked
-    )
+  override fun getSettings(settings: Settings) {
+    settings.system_tick = systemTickSlider.value.toInt()
+    settings.prediction_horizont = predictionHorizontSlider.value.toInt()
+    settings.gyro_hysteresis = gyroHysteresisSlider.value
+    settings.reversed_pitch = reversedPitchValue.isChecked
+    settings.reversed_roll = reversedRollValue.isChecked
   }
 }
-
-data class SettingsPart(
-  val system_tick: Int = 0,
-  val prediction_horizont: Int = 0,
-  val gyro_hysteresis: Float = 0f,
-  val reversed_pitch: Boolean = false,
-  val reversed_roll: Boolean = false,
-  val target_pitch: Float = 0f,
-  val dead_zone: Float = 0f,
-  val exit_threshold: Float = 0f,
-  val emerg_threshold: Float = 0f,
-  val min_voltage: Float = 0f,
-  val min_step: Int = 0,
-  val max_step: Int = 0,
-  val hysteresis: Float = 0f,
-  val max_speed: Int = 0,
-  val trend_duration: Int = 0,
-  val stable_duration: Int = 0
-)

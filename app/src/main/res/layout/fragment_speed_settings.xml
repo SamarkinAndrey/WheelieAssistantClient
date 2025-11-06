@@ -12,12 +12,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Основные настройки системы -->
+        <!-- Скорость реакции -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="⚙️ ОСНОВНЫЕ НАСТРОЙКИ"
+            android:text="🚀 СКОРОСТЬ РЕАКЦИИ"
             android:textColor="#FFFFFF"
             android:textSize="14sp"
             android:textStyle="bold"
@@ -26,7 +26,6 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
             app:cardBackgroundColor="@android:color/transparent"
             app:cardCornerRadius="8dp"
             app:strokeColor="#FFFFFF"
@@ -38,7 +37,7 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Период контроля -->
+                <!-- Коэффициент скорости реакции -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -49,180 +48,34 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:paddingLeft="8dp"
-                        android:text="Период контроля"
+                        android:text="Гистерезис"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/system_tick_value"
+                        android:id="@+id/hysteresis_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
                         android:paddingRight="8dp"
-                        android:text="10 мс"
+                        android:text="0.3 Kp"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <com.google.android.material.slider.Slider
-                    android:id="@+id/system_tick_slider"
+                    android:id="@+id/hysteresis_slider"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    android:elevation="0dp"
-                    android:stepSize="5.0"
-                    android:value="5.0"
-                    android:valueFrom="5.0"
-                    android:valueTo="100.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#666666" />
-
-                <!-- Время реакции мотора -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:paddingLeft="8dp"
-                        android:text="Время реакции мотора"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/motor_delay_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:gravity="right"
-                        android:paddingRight="8dp"
-                        android:text="80 мс"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <com.google.android.material.slider.Slider
-                    android:id="@+id/motor_delay_slider"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:elevation="0dp"
-                    android:stepSize="5.0"
-                    android:value="10.0"
-                    android:valueFrom="0.0"
-                    android:valueTo="250.0"
-                    android:visibility="gone"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#666666" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:paddingLeft="8dp"
-                        android:text="Время упреждения"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/prediction_horizont_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:gravity="right"
-                        android:paddingRight="8dp"
-                        android:text="90 мс"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <com.google.android.material.slider.Slider
-                    android:id="@+id/prediction_horizont_slider"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:elevation="0dp"
-                    android:stepSize="5.0"
-                    android:value="15.0"
-                    android:valueFrom="0.0"
-                    android:valueTo="250.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#666666" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:paddingLeft="8dp"
-                        android:text="Гистререзис положения"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/gyro_hysteresis_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:gravity="right"
-                        android:paddingRight="8dp"
-                        android:text="0.5°"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <com.google.android.material.slider.Slider
-                    android:id="@+id/gyro_hysteresis_slider"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:elevation="0dp"
                     android:stepSize="0.1"
-                    android:value="0.5"
+                    android:value="0.3"
                     android:valueFrom="0.0"
-                    android:valueTo="5.0"
+                    android:valueTo="1.0"
                     app:haloColor="#E02828"
                     app:labelBehavior="gone"
                     app:thumbColor="#E02828"
@@ -233,36 +86,54 @@
                     app:trackColorActive="#E02828"
                     app:trackColorInactive="#666666" />
 
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                <!-- Макс. скорость коррекции -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-        <!-- Основные настройки системы -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="⚙️ НАПРАВЛЕНИЕ ОСЕЙ"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:visibility="gone" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:paddingLeft="8dp"
+                        android:text="Макс. угловая скорость"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardBackgroundColor="@android:color/transparent"
-            app:cardCornerRadius="8dp"
-            app:strokeColor="#FFFFFF"
-            app:strokeWidth="1dp">
+                    <TextView
+                        android:id="@+id/max_speed_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:gravity="right"
+                        android:paddingRight="8dp"
+                        android:text="25.0 °/с"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="16dp"
-                android:paddingBottom="8dp">
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/max_speed_slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:elevation="0dp"
+                    android:stepSize="10.0"
+                    android:value="200"
+                    android:valueFrom="0.0"
+                    android:valueTo="500.0"
+                    app:haloColor="#E02828"
+                    app:labelBehavior="gone"
+                    app:thumbColor="#E02828"
+                    app:thumbElevation="0dp"
+                    app:thumbStrokeColor="#FFFFFF"
+                    app:thumbStrokeWidth="1dp"
+                    app:tickVisible="false"
+                    app:trackColorActive="#E02828"
+                    app:trackColorInactive="#666666" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -273,27 +144,46 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingStart="8dp"
-                        android:text="Инвертировать ось X"
+                        android:paddingLeft="8dp"
+                        android:text="Время определение тренда"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/reversed_pitch_value"
+                    <TextView
+                        android:id="@+id/trend_duration_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="false"
-                        android:contentDescription="@string/pitch_switch_description"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:thumb="@drawable/thumb_selector"
-                        app:thumbTint="@color/thumb_tint_selector"
-                        app:track="@drawable/track_selector"
-                        app:trackTint="@color/track_tint_selector" />
+                        android:layout_weight="0.5"
+                        android:gravity="right"
+                        android:paddingRight="8dp"
+                        android:text="0.3 Kp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/trend_duration_slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:elevation="0dp"
+                    android:stepSize="10.0"
+                    android:value="50"
+                    android:valueFrom="0.0"
+                    android:valueTo="500.0"
+                    app:haloColor="#E02828"
+                    app:labelBehavior="gone"
+                    app:thumbColor="#E02828"
+                    app:thumbElevation="0dp"
+                    app:thumbStrokeColor="#FFFFFF"
+                    app:thumbStrokeWidth="1dp"
+                    app:tickVisible="false"
+                    app:trackColorActive="#E02828"
+                    app:trackColorInactive="#666666" />
+
+                <!-- Макс. скорость коррекции -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -303,26 +193,43 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingStart="8dp"
-                        android:text="Инвертировать ось Y"
+                        android:paddingLeft="8dp"
+                        android:text="Время определение покоя"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/reversed_roll_value"
+                    <TextView
+                        android:id="@+id/stable_duration_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="false"
-                        android:contentDescription="@string/roll_switch_description"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:thumb="@drawable/thumb_selector"
-                        app:thumbTint="@color/thumb_tint_selector"
-                        app:track="@drawable/track_selector"
-                        app:trackTint="@color/track_tint_selector" />
+                        android:layout_weight="0.5"
+                        android:gravity="right"
+                        android:paddingRight="8dp"
+                        android:text="25.0 °/с"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/stable_duration_slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="0dp"
+                    android:stepSize="10.0"
+                    android:value="300"
+                    android:valueFrom="0.0"
+                    android:valueTo="500.0"
+                    app:haloColor="#E02828"
+                    app:labelBehavior="gone"
+                    app:thumbColor="#E02828"
+                    app:thumbElevation="0dp"
+                    app:thumbStrokeColor="#FFFFFF"
+                    app:thumbStrokeWidth="1dp"
+                    app:tickVisible="false"
+                    app:trackColorActive="#E02828"
+                    app:trackColorInactive="#666666" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

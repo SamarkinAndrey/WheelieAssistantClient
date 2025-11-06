@@ -51,9 +51,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#37383C"
-            app:tabIndicatorColor="#E02828"
             app:tabSelectedTextColor="#FFFFFF"
-            app:tabTextColor="#CCFFFFFF" />
+            app:tabTextColor="#8E8F93"
+            app:tabGravity="center"
+            app:tabMode="scrollable"
+            app:tabIndicator="@drawable/tab_indicator_slider"
+            app:tabIndicatorFullWidth="true"
+            app:tabIndicatorGravity="bottom"
+            app:tabMaxWidth="150dp"
+            app:tabMinWidth="150dp"
+            app:tabTextAppearance="@style/TabTextAppearance"
+            app:tabRippleColor="#37383C"/>
 
         <!-- ViewPager2 для контента -->
         <androidx.viewpager2.widget.ViewPager2
@@ -65,12 +73,12 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/saveLayout"
+        android:id="@+id/save_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="24dp"
         android:background="@drawable/bottom_panel_gradient"
         android:gravity="center"
         android:orientation="horizontal">
@@ -78,10 +86,11 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/save_button"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="54dp"
             android:layout_gravity="center"
             android:text="💾 СОХРАНИТЬ"
             android:textColor="#FFFFFF"
+            android:textSize="14sp"
             android:textStyle="bold"
             app:backgroundTint="#4D5A63"
             app:cornerRadius="8dp"

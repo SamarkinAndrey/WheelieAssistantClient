@@ -179,8 +179,6 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    otaManager = OtaManager(bleManager)
-
     initViews()
     initProgressBars()
     setupBluetooth()
@@ -189,6 +187,8 @@ class MainActivity : AppCompatActivity() {
     clearAttitudeValues()
     clearVoltageValues()
     clearVoltage()
+
+    otaManager = OtaManager(bleManager)
 
     if (hasAllPermissions())
       bleManager.startAutoConnect()

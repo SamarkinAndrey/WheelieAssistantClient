@@ -11,7 +11,7 @@ class SettingsPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStateAd
   override fun createFragment(position: Int): Fragment {
     return when (position) {
       0 -> BasicSettingsFragment()
-      1 -> AngularSettingsFragment()
+      1 -> AngleSettingsFragment()
       2 -> VoltageSettingsFragment()
       3 -> SpeedSettingsFragment()
       else -> BasicSettingsFragment()
