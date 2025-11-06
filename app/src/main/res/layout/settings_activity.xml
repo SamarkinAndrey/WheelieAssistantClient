@@ -8,7 +8,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#37383C"
         android:orientation="vertical">
 
         <!-- Красная панель с кнопкой назад -->
@@ -51,17 +50,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#37383C"
-            app:tabSelectedTextColor="#FFFFFF"
-            app:tabTextColor="#8E8F93"
             app:tabGravity="center"
-            app:tabMode="scrollable"
             app:tabIndicator="@drawable/tab_indicator_slider"
             app:tabIndicatorFullWidth="true"
             app:tabIndicatorGravity="bottom"
             app:tabMaxWidth="150dp"
             app:tabMinWidth="150dp"
+            app:tabMode="scrollable"
+            app:tabRippleColor="#37383C"
+            app:tabSelectedTextColor="#FFFFFF"
             app:tabTextAppearance="@style/TabTextAppearance"
-            app:tabRippleColor="#37383C"/>
+            app:tabTextColor="#8E8F93" />
 
         <!-- ViewPager2 для контента -->
         <androidx.viewpager2.widget.ViewPager2

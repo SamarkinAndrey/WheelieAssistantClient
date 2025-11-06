@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="CustomSwitchStyle" parent="Widget.Material3.CompoundButton.Switch">
-        <item name="android:thumb">@drawable/thumb_selector</item>
-        <item name="track">@drawable/track_selector</item>
-    </style>
     <style name="TabTextAppearance" parent="TextAppearance.AppCompat.Button">
         <item name="android:textSize">12sp</item>
         <item name="fontFamily">sans-serif</item>
