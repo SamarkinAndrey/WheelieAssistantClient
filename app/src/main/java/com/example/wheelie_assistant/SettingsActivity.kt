@@ -92,7 +92,8 @@ class SettingsActivity : AppCompatActivity() {
     val settings = SettingsManager.currentSettings
 
     supportFragmentManager.fragments.forEach { fragment ->
-      (fragment as BaseSettingsFragment).getSettings(settings)
+      if (fragment is BaseSettingsFragment)
+        fragment.getSettings(settings)
     }
 
     if (!SettingsManager.validate(settings)) {
