@@ -26,12 +26,8 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.card.MaterialCardView
-import org.json.JSONObject
-import org.json.JSONArray
-import org.json.JSONException
 import java.util.Locale
 import JsonParamParser
-import paramParser
 import BTParam.*
 import java.io.File
 
@@ -94,9 +90,6 @@ class MainActivity : AppCompatActivity() {
     updateControllerState()
   }
 
-  private var bluetoothAdapter: BluetoothAdapter? = null
-  private lateinit var bleManager: BleManager
-
   private enum class ConnectionState {
     DISCONNECTED, CONNECTING, CONNECTED
   }
@@ -120,28 +113,12 @@ class MainActivity : AppCompatActivity() {
     }
 
   private var serverMac: String? = null
-  private var targetDevice: BluetoothDevice? = null
 
   private val handler = Handler(Looper.getMainLooper())
   private val PERMISSION_REQUEST_CODE = 123
   private val BLUETOOTH_ENABLE_REQUEST_CODE = 124
 
-  private lateinit var otaManager: OtaManager
-//  private lateinit var otaButton: AppCompatImageButton
-
-//  private val RECONNECT_DELAY = 3000L
-//  private val CONNECTION_TIMEOUT = 10000L // 10 секунд
-
-//  private val bluetoothPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//    arrayOf(
-//      Manifest.permission.BLUETOOTH_SCAN,
-//      Manifest.permission.BLUETOOTH_CONNECT
-//    )
-//  } else {
-//    arrayOf(
-//      Manifest.permission.ACCESS_FINE_LOCATION
-//    )
-//  }
+  lateinit var bleManager: BleManager
 
   val bluetoothPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
     arrayOf(
@@ -155,8 +132,6 @@ class MainActivity : AppCompatActivity() {
       Manifest.permission.ACCESS_COARSE_LOCATION
     )
   }
-
-  private val parser = JsonParamParser(this)
 
   private fun lockScreen() {
     handler.post {
@@ -178,38 +153,23 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
+    instance = this
 
     initViews()
     initProgressBars()
-    setupBluetooth()
     setupBleManager()
-//    setupOTA()
     clearAttitudeValues()
     clearVoltageValues()
     clearVoltage()
-
-    otaManager = OtaManager(bleManager)
 
     if (hasAllPermissions())
       bleManager.startAutoConnect()
   }
 
-//  private fun setupOTA() {
-//    otaButton = findViewById(R.id.ota_button)
-//    otaButton.setOnClickListener {
-//      if (isConnected) {
-//        OtaUpdateDialog().show(supportFragmentManager, "ota_dialog")
-//      } else {
-//        showToast("Please connect to device first")
-//      }
-//    }
-//  }
-
   private fun setupBleManager() {
     bleManager = BleManager(this)
-    bleManager.setDataCallback { data ->
-      if (parser.parse(data))
-        processData()
+    bleManager.setDataCallback { parser ->
+      processData(parser)
     }
     bleManager.setConnectionCallback { connectionStatus ->
       handler.post {
@@ -298,7 +258,7 @@ class MainActivity : AppCompatActivity() {
     positionCard.setOnLongClickListener {
       if (isConnected) {
         showConfirmation(message = "Начать калибровку гироскопа?", onPositive = {
-          sendBluetoothCommands("${B_CALIBRATE_GYRO.value}=1")
+          bleManager.sendCommands("${B_CALIBRATE_GYRO.value}=1")
         })
       }
       true
@@ -309,7 +269,7 @@ class MainActivity : AppCompatActivity() {
     voltageCard.setOnLongClickListener {
       if (isConnected) {
         showConfirmation(message = "Сбросить вольтаж?", onPositive = {
-          sendBluetoothCommands("${B_RESET_VOLTAGE.value}=1")
+          bleManager.sendCommands("${B_RESET_VOLTAGE.value}=1")
         })
       }
       true
@@ -330,23 +290,13 @@ class MainActivity : AppCompatActivity() {
     updateConnectionStatus()
   }
 
-  private fun setupBluetooth() {
-    val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-    bluetoothAdapter = bluetoothManager.adapter
-
-    if (bluetoothAdapter == null) {
-      showToast("Bluetooth not supported")
-      finish()
-    }
-  }
-
   private fun setupSettings() {
     settingsButton.setOnClickListener {
       if (isConnected) {
         if (settingsLoaded)
           openSettings()
         else {
-          sendBluetoothCommands("${B_GET_SETTINGS.value}=1")
+          bleManager.sendCommands("${B_GET_SETTINGS.value}=1")
 
           settingsRequested = true
           handler.postDelayed( { settingsRequested = false }, 1000)
@@ -355,7 +305,7 @@ class MainActivity : AppCompatActivity() {
       }
     }
     SettingsActivity.setSendCallback { commands ->
-      sendBluetoothCommands(commands)
+      bleManager.sendCommands(commands)
 //      showToast("Settings sended")
     }
   }
@@ -363,7 +313,7 @@ class MainActivity : AppCompatActivity() {
   private fun setupEnabled() {
     controllerEnabled.setOnClickListener {
       if (isConnected) {
-        sendBluetoothCommands("${B_SET_ENABLED.value}=${if (controllerIsEnabled) 0 else 1}")
+        bleManager.sendCommands("${B_SET_ENABLED.value}=${if (controllerIsEnabled) 0 else 1}")
       }
     }
   }
@@ -614,7 +564,7 @@ class MainActivity : AppCompatActivity() {
     lockScreen()
     connectionState = ConnectionState.CONNECTED
 
-    sendBluetoothCommands("${B_CONNECTED.value}=1")
+    bleManager.sendCommands("${B_CONNECTED.value}=1")
   }
 
   private fun onConnecting() {
@@ -635,46 +585,6 @@ class MainActivity : AppCompatActivity() {
 
     closeConnection()
     connectionState = ConnectionState.DISCONNECTED
-  }
-
-  private fun sendBluetoothCommands(commands: String) {
-    if (!isConnected) return
-
-    var buf: String = commands
-    try {
-      if (!isJson(buf)) {
-        val p = paramParser()
-        if (!p.parse(buf)) return
-        buf = p.toJson()
-      }
-      val data = "$buf\n"
-      bleManager.writeData(data)
-    } catch (e: Exception) {
-      showToast("Failed to send data")
-    }
-  }
-
-  private fun isJson(jsonString: String): Boolean {
-    val trimmed = jsonString.trim()
-    if (trimmed.isEmpty()) return false
-
-    return try {
-      when {
-        trimmed.startsWith("{") && trimmed.endsWith("}") -> {
-          JSONObject(trimmed)
-          true
-        }
-
-        trimmed.startsWith("[") && trimmed.endsWith("]") -> {
-          JSONArray(trimmed)
-          true
-        }
-
-        else -> false
-      }
-    } catch (e: JSONException) {
-      false
-    }
   }
 
   private fun updateConnectionStatus() {
@@ -710,17 +620,7 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  private fun processData() {
-    if (otaManager.isOtaInProgress()) {
-      otaManager.handleOtaResponse(parser)
-    }
-
-    if (parser.hasParam(BTParam.B_FIRMWARE_PROGRESS)) {
-      val progress = parser.getInt(BTParam.B_FIRMWARE_PROGRESS)
-
-      Log.d("OTA", "Device progress: $progress%")
-    }
-
+  private fun processData(parser: JsonParamParser) {
     if (parser.hasParam(B_ENABLED))
       controllerIsEnabled = parser.getInt(B_ENABLED) == 1
 
@@ -762,7 +662,7 @@ class MainActivity : AppCompatActivity() {
       } else {
         progressFinish()
 
-        sendBluetoothCommands("${B_GET_POSITION.value}=1")
+        bleManager.sendCommands("${B_GET_POSITION.value}=1")
 
         if (value == -1)
           showToast("Gyroscope calibration failed")
@@ -786,37 +686,6 @@ class MainActivity : AppCompatActivity() {
   private fun openSettings() {
     val intent = Intent(this, SettingsActivity::class.java)
     startActivity(intent)
-  }
-
-  fun startFirmwareUpdate(firmwareFile: File) {
-    otaManager.startOtaUpdate(firmwareFile, object : OtaManager.OtaCallback {
-      override fun onProgress(progress: Int, bytesSent: Long, totalSize: Long) {
-        runOnUiThread {
-          showToast("OTA Progress: $progress% ($bytesSent/$totalSize)")
-        }
-      }
-
-      override fun onSuccess() {
-        runOnUiThread {
-          showToast("OTA update completed successfully! Device will restart.")
-        }
-      }
-
-      override fun onError(message: String) {
-        runOnUiThread {
-          showToast("OTA Error: $message")
-        }
-      }
-
-      override fun onAcknowledged(bytesReceived: Long) {
-        Log.d("OTA", "Device acknowledged: $bytesReceived bytes")
-      }
-    })
-  }
-
-  fun abortFirmwareUpdate() {
-    otaManager.abortOtaUpdate()
-    showToast("OTA update aborted")
   }
 
   override fun onDestroy() {
@@ -855,5 +724,11 @@ class MainActivity : AppCompatActivity() {
       .setPositiveButton(positiveText) { dialog, which -> onPositive() }
       .setNegativeButton(negativeText) { dialog, which -> onNegative() }.setCancelable(isCancelable)
       .setOnDismissListener { onDismiss() }.show()
+  }
+
+  companion object {
+    private var instance: MainActivity? = null
+
+    fun getInstance(): MainActivity? = instance
   }
 }

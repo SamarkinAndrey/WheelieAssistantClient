@@ -6,15 +6,30 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class SettingsPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStateAdapter(fragmentActivity) {
 
-  override fun getItemCount(): Int = 4
+  private val fragments = mutableListOf<Fragment>()
+
+  override fun getItemCount(): Int = 5
 
   override fun createFragment(position: Int): Fragment {
-    return when (position) {
+    val fragment = when (position) {
       0 -> BasicSettingsFragment()
       1 -> AngleSettingsFragment()
       2 -> VoltageSettingsFragment()
       3 -> SpeedSettingsFragment()
+      4 -> OtaUpdateFragment()
       else -> BasicSettingsFragment()
     }
+
+    if (fragments.size <= position) {
+      fragments.add(position, fragment)
+    } else {
+      fragments[position] = fragment
+    }
+
+    return fragment
+  }
+
+  fun getFragment(position: Int): Fragment? {
+    return fragments.getOrNull(position)
   }
 }

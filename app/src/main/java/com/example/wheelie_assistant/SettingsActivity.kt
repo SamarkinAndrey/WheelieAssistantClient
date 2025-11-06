@@ -9,6 +9,8 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.core.view.get
+import androidx.core.view.isVisible
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -54,7 +56,7 @@ class SettingsActivity : AppCompatActivity() {
     // Получаем ссылки на фрагменты после создания адаптера
     viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
       override fun onPageSelected(position: Int) {
-        // Можно добавить логику при переключении страниц
+        saveButton.isVisible = adapter.getFragment(position) is BaseSettingsFragment
       }
     })
   }
@@ -66,6 +68,7 @@ class SettingsActivity : AppCompatActivity() {
         1 -> "Угловые"
         2 -> "Напряжение"
         3 -> "Скорость"
+        4 -> "Прошивка"
         else -> "Раздел"
       }
     }.attach()

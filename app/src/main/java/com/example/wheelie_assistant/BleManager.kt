@@ -1,5 +1,7 @@
 package com.app.wheelie_assistant
 
+import BTParam.*
+import JsonParamParser
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
@@ -14,6 +16,12 @@ import no.nordicsemi.android.ble.observer.ConnectionObserver
 import android.content.Context
 import android.os.ParcelUuid
 import android.util.Log
+import com.app.wheelie_assistant.OtaManager.OtaCallback
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
+import paramParser
+import java.io.File
 import java.util.*
 
 class BleManager(context: Context) : BleManager(context) {
@@ -26,7 +34,7 @@ class BleManager(context: Context) : BleManager(context) {
     private const val TAG = "BleManager"
   }
 
-  private var dataCallback: ((String) -> Unit)? = null
+  private var dataCallback: ((JsonParamParser) -> Unit)? = null
   private var connectionCallback: ((String) -> Unit)? = null
   private var writeErrorCallback: ((String) -> Unit)? = null
 
@@ -35,6 +43,9 @@ class BleManager(context: Context) : BleManager(context) {
 
   private var isManualDisconnect = false
   private var scanCallback: ScanCallback? = null
+
+  private var ota = OtaManager(this)
+  private var parser = JsonParamParser()
 
   init {
     setConnectionObserver(object : ConnectionObserver {
@@ -114,7 +125,13 @@ class BleManager(context: Context) : BleManager(context) {
       if (data.value != null) {
         val value = data.getStringValue(0) ?: ""
         log(Log.DEBUG, "Received data: $value")
-        dataCallback?.invoke(value)
+
+        if (parser.parse(value)) {
+          if (ota.inProgress())
+            ota.handleResponse(parser)
+
+          dataCallback?.invoke(parser)
+        }
       }
     }
 
@@ -147,6 +164,50 @@ class BleManager(context: Context) : BleManager(context) {
     } else {
       log(Log.ERROR, "RX characteristic not available")
       writeErrorCallback?.invoke("RX characteristic not available")
+    }
+  }
+
+  fun sendCommands(commands: String) {
+    if (rxCharacteristic != null) {
+      var buf: String = commands
+      try {
+        if (!isJson(buf)) {
+          val p = paramParser()
+          if (!p.parse(buf)) return
+          buf = p.toJson()
+        }
+        val data = "$buf\n"
+        writeData(data)
+      } catch (e: Exception) {
+        log(Log.ERROR, "Failed to write data: ${e.message}")
+        writeErrorCallback?.invoke("Failed to send data: error ${e.message}")
+      }
+    } else {
+      log(Log.ERROR, "RX characteristic not available")
+      writeErrorCallback?.invoke("RX characteristic not available")
+    }
+  }
+
+  private fun isJson(jsonString: String): Boolean {
+    val trimmed = jsonString.trim()
+    if (trimmed.isEmpty()) return false
+
+    return try {
+      when {
+        trimmed.startsWith("{") && trimmed.endsWith("}") -> {
+          JSONObject(trimmed)
+          true
+        }
+
+        trimmed.startsWith("[") && trimmed.endsWith("]") -> {
+          JSONArray(trimmed)
+          true
+        }
+
+        else -> false
+      }
+    } catch (e: JSONException) {
+      false
     }
   }
 
@@ -252,7 +313,7 @@ class BleManager(context: Context) : BleManager(context) {
     disconnect().enqueue()
   }
 
-  fun setDataCallback(callback: (String) -> Unit) {
+  fun setDataCallback(callback: (JsonParamParser) -> Unit) {
     dataCallback = callback
   }
 
@@ -263,4 +324,14 @@ class BleManager(context: Context) : BleManager(context) {
   fun setWriteErrorCallback(callback: (String) -> Unit) {
     writeErrorCallback = callback
   }
+
+  fun startOtaUpdate(firmwareFile: File, callback: OtaCallback) {
+    ota.startUpdate(firmwareFile, callback)
+  }
+
+  fun abortOtaUpdate() {
+    ota.abortUpdate()
+  }
+
+  fun updateInProgress(): Boolean = ota.inProgress()
 }
