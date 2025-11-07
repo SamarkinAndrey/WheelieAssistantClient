@@ -535,6 +535,8 @@ class MainActivity : AppCompatActivity() {
   private fun closeConnection() {
     controllerIsEnabled = false
 
+    SettingsActivity.getInstance()?.finish()
+
     progressFinish()
 
     clearAttitudeValues()
@@ -690,6 +692,7 @@ class MainActivity : AppCompatActivity() {
 
   override fun onDestroy() {
     super.onDestroy()
+    instance = null
 
     disconnectManually()
   }
