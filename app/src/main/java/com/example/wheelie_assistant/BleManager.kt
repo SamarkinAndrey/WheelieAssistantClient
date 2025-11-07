@@ -1,6 +1,5 @@
 package com.app.wheelie_assistant
 
-import BTParam.*
 import JsonParamParser
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothDevice
@@ -127,10 +126,10 @@ class BleManager(context: Context) : BleManager(context) {
         log(Log.DEBUG, "Received data: $value")
 
         if (parser.parse(value)) {
-          if (ota.inProgress())
-            ota.handleResponse(parser)
+          ota.processUpdate(parser)
 
-          dataCallback?.invoke(parser)
+          if (!ota.inProgress())
+            dataCallback?.invoke(parser)
         }
       }
     }

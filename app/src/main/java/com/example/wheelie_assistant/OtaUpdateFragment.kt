@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,8 +57,6 @@ class OtaUpdateFragment : Fragment() {
 
     btnStartUpdate.setOnClickListener {
       firmwareFile?.let { file ->
-        progressBar.visibility = ProgressBar.VISIBLE
-        btnStartUpdate.isEnabled = false
         startFirmwareUpdate(file)
       } ?: showToast("Please select a firmware file first")
     }
@@ -126,43 +123,44 @@ class OtaUpdateFragment : Fragment() {
 
   fun startFirmwareUpdate(firmwareFile: File) {
     mainActivity?.bleManager?.startOtaUpdate(firmwareFile, object : OtaManager.OtaCallback {
-      override fun onProgress(progress: Int, bytesSent: Long, totalSize: Long) {
-        if (!btnCancel.isEnabled)
-          btnCancel.isEnabled = true
-
-        showToast("OTA Progress: $progress% ($bytesSent/$totalSize)")
-      }
-
-      override fun onDeviceProgress(progress: Int) {
-        if (!btnCancel.isEnabled)
-          btnCancel.isEnabled = true
-
-        showToast("Device Progress: $progress%")
+      override fun onProgress(progress: Int, bytesReceived: Long, totalSize: Long) {
+        showToast("OTA Progress: $progress% ($bytesReceived/$totalSize)")
       }
 
       override fun onSuccess() {
-        if (!btnCancel.isEnabled)
-          btnCancel.isEnabled = true
-
         showToast("OTA update completed successfully! Device will restart.")
+        finish()
       }
 
-      override fun onError(message: String) {
-        showToast("OTA Error: $message")
-      }
-
-      override fun onAcknowledged(bytesReceived: Long) {
-        Log.d("OTA", "Device acknowledged: $bytesReceived bytes")
+      override fun onNotify(message: String) {
+        showToast("OTA Information: $message")
       }
 
       override fun onStart() {
-        btnCancel.isEnabled = true
+        start()
       }
 
-      override fun onFinish() {
-        btnCancel.isEnabled = false
+      override fun onAbort() {
+        finish()
+      }
+
+      override fun onFailed(errorMessage: String) {
+        showToast("OTA Error: $errorMessage")
+        finish()
       }
     })
+  }
+
+  private fun start() {
+    progressBar.visibility = ProgressBar.VISIBLE
+    btnStartUpdate.isEnabled = false
+    btnCancel.isEnabled = true
+  }
+
+  private fun finish() {
+    progressBar.visibility = ProgressBar.INVISIBLE
+    btnStartUpdate.isEnabled = true
+    btnCancel.isEnabled = false
   }
 
   fun abortFirmwareUpdate() {

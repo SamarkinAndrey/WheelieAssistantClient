@@ -9,93 +9,105 @@ import JsonParamParser
 import BTParam.*
 
 class OtaManager(private val bleManager: BleManager) {
-  companion object {
-    private const val TAG = "OtaManager"
-    private const val PACKET_SIZE = 200 // bytes
-  }
+  private val TAG = "OtaManager"
 
   private var inProgress = false
   private var totalSize = 0L
-  private var bytesSent = 0L
+  private var chkSum: String? = null
+  private var bytesReceived = 0L
   private var firmwareFile: File? = null
+  private var dataSize = 0
 
   interface OtaCallback {
-    fun onProgress(progress: Int, bytesSent: Long, totalSize: Long)
-    fun onDeviceProgress(progress: Int)
+    fun onProgress(progress: Int, bytesReceived: Long, totalSize: Long)
     fun onSuccess()
-    fun onError(message: String)
-    fun onAcknowledged(bytesReceived: Long)
+    fun onFailed(errorMessage: String)
+    fun onNotify(message: String)
     fun onStart()
-    fun onFinish()
+    fun onAbort()
   }
 
   private var otaCallback: OtaCallback? = null
 
   fun startUpdate(firmwareFile: File, callback: OtaCallback) {
     if (inProgress) {
-      callback.onError("OTA update already in progress")
+      callback.onNotify("OTA update already in progress")
       return
     }
 
     this.firmwareFile = firmwareFile
     this.otaCallback = callback
     this.totalSize = firmwareFile.length()
-    this.bytesSent = 0L
-    this.inProgress = true
-
-    callback.onStart()
+    this.chkSum = calculateFileChecksum(firmwareFile)
 
     Log.d(TAG, "Starting OTA update, file size: $totalSize bytes")
 
-    bleManager.sendCommands("${B_FIRMWARE_START.s()}=1,${B_FIRMWARE_SIZE.s()}=$totalSize")
+    bleManager.sendCommands("${B_FIRMWARE_START.s()}=1,${B_FIRMWARE_SIZE.s()}=$totalSize,${B_FIRMWARE_CHECKSUM.s()}=$chkSum")
   }
 
   fun abortUpdate() {
     if (!inProgress) return
 
     bleManager.sendCommands("${B_FIRMWARE_ABORT.s()}=1")
+    otaCallback?.onAbort()
     cleanup()
   }
 
-  fun handleResponse(parser: JsonParamParser) {
-    if (!inProgress) return
+  fun processUpdate(parser: JsonParamParser) {
+    if (!this.inProgress) {
+      if (parser.getInt(B_FIRMWARE_START, 0) == 1) {
+        this.dataSize = parser.getInt(B_FIRMWARE_DATA_SIZE)
 
-    if (parser.hasParam(B_FIRMWARE_ACK)) {
-      val receivedBytes = parser.getLong(B_FIRMWARE_RECEIVED, 0)
-      otaCallback?.onAcknowledged(receivedBytes)
+        if (this.dataSize < 1) {
+          Log.d(TAG, "Data size not defined!")
+          this.otaCallback?.onFailed("Data size not defined!")
+          return
+        }
 
-      sendNextPacket()
-    }
+        this.bytesReceived = 0L
+        this.inProgress = true
 
-    if (parser.hasParam(B_FIRMWARE_ERROR)) {
-      val errorMessage = parser.getString(B_FIRMWARE_MESSAGE, "Unknown error")
-      otaCallback?.onError(errorMessage)
-      cleanup()
-    }
+        this.otaCallback?.onStart()
 
-    if (parser.hasParam(B_FIRMWARE_SUCCESS)) {
-      otaCallback?.onSuccess()
-      cleanup()
-    }
+        sendNextPacket()
+      }
+    } else {
+      if (parser.hasParam(B_FIRMWARE_RECEIVED)) {
+        bytesReceived = parser.getLong(B_FIRMWARE_RECEIVED)
 
-    if (parser.hasParam(B_FIRMWARE_PROGRESS)) {
-      val progress = parser.getInt(B_FIRMWARE_PROGRESS)
-      Log.d("OTA", "Device progress: $progress%")
+        val progress = ((bytesReceived * 100) / totalSize).toInt()
+        Log.d(TAG, "Receive progress: $bytesReceived / $totalSize ($progress%)")
 
-      otaCallback?.onDeviceProgress(progress)
+        otaCallback?.onProgress(progress, bytesReceived, totalSize)
+
+        sendNextPacket()
+      }
+
+      if (parser.hasParam(B_FIRMWARE_ERROR)) {
+        val errorMessage = parser.getString(B_FIRMWARE_MESSAGE, "Unknown error")
+        otaCallback?.onFailed(errorMessage)
+        cleanup()
+      }
+
+      if (parser.hasParam(B_FIRMWARE_SUCCESS)) {
+        otaCallback?.onSuccess()
+        cleanup()
+      }
     }
   }
 
   private fun sendNextPacket() {
+    if (bytesReceived >= totalSize)
+      return
+
     try {
       val file = firmwareFile ?: throw IllegalStateException("Firmware file not set")
       val inputStream = FileInputStream(file)
 
-      if (bytesSent > 0) {
-        inputStream.skip(bytesSent)
-      }
+      if (bytesReceived > 0)
+        inputStream.skip(bytesReceived)
 
-      val buffer = ByteArray(PACKET_SIZE)
+      val buffer = ByteArray(dataSize)
       val bytesRead = inputStream.read(buffer)
 
       if (bytesRead > 0) {
@@ -103,33 +115,25 @@ class OtaManager(private val bleManager: BleManager) {
           .replace("\n", "")
 
         bleManager.sendCommands("${B_FIRMWARE_DATA.s()}=$encodedData")
-        bytesSent += bytesRead
 
+        val bytesSent = bytesReceived + bytesRead
         val progress = ((bytesSent * 100) / totalSize).toInt()
-        otaCallback?.onProgress(progress, bytesSent, totalSize)
-
-        Log.d(TAG, "Sent packet: $bytesSent/$totalSize ($progress%)")
-      } else {
-        sendFinishCommand()
-        inputStream.close()
+        Log.d(TAG, "Sent progress: $bytesSent / $totalSize ($progress%)")
       }
+
+      inputStream.close()
     } catch (e: Exception) {
-      otaCallback?.onError("Failed to send packet: ${e.message}")
+      otaCallback?.onFailed("Failed to send packet: ${e.message}")
       cleanup()
     }
-  }
-
-  private fun sendFinishCommand() {
-    bleManager.sendCommands("${B_FIRMWARE_END.s()}=1")
   }
 
   private fun cleanup() {
     inProgress = false
     firmwareFile = null
     totalSize = 0L
-    bytesSent = 0L
-
-    otaCallback?.onFinish()
+    chkSum = null
+    bytesReceived = 0L
   }
 
   fun inProgress(): Boolean = inProgress
