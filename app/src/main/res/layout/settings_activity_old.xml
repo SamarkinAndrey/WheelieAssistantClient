@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#37383C">
+    android:background="#37383B">
 
     <!-- Основной контент -->
     <LinearLayout
@@ -136,7 +136,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666" />
+                            app:trackColorInactive="#6E7881" />
 
                         <!-- Время реакции мотора -->
                         <LinearLayout
@@ -187,7 +187,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666" />
+                            app:trackColorInactive="#6E7881" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -235,7 +235,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666" />
+                            app:trackColorInactive="#6E7881" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -282,7 +282,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666" />
+                            app:trackColorInactive="#6E7881" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -419,7 +419,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666" />
+                            app:trackColorInactive="#6E7881" />
 
                         <!-- Зона стабилизации -->
                         <LinearLayout
@@ -468,7 +468,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666" />
+                            app:trackColorInactive="#6E7881" />
 
                         <!-- Порог отключения -->
                         <LinearLayout
@@ -517,7 +517,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666" />
+                            app:trackColorInactive="#6E7881" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -564,7 +564,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666" />
+                            app:trackColorInactive="#6E7881" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -641,7 +641,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666" />
+                            app:trackColorInactive="#6E7881" />
 
                         <!-- Базовый шаг -->
                         <LinearLayout
@@ -687,7 +687,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666"
+                            app:trackColorInactive="#6E7881"
                             app:values="@array/initial_range_values" />
 
                     </LinearLayout>
@@ -766,7 +766,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666" />
+                            app:trackColorInactive="#6E7881" />
 
                         <!-- Макс. скорость коррекции -->
                         <LinearLayout
@@ -815,7 +815,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666" />
+                            app:trackColorInactive="#6E7881" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -863,7 +863,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666" />
+                            app:trackColorInactive="#6E7881" />
 
                         <!-- Макс. скорость коррекции -->
                         <LinearLayout
@@ -911,7 +911,7 @@
                             app:thumbStrokeWidth="1dp"
                             app:tickVisible="false"
                             app:trackColorActive="#E02828"
-                            app:trackColorInactive="#666666" />
+                            app:trackColorInactive="#6E7881" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -942,7 +942,7 @@
             android:text="💾 СОХРАНИТЬ"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
-            app:backgroundTint="#4D5A63"
+            app:backgroundTint="#4D5963"
             app:cornerRadius="8dp"
             app:strokeColor="#FFFFFF" />
 

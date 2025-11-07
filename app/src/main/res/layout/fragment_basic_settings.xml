@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#37383C"
+    android:background="#37383B"
     android:padding="16dp"
     android:scrollbars="none">
 
@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#37383C"
+            app:cardBackgroundColor="#37383B"
             app:cardCornerRadius="8dp"
             app:strokeColor="#FFFFFF"
             app:strokeWidth="1dp">
@@ -86,7 +86,7 @@
                     app:thumbStrokeWidth="1dp"
                     app:tickVisible="false"
                     app:trackColorActive="#E02828"
-                    app:trackColorInactive="#666666" />
+                    app:trackColorInactive="#6E7881" />
 
                 <!-- Время реакции мотора -->
                 <LinearLayout
@@ -137,7 +137,7 @@
                     app:thumbStrokeWidth="1dp"
                     app:tickVisible="false"
                     app:trackColorActive="#E02828"
-                    app:trackColorInactive="#666666" />
+                    app:trackColorInactive="#6E7881" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -185,7 +185,7 @@
                     app:thumbStrokeWidth="1dp"
                     app:tickVisible="false"
                     app:trackColorActive="#E02828"
-                    app:trackColorInactive="#666666" />
+                    app:trackColorInactive="#6E7881" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -232,7 +232,7 @@
                     app:thumbStrokeWidth="1dp"
                     app:tickVisible="false"
                     app:trackColorActive="#E02828"
-                    app:trackColorInactive="#666666" />
+                    app:trackColorInactive="#6E7881" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -251,7 +251,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="#37383C"
+            app:cardBackgroundColor="#37383B"
             app:cardCornerRadius="8dp"
             app:strokeColor="#FFFFFF"
             app:strokeWidth="1dp">

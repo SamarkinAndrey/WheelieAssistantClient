@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#37383C">
+    android:background="#37383B">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -49,18 +49,21 @@
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#37383C"
+            android:background="#37383B"
             app:tabGravity="center"
             app:tabIndicator="@drawable/tab_indicator_slider"
+            app:tabUnboundedRipple="true"
+            app:tabIndicatorColor="#E02828"
             app:tabIndicatorFullWidth="true"
             app:tabIndicatorGravity="bottom"
+            app:tabIndicatorAnimationMode="elastic"
             app:tabMaxWidth="150dp"
             app:tabMinWidth="150dp"
             app:tabMode="scrollable"
-            app:tabRippleColor="#37383C"
+            app:tabRippleColor="#13191E"
             app:tabSelectedTextColor="#FFFFFF"
             app:tabTextAppearance="@style/TabTextAppearance"
-            app:tabTextColor="#8E8F93" />
+            app:tabTextColor="#98999A" />
 
         <!-- ViewPager2 для контента -->
         <androidx.viewpager2.widget.ViewPager2
@@ -91,7 +94,7 @@
             android:textColor="#FFFFFF"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:backgroundTint="#4D5A63"
+            app:backgroundTint="#4D5963"
             app:cornerRadius="8dp"
             app:strokeColor="#FFFFFF" />
 
@@ -103,7 +106,7 @@
     <!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
     <!--    android:layout_width="match_parent"-->
     <!--    android:layout_height="match_parent"-->
-    <!--    android:background="#37383C">-->
+    <!--    android:background="#37383B">-->
 
     <!--    &lt;!&ndash; Основной контент &ndash;&gt;-->
     <!--    <LinearLayout-->
@@ -236,7 +239,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666" />-->
+    <!--                            app:trackColorInactive="#6E7881" />-->
 
     <!--                        &lt;!&ndash; Время реакции мотора &ndash;&gt;-->
     <!--                        <LinearLayout-->
@@ -287,7 +290,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666" />-->
+    <!--                            app:trackColorInactive="#6E7881" />-->
 
     <!--                        <LinearLayout-->
     <!--                            android:layout_width="match_parent"-->
@@ -335,7 +338,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666" />-->
+    <!--                            app:trackColorInactive="#6E7881" />-->
 
     <!--                        <LinearLayout-->
     <!--                            android:layout_width="match_parent"-->
@@ -382,7 +385,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666" />-->
+    <!--                            app:trackColorInactive="#6E7881" />-->
 
     <!--                        <LinearLayout-->
     <!--                            android:layout_width="match_parent"-->
@@ -519,7 +522,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666" />-->
+    <!--                            app:trackColorInactive="#6E7881" />-->
 
     <!--                        &lt;!&ndash; Зона стабилизации &ndash;&gt;-->
     <!--                        <LinearLayout-->
@@ -568,7 +571,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666" />-->
+    <!--                            app:trackColorInactive="#6E7881" />-->
 
     <!--                        &lt;!&ndash; Порог отключения &ndash;&gt;-->
     <!--                        <LinearLayout-->
@@ -617,7 +620,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666" />-->
+    <!--                            app:trackColorInactive="#6E7881" />-->
 
     <!--                        <LinearLayout-->
     <!--                            android:layout_width="match_parent"-->
@@ -664,7 +667,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666" />-->
+    <!--                            app:trackColorInactive="#6E7881" />-->
 
     <!--                    </LinearLayout>-->
     <!--                </com.google.android.material.card.MaterialCardView>-->
@@ -741,7 +744,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666" />-->
+    <!--                            app:trackColorInactive="#6E7881" />-->
 
     <!--                        &lt;!&ndash; Базовый шаг &ndash;&gt;-->
     <!--                        <LinearLayout-->
@@ -787,7 +790,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666"-->
+    <!--                            app:trackColorInactive="#6E7881"-->
     <!--                            app:values="@array/initial_range_values" />-->
 
     <!--                    </LinearLayout>-->
@@ -866,7 +869,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666" />-->
+    <!--                            app:trackColorInactive="#6E7881" />-->
 
     <!--                        &lt;!&ndash; Макс. скорость коррекции &ndash;&gt;-->
     <!--                        <LinearLayout-->
@@ -915,7 +918,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666" />-->
+    <!--                            app:trackColorInactive="#6E7881" />-->
 
     <!--                        <LinearLayout-->
     <!--                            android:layout_width="match_parent"-->
@@ -963,7 +966,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666" />-->
+    <!--                            app:trackColorInactive="#6E7881" />-->
 
     <!--                        &lt;!&ndash; Макс. скорость коррекции &ndash;&gt;-->
     <!--                        <LinearLayout-->
@@ -1011,7 +1014,7 @@
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
-    <!--                            app:trackColorInactive="#666666" />-->
+    <!--                            app:trackColorInactive="#6E7881" />-->
 
     <!--                    </LinearLayout>-->
     <!--                </com.google.android.material.card.MaterialCardView>-->
@@ -1042,7 +1045,7 @@
     <!--            android:text="💾 СОХРАНИТЬ"-->
     <!--            android:textColor="#FFFFFF"-->
     <!--            android:textStyle="bold"-->
-    <!--            app:backgroundTint="#4D5A63"-->
+    <!--            app:backgroundTint="#4D5963"-->
     <!--            app:cornerRadius="8dp"-->
     <!--            app:strokeColor="#FFFFFF" />-->
 
