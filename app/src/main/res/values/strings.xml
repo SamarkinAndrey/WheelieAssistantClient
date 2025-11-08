@@ -1,5 +1,3 @@
 <resources>
     <string name="app_name">Wheelie Assistant</string>
-    <string name="roll_switch_description">Reverse roll switch</string>
-    <string name="pitch_switch_description">Reverse pitch switch</string>
 </resources>

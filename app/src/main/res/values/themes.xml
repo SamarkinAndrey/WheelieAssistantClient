@@ -12,18 +12,4 @@
         <item name='tabStyle'>@style/MaterialTabStyle</item>
         <item name="imageButtonStyle">@style/MaterialImageButtonStyle</item>
     </style>
-    <style name="AppTheme" parent="Theme.Material3.Dark">
-        <item name="colorPrimary">#FF4444</item>
-        <item name="colorPrimaryDark">#CC0000</item>
-        <item name="colorAccent">#FFA500</item>
-        <item name="android:windowBackground">#000000</item>
-    </style>
-    <style name="AppTheme.NoActionBar" parent="Theme.Material3.Dark">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="colorPrimary">#FF4444</item>
-        <item name="colorPrimaryDark">#CC0000</item>
-        <item name="colorAccent">#FFA500</item>
-        <item name="android:windowBackground">#000000</item>
-    </style>
 </resources>

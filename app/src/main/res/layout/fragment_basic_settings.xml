@@ -97,7 +97,6 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/motor_delay_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
@@ -110,7 +109,6 @@
                 </LinearLayout>
 
                 <com.google.android.material.slider.Slider
-                    android:id="@+id/motor_delay_slider"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
