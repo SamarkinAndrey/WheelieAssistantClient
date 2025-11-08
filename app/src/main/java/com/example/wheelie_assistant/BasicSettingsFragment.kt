@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
-import com.google.android.material.switchmaterial.SwitchMaterial
+//import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.materialswitch.MaterialSwitch
 import kotlin.math.max
 
 class BasicSettingsFragment : BaseSettingsFragment() {
@@ -15,8 +16,8 @@ class BasicSettingsFragment : BaseSettingsFragment() {
   private lateinit var systemTickValue: MaterialTextView
   private lateinit var predictionHorizontValue: MaterialTextView
   private lateinit var gyroHysteresisValue: MaterialTextView
-  private lateinit var reversedPitchValue: SwitchMaterial
-  private lateinit var reversedRollValue: SwitchMaterial
+  private lateinit var reversedPitchValue: MaterialSwitch
+  private lateinit var reversedRollValue: MaterialSwitch
 
   private lateinit var systemTickSlider: Slider
   private lateinit var predictionHorizontSlider: Slider
@@ -40,9 +41,9 @@ class BasicSettingsFragment : BaseSettingsFragment() {
 
       saveLayout.post {
         scrollLayout.setPadding(
-          scrollLayout.paddingLeft,
+          scrollLayout.paddingStart,
           scrollLayout.paddingTop,
-          scrollLayout.paddingRight,
+          scrollLayout.paddingEnd,
           saveLayout.height
         )
       }

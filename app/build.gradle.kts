@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.app.wheelie_assistant"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.app.wheelie_assistant"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -83,10 +83,11 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.10.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.core:core-ktx:1.17.0")
+    implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("androidx.appcompat:appcompat-resources:1.7.1")
+    implementation("com.google.android.material:material:1.14.0-alpha06")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("no.nordicsemi.android:ble:2.7.1")
     implementation("no.nordicsemi.android:ble-ktx:2.7.1")
     implementation("no.nordicsemi.android:ble-common:2.7.1")

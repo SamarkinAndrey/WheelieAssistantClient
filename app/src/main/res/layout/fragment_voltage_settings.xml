@@ -48,7 +48,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Порог включения"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -60,7 +60,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="1.5 В"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -76,16 +76,7 @@
                     android:stepSize="0.1"
                     android:value="1.5"
                     android:valueFrom="0.0"
-                    android:valueTo="5.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#6E7881" />
+                    android:valueTo="5.0" />
 
                 <!-- Базовый шаг -->
                 <LinearLayout
@@ -97,7 +88,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Диапазон шагов"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -109,7 +100,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="1 ед"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"

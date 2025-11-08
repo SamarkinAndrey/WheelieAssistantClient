@@ -49,7 +49,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Период контроля"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -61,7 +61,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="10 мс"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -77,16 +77,7 @@
                     android:stepSize="5.0"
                     android:value="5.0"
                     android:valueFrom="5.0"
-                    android:valueTo="100.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#6E7881" />
+                    android:valueTo="100.0" />
 
                 <!-- Время реакции мотора -->
                 <LinearLayout
@@ -99,7 +90,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Время реакции мотора"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -111,7 +102,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="80 мс"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -128,16 +119,7 @@
                     android:value="10.0"
                     android:valueFrom="0.0"
                     android:valueTo="250.0"
-                    android:visibility="gone"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#6E7881" />
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -148,7 +130,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Время упреждения"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -160,7 +142,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="90 мс"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -176,16 +158,7 @@
                     android:stepSize="5.0"
                     android:value="15.0"
                     android:valueFrom="0.0"
-                    android:valueTo="250.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#6E7881" />
+                    android:valueTo="250.0" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -196,7 +169,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Гистререзис положения"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -208,7 +181,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="0.5°"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -219,20 +192,11 @@
                     android:id="@+id/gyro_hysteresis_slider"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:elevation="0dp"
                     android:stepSize="0.1"
                     android:value="0.5"
                     android:valueFrom="0.0"
                     android:valueTo="5.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#6E7881" />
+                    android:background="@null" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -281,20 +245,11 @@
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/reversed_pitch_value"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="false"
-                        android:contentDescription="@string/pitch_switch_description"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:thumb="@drawable/thumb_selector"
-                        app:thumbTint="@android:color/transparent"
-                        app:thumbTintMode="screen"
-                        app:track="@drawable/track_selector"
-                        app:trackTint="@android:color/transparent"
-                        app:trackTintMode="screen" />
+                        android:layout_height="wrap_content"/>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -313,20 +268,10 @@
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/reversed_roll_value"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="false"
-                        android:contentDescription="@string/roll_switch_description"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:thumb="@drawable/thumb_selector"
-                        app:thumbTint="@android:color/transparent"
-                        app:thumbTintMode="screen"
-                        app:track="@drawable/track_selector"
-                        app:trackTint="@android:color/transparent"
-                        app:trackTintMode="screen" />
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
             </LinearLayout>

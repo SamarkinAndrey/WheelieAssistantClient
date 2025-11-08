@@ -33,9 +33,9 @@ class VoltageSettingsFragment : BaseSettingsFragment() {
 
       saveLayout.post {
         scrollLayout.setPadding(
-          scrollLayout.paddingLeft,
+          scrollLayout.paddingStart,
           scrollLayout.paddingTop,
-          scrollLayout.paddingRight,
+          scrollLayout.paddingEnd,
           saveLayout.height
         )
       }

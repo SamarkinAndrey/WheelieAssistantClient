@@ -48,7 +48,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Гистерезис"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -60,7 +60,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="0.3 Kp"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -76,16 +76,7 @@
                     android:stepSize="0.1"
                     android:value="0.3"
                     android:valueFrom="0.0"
-                    android:valueTo="1.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#6E7881" />
+                    android:valueTo="1.0" />
 
                 <!-- Макс. скорость коррекции -->
                 <LinearLayout
@@ -97,7 +88,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Макс. угловая скорость"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -109,7 +100,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="25.0 °/с"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -125,16 +116,7 @@
                     android:stepSize="10.0"
                     android:value="200"
                     android:valueFrom="0.0"
-                    android:valueTo="500.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#6E7881" />
+                    android:valueTo="500.0" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -145,7 +127,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Время определение тренда"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -157,7 +139,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="0.3 Kp"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -173,16 +155,7 @@
                     android:stepSize="10.0"
                     android:value="50"
                     android:valueFrom="0.0"
-                    android:valueTo="500.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#6E7881" />
+                    android:valueTo="500.0" />
 
                 <!-- Макс. скорость коррекции -->
                 <LinearLayout
@@ -194,7 +167,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Время определение покоя"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -206,7 +179,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="25.0 °/с"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -221,16 +194,7 @@
                     android:stepSize="10.0"
                     android:value="300"
                     android:valueFrom="0.0"
-                    android:valueTo="500.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#6E7881" />
+                    android:valueTo="500.0" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

@@ -48,7 +48,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Целевой угол подъема"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -60,7 +60,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="25.0°"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -76,16 +76,7 @@
                     android:stepSize="1.0"
                     android:value="25.0"
                     android:valueFrom="15.0"
-                    android:valueTo="65.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#6E7881" />
+                    android:valueTo="65.0" />
 
                 <!-- Зона стабилизации -->
                 <LinearLayout
@@ -97,7 +88,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Зона стабилизации"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -109,7 +100,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="0.5°"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -125,16 +116,7 @@
                     android:stepSize="0.1"
                     android:value="0.5"
                     android:valueFrom="0.0"
-                    android:valueTo="5.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#6E7881" />
+                    android:valueTo="5.0" />
 
                 <!-- Порог отключения -->
                 <LinearLayout
@@ -146,7 +128,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Порог отключения"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -158,7 +140,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="-5.0°"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -174,16 +156,7 @@
                     android:stepSize="1.0"
                     android:value="5.0"
                     android:valueFrom="0.0"
-                    android:valueTo="10.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#6E7881" />
+                    android:valueTo="10.0" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -194,7 +167,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:paddingLeft="8dp"
+                        android:paddingStart="8dp"
                         android:text="Опасный порог"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -206,7 +179,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
-                        android:paddingRight="8dp"
+                        android:paddingEnd="8dp"
                         android:text="+5.0°"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
@@ -221,16 +194,7 @@
                     android:stepSize="1.0"
                     android:value="5.0"
                     android:valueFrom="0.0"
-                    android:valueTo="10.0"
-                    app:haloColor="#E02828"
-                    app:labelBehavior="gone"
-                    app:thumbColor="#E02828"
-                    app:thumbElevation="0dp"
-                    app:thumbStrokeColor="#FFFFFF"
-                    app:thumbStrokeWidth="1dp"
-                    app:tickVisible="false"
-                    app:trackColorActive="#E02828"
-                    app:trackColorInactive="#6E7881" />
+                    android:valueTo="10.0" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
