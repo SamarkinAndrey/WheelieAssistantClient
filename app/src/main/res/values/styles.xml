@@ -11,9 +11,9 @@
         <item name="android:scaleY">0.8</item>
         <item name="android:textOff">@null</item>
         <item name="android:textOn">@null</item>
-        <item name="android:thumb">@drawable/mtrl_thumb_selector</item>
+        <item name="android:thumb">@drawable/thumb_selector</item>
         <item name="thumbTint">@color/thumb_tint_selector</item>
-        <item name="track">@drawable/mtrl_track_selector</item>
+        <item name="track">@drawable/track_selector</item>
         <item name="trackTint">@color/track_tint_selector</item>
     </style>
 
