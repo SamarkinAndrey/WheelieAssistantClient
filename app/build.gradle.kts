@@ -92,10 +92,13 @@ dependencies {
     implementation("no.nordicsemi.android:ble-ktx:2.7.1")
     implementation("no.nordicsemi.android:ble-common:2.7.1")
     implementation("no.nordicsemi.android.support.v18:scanner:1.6.0")
-    implementation("no.nordicsemi.android:log:2.3.0")
+    implementation("no.nordicsemi.android:log:2.5.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
 
+    implementation("org.nanohttpd:nanohttpd:2.3.1")
+    implementation("com.squareup.okhttp3:okhttp:5.3.0")
+
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
 }
