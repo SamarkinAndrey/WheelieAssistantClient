@@ -47,7 +47,6 @@ android {
                 variant.outputs
                     .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
                     .forEach { output ->
-//                        val outputFileName = "WheelieAssistant-${variant.name}-v${variant.versionName}.apk"
                         val outputFileName = "WheelieAssistant_v${variant.versionName}.apk"
                         output.outputFileName = outputFileName
                     }
@@ -88,15 +87,21 @@ dependencies {
     implementation("androidx.appcompat:appcompat-resources:1.7.1")
     implementation("com.google.android.material:material:1.14.0-alpha06")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
-    implementation("no.nordicsemi.android:ble:2.7.1")
-    implementation("no.nordicsemi.android:ble-ktx:2.7.1")
-    implementation("no.nordicsemi.android:ble-common:2.7.1")
+    implementation("no.nordicsemi.android:ble:2.11.0")
+    implementation("no.nordicsemi.android:ble-ktx:2.11.0")
+    implementation("no.nordicsemi.android:ble-common:2.11.0")
     implementation("no.nordicsemi.android.support.v18:scanner:1.6.0")
     implementation("no.nordicsemi.android:log:2.5.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
 
     implementation("org.nanohttpd:nanohttpd:2.3.1")
     implementation("com.squareup.okhttp3:okhttp:5.3.0")
+
+//    implementation("com.google.code.gson:gson:2.13.2")
+//    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
+//    implementation("com.mindorks.android:prdownloader:0.6.0")
+//    implementation("androidx.work:work-runtime-ktx:2.11.0")
+//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")

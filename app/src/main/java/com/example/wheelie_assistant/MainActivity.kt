@@ -1,9 +1,6 @@
 package com.app.wheelie_assistant
 
 import android.Manifest
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -29,7 +26,13 @@ import com.google.android.material.card.MaterialCardView
 import java.util.Locale
 import JsonParamParser
 import BTParam.*
-import java.io.File
+import android.annotation.SuppressLint
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import android.net.wifi.WifiInfo
+import android.net.wifi.WifiManager
 
 class MainActivity : AppCompatActivity() {
   enum class ControllerState {
@@ -78,6 +81,12 @@ class MainActivity : AppCompatActivity() {
   private var settingsLoaded = false;
   private var settingsRequested = false;
 
+  private lateinit var connectivityManager: ConnectivityManager
+  private lateinit var networkCallback: ConnectivityManager.NetworkCallback
+  private var serverSsid: String? = null
+  private var serverIP: String? = null
+  private var ssid: String? = null
+
   private var controllerIsEnabled: Boolean = false
     set(value) {
       field = value
@@ -85,10 +94,10 @@ class MainActivity : AppCompatActivity() {
     }
 
   private var controllerState: ControllerState = ControllerState.IDLE
-  set(value) {
-    field = value
-    updateControllerState()
-  }
+    set(value) {
+      field = value
+      updateControllerState()
+    }
 
   private enum class ConnectionState {
     DISCONNECTED, CONNECTING, CONNECTED
@@ -117,6 +126,7 @@ class MainActivity : AppCompatActivity() {
   private val handler = Handler(Looper.getMainLooper())
   private val PERMISSION_REQUEST_CODE = 123
   private val BLUETOOTH_ENABLE_REQUEST_CODE = 124
+  private val WIFI_PERMISSION_REQUEST_CODE = 125
 
   lateinit var bleManager: BleManager
 
@@ -158,6 +168,7 @@ class MainActivity : AppCompatActivity() {
     initViews()
     initProgressBars()
     setupBleManager()
+    setupWifiWithPermissions()
     clearAttitudeValues()
     clearVoltageValues()
     clearVoltage()
@@ -188,6 +199,134 @@ class MainActivity : AppCompatActivity() {
       }
     }
   }
+
+  private fun setupWifiWithPermissions() {
+    val wifiPermissions = arrayOf(
+      Manifest.permission.ACCESS_NETWORK_STATE,
+      Manifest.permission.ACCESS_WIFI_STATE
+    )
+
+    val missingPermissions = wifiPermissions.filter {
+      ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+    }
+
+    if (missingPermissions.isNotEmpty()) {
+      ActivityCompat.requestPermissions(
+        this,
+        missingPermissions.toTypedArray(),
+        WIFI_PERMISSION_REQUEST_CODE
+      )
+    } else {
+      setupWifi()
+    }
+  }
+
+  @SuppressLint("MissingPermission")
+  private fun setupWifi() {
+    try {
+      connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+      val request = NetworkRequest.Builder()
+        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        .build()
+
+      networkCallback = object : ConnectivityManager.NetworkCallback() {
+        override fun onAvailable(network: Network) {
+          Log.d("WiFi", "WiFi network available")
+          updateCurrentWifiInfo()
+        }
+
+        override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
+          Log.d("WiFi", "WiFi capabilities changed")
+          handleWifiCapabilities(networkCapabilities)
+        }
+
+        override fun onLost(network: Network) {
+          Log.d("WiFi", "WiFi network lost")
+          ssid = null
+        }
+      }
+
+      connectivityManager.registerNetworkCallback(request, networkCallback)
+      Log.d("WiFi", "WiFi monitoring started")
+
+    } catch (e: SecurityException) {
+      Log.e("WiFi", "WiFi permissions denied", e)
+    } catch (e: Exception) {
+      Log.e("WiFi", "WiFi setup error", e)
+    }
+  }
+
+  @SuppressLint("MissingPermission")
+  private fun updateCurrentWifiInfo() {
+    try {
+      val activeNetwork = connectivityManager.activeNetwork
+      val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
+
+      if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+        handleWifiCapabilities(capabilities)
+      } else {
+        ssid = null
+        Log.d("WiFi", "No active WiFi connection")
+      }
+    } catch (e: Exception) {
+      Log.e("WiFi", "Error checking current WiFi", e)
+    }
+  }
+
+  @SuppressLint("MissingPermission")
+  private fun handleWifiCapabilities(networkCapabilities: NetworkCapabilities) {
+    try {
+      val transportInfo = networkCapabilities.transportInfo
+      if (transportInfo is WifiInfo) {
+        val rawSsid = transportInfo.ssid
+
+        ssid = when {
+          rawSsid == "<unknown ssid>" || rawSsid == "null" -> {
+            getSsidAlternative()
+          }
+          rawSsid.startsWith("\"") && rawSsid.endsWith("\"") -> {
+            rawSsid.substring(1, rawSsid.length - 1)
+          }
+          else -> rawSsid
+        }
+
+        Log.d("WiFi", "WiFi SSID: $ssid")
+
+        ssid?.let { networkName ->
+          handler.post {
+            showToast("Подключено к Wi-Fi: $networkName")
+          }
+        }
+      } else {
+        Log.d("WiFi", "Transport info is not WifiInfo: ${transportInfo?.javaClass}")
+      }
+    } catch (e: Exception) {
+      Log.e("WiFi", "Error handling WiFi capabilities", e)
+    }
+  }
+
+  @SuppressLint("MissingPermission", "Deprecation")
+  private fun getSsidAlternative(): String? {
+    return try {
+      val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
+      val connectionInfo = wifiManager?.connectionInfo
+      val ssid = connectionInfo?.ssid
+
+      when {
+        ssid == null -> null
+        ssid == "<unknown ssid>" -> null
+        ssid.startsWith("\"") && ssid.endsWith("\"") -> ssid.substring(1, ssid.length - 1)
+        else -> ssid
+      }
+    } catch (e: Exception) {
+      Log.e("WiFi", "Alternative SSID method failed", e)
+      null
+    }
+  }
+
+  fun isWifiConnected(): Boolean = ssid != null
 
   private fun clearAttitudeValues(updateView: Boolean = true) {
     roll = 0f
@@ -299,7 +438,7 @@ class MainActivity : AppCompatActivity() {
           bleManager.sendCommands("${B_GET_SETTINGS.value}=1")
 
           settingsRequested = true
-          handler.postDelayed( { settingsRequested = false }, 1000)
+          handler.postDelayed({ settingsRequested = false }, 1000)
         }
 //      showToast("Settings requested")
       }
@@ -451,6 +590,7 @@ class MainActivity : AppCompatActivity() {
       cur <= mid -> {
         (cur - min) / (mid - min)
       }
+
       else -> {
         1f - (cur - mid) / (max - mid)
       }
@@ -473,11 +613,18 @@ class MainActivity : AppCompatActivity() {
   ) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-    if (requestCode == PERMISSION_REQUEST_CODE) {
-      if (hasAllPermissions()) {
-        onPermissionsGranted()
-      } else {
-        onPermissionsDenied()
+    when (requestCode) {
+      PERMISSION_REQUEST_CODE -> {
+        if (hasAllPermissions()) {
+          onPermissionsGranted()
+        } else {
+          onPermissionsDenied()
+        }
+      }
+      WIFI_PERMISSION_REQUEST_CODE -> {
+        if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+          setupWifi()
+        }
       }
     }
   }
@@ -695,6 +842,12 @@ class MainActivity : AppCompatActivity() {
     instance = null
 
     disconnectManually()
+
+    try {
+      connectivityManager.unregisterNetworkCallback(networkCallback)
+    } catch (e: Exception) {
+      Log.e("WiFi", "Ошибка при отмене регистрации network callback", e)
+    }
   }
 
   private fun showConfirmation(

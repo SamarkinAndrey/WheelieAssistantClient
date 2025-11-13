@@ -13,14 +13,14 @@ import no.nordicsemi.android.ble.BleManager
 import no.nordicsemi.android.ble.data.Data
 import no.nordicsemi.android.ble.observer.ConnectionObserver
 import android.content.Context
+import android.net.Uri
 import android.os.ParcelUuid
 import android.util.Log
-import com.app.wheelie_assistant.OtaManager.OtaCallback
+import com.example.wheelie_assistant.OTAManager
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import paramParser
-import java.io.File
 import java.util.*
 
 class BleManager(context: Context) : BleManager(context) {
@@ -31,9 +31,14 @@ class BleManager(context: Context) : BleManager(context) {
     val TX_CHARACTERISTIC_UUID = UUID.fromString("00002B03-0000-1000-8000-00805F9B34FB")
 
     private const val TAG = "BleManager"
+
+    private var instance: BleManager? = null
+
+    fun getInstance(): BleManager? = instance
   }
 
   private var dataCallback: ((JsonParamParser) -> Unit)? = null
+  private var otaCallback: ((JsonParamParser) -> Unit)? = null
   private var connectionCallback: ((String) -> Unit)? = null
   private var writeErrorCallback: ((String) -> Unit)? = null
 
@@ -43,7 +48,7 @@ class BleManager(context: Context) : BleManager(context) {
   private var isManualDisconnect = false
   private var scanCallback: ScanCallback? = null
 
-  private var ota = OtaManager(this)
+  private var otaManager: OTAManager? = null
   private var parser = JsonParamParser()
 
   init {
@@ -126,10 +131,10 @@ class BleManager(context: Context) : BleManager(context) {
         log(Log.DEBUG, "Received data: $value")
 
         if (parser.parse(value)) {
-          ota.processUpdate(parser)
-
-          if (!ota.inProgress())
-            dataCallback?.invoke(parser)
+          otaManager?.let {
+            if(it.inProgress())
+              it.processUpdate(parser)
+          }?: dataCallback?.invoke(parser)
         }
       }
     }
@@ -324,13 +329,19 @@ class BleManager(context: Context) : BleManager(context) {
     writeErrorCallback = callback
   }
 
-  fun startOtaUpdate(firmwareFile: File, callback: OtaCallback) {
-    ota.startUpdate(firmwareFile, callback)
+  fun startOtaUpdate(firmwareUri: Uri, callback: OTAManager.IOTACallback) {
+    if (otaManager == null) {
+      otaManager = OTAManager(context, this, callback)
+      otaManager?.startUpdate(firmwareUri)
+    }
   }
 
   fun abortOtaUpdate() {
-    ota.abortUpdate()
+    otaManager?.abort()
+    otaManager = null
   }
 
-  fun updateInProgress(): Boolean = ota.inProgress()
+  fun otaInProgress(): Boolean {
+    return otaManager?.inProgress() == true
+  }
 }

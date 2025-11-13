@@ -1,16 +1,20 @@
 package com.app.wheelie_assistant
 
-import android.os.Bundle
-import android.content.Intent
+import BTParam.*
+import android.content.Context
 import android.net.Uri
+import android.os.Bundle
 import android.provider.OpenableColumns
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import java.io.File
-import java.io.FileOutputStream
+import com.example.wheelie_assistant.OTAManager
 import com.google.android.material.button.MaterialButton
 
 class OtaUpdateFragment : Fragment() {
@@ -20,25 +24,41 @@ class OtaUpdateFragment : Fragment() {
   private lateinit var tvFileName: TextView
   private lateinit var tvFileSize: TextView
   private lateinit var progressBar: ProgressBar
-  private var mainActivity: MainActivity? = null
-  private var firmwareFile: File? = null
+  private lateinit var tvStatus: TextView
 
-  companion object {
-    private const val PICK_FIRMWARE_FILE = 1001
+  private var bleManager: BleManager? = null
+  private var fileUri: Uri? = null
+  private var fileName: String? = null
+  private var fileSize: Long? = null
+
+  private val selectFirmwareLauncher = registerForActivityResult(
+    ActivityResultContracts.GetContent()
+  ) { uri: Uri? ->
+    uri?.let {
+      fileUri = it
+      readFileInfo()
+    }
+  }
+
+  override fun onAttach(context: Context) {
+    super.onAttach(context)
+    val mainActivity = MainActivity.getInstance()
+    mainActivity?.let {
+      bleManager = mainActivity.bleManager
+    }
   }
 
   override fun onCreateView(
-    inflater: LayoutInflater, container: ViewGroup?,
-    savedInstanceState: Bundle?
+    inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
   ): View? {
-    val view = inflater.inflate(R.layout.fragment_ota_update, container, false)
+    return inflater.inflate(R.layout.fragment_ota_update, container, false)
+  }
 
-    mainActivity = MainActivity.getInstance()
-
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
     initViews(view)
     setup()
-
-    return view
+    updateUI()
   }
 
   private fun initViews(view: View) {
@@ -48,17 +68,16 @@ class OtaUpdateFragment : Fragment() {
     tvFileName = view.findViewById(R.id.tvFileName)
     tvFileSize = view.findViewById(R.id.tvFileSize)
     progressBar = view.findViewById(R.id.progressBar)
+    tvStatus = view.findViewById(R.id.tvStatus)
   }
 
   private fun setup() {
     btnSelectFile.setOnClickListener {
-      selectFirmwareFile()
+      selectFirmwareLauncher.launch("*/*")
     }
 
     btnStartUpdate.setOnClickListener {
-      firmwareFile?.let { file ->
-        startFirmwareUpdate(file)
-      } ?: showToast("Please select a firmware file first")
+      startFirmwareUpdate()
     }
 
     btnCancel.setOnClickListener {
@@ -66,110 +85,103 @@ class OtaUpdateFragment : Fragment() {
     }
   }
 
-  private fun selectFirmwareFile() {
-    val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-      type = "*/*"
-      addCategory(Intent.CATEGORY_OPENABLE)
-    }
-    startActivityForResult(Intent.createChooser(intent, "Select Firmware File"), PICK_FIRMWARE_FILE)
-  }
-
-  @Deprecated("Deprecated in Java")
-  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
-
-    if (requestCode == PICK_FIRMWARE_FILE && resultCode == android.app.Activity.RESULT_OK) {
-      data?.data?.let { uri ->
-        copyFileFromUri(uri)
-      }
-    }
-  }
-
-  private fun copyFileFromUri(uri: Uri) {
-    try {
-      requireContext().contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-        if (cursor.moveToFirst()) {
-          val displayName = cursor.getString(
-            cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME)
-          )
-          val size = cursor.getLong(cursor.getColumnIndexOrThrow(OpenableColumns.SIZE))
-
-          val tempFile = File(requireContext().cacheDir, displayName)
-          requireContext().contentResolver.openInputStream(uri)?.use { inputStream ->
-            FileOutputStream(tempFile).use { outputStream ->
-              inputStream.copyTo(outputStream)
-            }
+  private fun readFileInfo() {
+    fileUri?.let { uri ->
+      try {
+        requireContext().contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+          if (cursor.moveToFirst()) {
+            fileName = cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+            fileSize = cursor.getLong(cursor.getColumnIndexOrThrow(OpenableColumns.SIZE))
+            updateFileInfo()
           }
-
-          firmwareFile = tempFile
-          updateFileInfo(displayName, size)
         }
+      } catch (e: Exception) {
+        showToast("Ошибка чтения файла: ${e.message}")
       }
-    } catch (e: Exception) {
-      showToast("Failed to read file: ${e.message}")
     }
   }
 
-  private fun updateFileInfo(fileName: String, fileSize: Long) {
+  private fun updateFileInfo() {
     tvFileName.text = "Файл: $fileName"
-    tvFileSize.text = "Размер: ${fileSize / 1024} KB"
-
+    tvFileSize.text = "Размер: ${fileSize?.let { String.format("%.1f", it / 1024f) } ?: 0} КБ"
     btnStartUpdate.isEnabled = true
+    updateStatus("Файл выбран. Нажмите «Начать обновление»")
+  }
+
+  private fun startFirmwareUpdate() {
+    if (fileUri == null) {
+      showToast("Сначала выберите файл прошивки")
+      return
+    }
+
+    bleManager?.sendCommands("${B_FIRMWARE_START.value}=1")
+//    bleManager?.startOtaUpdate(fileUri!!, otaCallback)
+  }
+
+  private val otaCallback = object : OTAManager.IOTACallback {
+    override fun onStarted() {
+      updateStatus("Отправка команды на устройство...")
+      progressBar.visibility = ProgressBar.VISIBLE
+      btnStartUpdate.isEnabled = false
+      btnCancel.isEnabled = true
+    }
+
+    override fun onProgress(progress: Int) {
+      progressBar.progress = progress
+      updateStatus("Обновление: $progress%")
+    }
+
+    override fun onSuccess() {
+      showToast("Обновление успешно завершено!")
+      updateStatus("Готово! Устройство перезагружается...")
+      resetUI()
+    }
+
+    override fun onFailed(message: String) {
+      showToast("Ошибка: $message")
+      updateStatus("Ошибка: $message")
+      resetUI()
+    }
+
+    override fun onNotify(message: String) {
+      updateStatus(message)
+    }
+
+    override fun onAborted() {
+      showToast("Обновление отменено")
+      updateStatus("Отменено пользователем")
+      resetUI()
+    }
+  }
+
+  private fun abortFirmwareUpdate() {
+    bleManager?.abortOtaUpdate()
+  }
+
+  private fun updateStatus(text: String) {
+    tvStatus.text = text
+  }
+
+  private fun resetUI() {
+    progressBar.visibility = ProgressBar.INVISIBLE
+    btnStartUpdate.isEnabled = fileUri != null
+    btnCancel.isEnabled = false
+    updateStatus("Готов к обновлению")
+  }
+
+  private fun updateUI() {
+    btnStartUpdate.isEnabled = fileUri != null
+    btnCancel.isEnabled = false
+    progressBar.visibility = ProgressBar.INVISIBLE
+    updateStatus("Выберите файл прошивки")
   }
 
   private fun showToast(message: String) {
-    Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    Log.d("OTAManager", message)
   }
 
-  fun startFirmwareUpdate(firmwareFile: File) {
-    mainActivity?.bleManager?.startOtaUpdate(firmwareFile, object : OtaManager.OtaCallback {
-      override fun onProgress(progress: Int, bytesReceived: Long, totalSize: Long) {
-        showToast("OTA Progress: $progress% ($bytesReceived/$totalSize)")
-      }
-
-      override fun onSuccess() {
-        showToast("OTA update completed successfully! Device will restart.")
-        finish()
-      }
-
-      override fun onNotify(message: String) {
-        showToast("OTA Information: $message")
-      }
-
-      override fun onStart() {
-        start()
-      }
-
-      override fun onAbort() {
-        finish()
-      }
-
-      override fun onFailed(errorMessage: String) {
-        showToast("OTA Error: $errorMessage")
-        finish()
-      }
-    })
-  }
-
-  private fun start() {
-    progressBar.visibility = ProgressBar.VISIBLE
-    btnStartUpdate.isEnabled = false
-    btnCancel.isEnabled = true
-  }
-
-  private fun finish() {
-    progressBar.visibility = ProgressBar.INVISIBLE
-    btnStartUpdate.isEnabled = true
-    btnCancel.isEnabled = false
-  }
-
-  fun abortFirmwareUpdate() {
-    mainActivity?.let{
-      if (!it.bleManager.updateInProgress())
-        return
-
-      it.bleManager.abortOtaUpdate()
-      showToast("OTA update aborted")
-    }
+  override fun onDestroyView() {
+    super.onDestroyView()
   }
 }
