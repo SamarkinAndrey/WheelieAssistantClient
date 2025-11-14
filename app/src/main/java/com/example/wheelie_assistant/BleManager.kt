@@ -13,10 +13,8 @@ import no.nordicsemi.android.ble.BleManager
 import no.nordicsemi.android.ble.data.Data
 import no.nordicsemi.android.ble.observer.ConnectionObserver
 import android.content.Context
-import android.net.Uri
 import android.os.ParcelUuid
 import android.util.Log
-import com.example.wheelie_assistant.OTAManager
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -48,7 +46,6 @@ class BleManager(context: Context) : BleManager(context) {
   private var isManualDisconnect = false
   private var scanCallback: ScanCallback? = null
 
-  private var otaManager: OTAManager? = null
   private var parser = JsonParamParser()
 
   init {
@@ -130,12 +127,8 @@ class BleManager(context: Context) : BleManager(context) {
         val value = data.getStringValue(0) ?: ""
         log(Log.DEBUG, "Received data: $value")
 
-        if (parser.parse(value)) {
-          otaManager?.let {
-            if(it.inProgress())
-              it.processUpdate(parser)
-          }?: dataCallback?.invoke(parser)
-        }
+        if (parser.parse(value))
+          dataCallback?.invoke(parser)
       }
     }
 
@@ -327,21 +320,5 @@ class BleManager(context: Context) : BleManager(context) {
 
   fun setWriteErrorCallback(callback: (String) -> Unit) {
     writeErrorCallback = callback
-  }
-
-  fun startOtaUpdate(firmwareUri: Uri, callback: OTAManager.IOTACallback) {
-    if (otaManager == null) {
-      otaManager = OTAManager(context, this, callback)
-      otaManager?.startUpdate(firmwareUri)
-    }
-  }
-
-  fun abortOtaUpdate() {
-    otaManager?.abort()
-    otaManager = null
-  }
-
-  fun otaInProgress(): Boolean {
-    return otaManager?.inProgress() == true
   }
 }

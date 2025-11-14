@@ -33,6 +33,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
+import com.example.wheelie_assistant.OtaManager
 
 class MainActivity : AppCompatActivity() {
   enum class ControllerState {
@@ -129,6 +130,7 @@ class MainActivity : AppCompatActivity() {
   private val WIFI_PERMISSION_REQUEST_CODE = 125
 
   lateinit var bleManager: BleManager
+  lateinit var otaManager: OtaManager
 
   val bluetoothPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
     arrayOf(
@@ -168,6 +170,7 @@ class MainActivity : AppCompatActivity() {
     initViews()
     initProgressBars()
     setupBleManager()
+    setupOtaManager()
     setupWifiWithPermissions()
     clearAttitudeValues()
     clearVoltageValues()
@@ -198,6 +201,10 @@ class MainActivity : AppCompatActivity() {
         Log.e("MainActivity", "Write error: $errorMessage")
       }
     }
+  }
+
+  private fun setupOtaManager() {
+    otaManager = OtaManager(this, bleManager)
   }
 
   private fun setupWifiWithPermissions() {
@@ -770,6 +777,12 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun processData(parser: JsonParamParser) {
+    if (otaManager.isStarted()) {
+      otaManager.processUpdate(parser)
+
+      return
+    }
+
     if (parser.hasParam(B_ENABLED))
       controllerIsEnabled = parser.getInt(B_ENABLED) == 1
 
