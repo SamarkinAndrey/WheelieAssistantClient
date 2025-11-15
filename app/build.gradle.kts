@@ -96,6 +96,7 @@ dependencies {
 
     implementation("org.nanohttpd:nanohttpd:2.3.1")
     implementation("com.squareup.okhttp3:okhttp:5.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
 //    implementation("com.google.code.gson:gson:2.13.2")
 //    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")

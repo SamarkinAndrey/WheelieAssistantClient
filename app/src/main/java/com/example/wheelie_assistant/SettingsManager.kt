@@ -21,8 +21,6 @@ data class Settings(
     var max_speed: Int = 0,
     var trend_duration: Int = 0,
     var stable_duration: Int = 0,
-    var server_ssid: String = "",
-    var server_pass: String = "",
     var firmware_ver: String = ""
 )
 
@@ -48,8 +46,6 @@ object SettingsManager {
                 max_speed =  parser.getInt(B_MAX_SPEED, 0),
                 trend_duration = parser.getInt(B_TREND_DURATION, 0),
                 stable_duration = parser.getInt(B_STABLE_DURATION, 0),
-                server_ssid = parser.getString(B_SERVER_SSID, ""),
-                server_pass = parser.getString(B_SERVER_PASS, ""),
                 firmware_ver = parser.getString(B_FIRMWARE_VERSION, "")
             )
             true
@@ -77,8 +73,6 @@ object SettingsManager {
             put(B_MAX_SPEED.s(), settings.max_speed)
             put(B_TREND_DURATION.s(), settings.trend_duration)
             put(B_STABLE_DURATION.s(), settings.stable_duration)
-            put(B_SERVER_SSID.s(), settings.server_ssid)
-            put(B_SERVER_PASS.s(), settings.server_pass)
         }.toString()
     }
 

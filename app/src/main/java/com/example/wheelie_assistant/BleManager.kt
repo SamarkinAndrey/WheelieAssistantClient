@@ -164,7 +164,14 @@ class BleManager(context: Context) : BleManager(context) {
     }
   }
 
-  fun sendCommands(commands: String) {
+  fun sendJsonParams(parser: JsonParamParser) {
+    if (parser.isEmpty())
+      return;
+
+    send(parser.serialize());
+  }
+
+  fun send(commands: String) {
     if (rxCharacteristic != null) {
       var buf: String = commands
       try {

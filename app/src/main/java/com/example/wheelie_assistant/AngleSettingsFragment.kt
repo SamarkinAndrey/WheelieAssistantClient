@@ -29,22 +29,6 @@ class AngleSettingsFragment : BaseSettingsFragment() {
     setupSliders()
     setSettings(SettingsManager.currentSettings)
 
-    val scrollLayout = view.findViewById<LinearLayout>(R.id.scroll_layout)
-    val activity = SettingsActivity.getInstance()
-
-    activity?.let {
-      val saveLayout = it.getSaveLayout()
-
-      saveLayout.post {
-        scrollLayout.setPadding(
-          scrollLayout.paddingStart,
-          scrollLayout.paddingTop,
-          scrollLayout.paddingEnd,
-          saveLayout.height
-        )
-      }
-    }
-
     return view
   }
 

@@ -35,7 +35,7 @@ class JsonParamParser() {
   }
 
   fun getString(param: BTParam, defaultValue: String = ""): String {
-    return getString(param.value, defaultValue)
+    return getString(param.toInt(), defaultValue)
   }
 
   fun getInt(param: Int, defaultValue: Int = 0): Int {
@@ -43,7 +43,7 @@ class JsonParamParser() {
   }
 
   fun getInt(param: BTParam, defaultValue: Int = 0): Int {
-    return getInt(param.value, defaultValue)
+    return getInt(param.toInt(), defaultValue)
   }
 
   fun getLong(param: Int, defaultValue: Long = 0L): Long {
@@ -51,7 +51,7 @@ class JsonParamParser() {
   }
 
   fun getLong(param: BTParam, defaultValue: Long = 0L): Long {
-    return getLong(param.value, defaultValue)
+    return getLong(param.toInt(), defaultValue)
   }
 
   fun getFloat(param: Int, defaultValue: Float = 0.0f): Float {
@@ -59,7 +59,7 @@ class JsonParamParser() {
   }
 
   fun getFloat(param: BTParam, defaultValue: Float = 0.0f): Float {
-    return getFloat(param.value, defaultValue)
+    return getFloat(param.toInt(), defaultValue)
   }
 
   fun getDouble(param: Int, defaultValue: Double = 0.0): Double {
@@ -67,7 +67,7 @@ class JsonParamParser() {
   }
 
   fun getDouble(param: BTParam, defaultValue: Double = 0.0): Double {
-    return getDouble(param.value, defaultValue)
+    return getDouble(param.toInt(), defaultValue)
   }
 
   fun getBoolean(param: Int, defaultValue: Boolean = false): Boolean {
@@ -75,7 +75,7 @@ class JsonParamParser() {
   }
 
   fun getBoolean(param: BTParam, defaultValue: Boolean = false): Boolean {
-    return getBoolean(param.value, defaultValue)
+    return getBoolean(param.toInt(), defaultValue)
   }
 
   fun hasParam(param: Int): Boolean {
@@ -83,15 +83,16 @@ class JsonParamParser() {
   }
 
   fun hasParam(param: BTParam): Boolean {
-    return hasParam(param.value)
+    return hasParam(param.toInt())
   }
 
-  fun setString(param: Int, value: String) {
+  fun 
+    setString(param: Int, value: String) {
     root.put(param.toString(), value)
   }
 
   fun setString(param: BTParam, value: String) {
-    setString(param.value, value)
+    setString(param.toInt(), value)
   }
 
   fun setInt(param: Int, value: Int) {
@@ -99,7 +100,7 @@ class JsonParamParser() {
   }
 
   fun setInt(param: BTParam, value: Int) {
-    setInt(param.value, value)
+    setInt(param.toInt(), value)
   }
 
   fun setLong(param: Int, value: Long) {
@@ -107,7 +108,7 @@ class JsonParamParser() {
   }
 
   fun setLong(param: BTParam, value: Long) {
-    setLong(param.value, value)
+    setLong(param.toInt(), value)
   }
 
   fun setFloat(param: Int, value: Float) {
@@ -115,7 +116,7 @@ class JsonParamParser() {
   }
 
   fun setFloat(param: BTParam, value: Float) {
-    setFloat(param.value, value)
+    setFloat(param.toInt(), value)
   }
 
   fun setDouble(param: Int, value: Double) {
@@ -123,7 +124,7 @@ class JsonParamParser() {
   }
 
   fun setDouble(param: BTParam, value: Double) {
-    setDouble(param.value, value)
+    setDouble(param.toInt(), value)
   }
 
   fun setBoolean(param: Int, value: Boolean) {
@@ -131,7 +132,7 @@ class JsonParamParser() {
   }
 
   fun setBoolean(param: BTParam, value: Boolean) {
-    setBoolean(param.value, value)
+    setBoolean(param.toInt(), value)
   }
 
   fun count(): Int {

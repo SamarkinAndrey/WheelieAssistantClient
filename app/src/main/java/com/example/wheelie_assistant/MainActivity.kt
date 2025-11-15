@@ -27,6 +27,8 @@ import java.util.Locale
 import JsonParamParser
 import BTParam.*
 import android.annotation.SuppressLint
+import android.app.Application
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -35,6 +37,12 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import com.example.wheelie_assistant.OtaManager
 
+class App : Application() {
+  companion object {
+    var mainActivity: MainActivity? = null
+    var settingsActivity: SettingsActivity? = null
+  }
+}
 class MainActivity : AppCompatActivity() {
   enum class ControllerState {
     IDLE,
@@ -82,11 +90,11 @@ class MainActivity : AppCompatActivity() {
   private var settingsLoaded = false;
   private var settingsRequested = false;
 
-  private lateinit var connectivityManager: ConnectivityManager
-  private lateinit var networkCallback: ConnectivityManager.NetworkCallback
-  private var serverSsid: String? = null
-  private var serverIP: String? = null
-  private var ssid: String? = null
+//  private lateinit var connectivityManager: ConnectivityManager
+//  private lateinit var networkCallback: ConnectivityManager.NetworkCallback
+//  private var serverSsid: String? = null
+//  private var serverIP: String? = null
+//  private var ssid: String? = null
 
   private var controllerIsEnabled: Boolean = false
     set(value) {
@@ -127,10 +135,11 @@ class MainActivity : AppCompatActivity() {
   private val handler = Handler(Looper.getMainLooper())
   private val PERMISSION_REQUEST_CODE = 123
   private val BLUETOOTH_ENABLE_REQUEST_CODE = 124
-  private val WIFI_PERMISSION_REQUEST_CODE = 125
+//  private val WIFI_PERMISSION_REQUEST_CODE = 125
 
   lateinit var bleManager: BleManager
   lateinit var otaManager: OtaManager
+  lateinit var prefManager: PreferencesManager
 
   val bluetoothPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
     arrayOf(
@@ -165,13 +174,14 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
-    instance = this
+    App.mainActivity = this
 
     initViews()
     initProgressBars()
     setupBleManager()
     setupOtaManager()
-    setupWifiWithPermissions()
+    setupPrefManager()
+//    setupWifiWithPermissions()
     clearAttitudeValues()
     clearVoltageValues()
     clearVoltage()
@@ -207,133 +217,137 @@ class MainActivity : AppCompatActivity() {
     otaManager = OtaManager(this, bleManager)
   }
 
-  private fun setupWifiWithPermissions() {
-    val wifiPermissions = arrayOf(
-      Manifest.permission.ACCESS_NETWORK_STATE,
-      Manifest.permission.ACCESS_WIFI_STATE
-    )
-
-    val missingPermissions = wifiPermissions.filter {
-      ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
-    }
-
-    if (missingPermissions.isNotEmpty()) {
-      ActivityCompat.requestPermissions(
-        this,
-        missingPermissions.toTypedArray(),
-        WIFI_PERMISSION_REQUEST_CODE
-      )
-    } else {
-      setupWifi()
-    }
+  private fun setupPrefManager() {
+    prefManager = PreferencesManager(this)
   }
 
-  @SuppressLint("MissingPermission")
-  private fun setupWifi() {
-    try {
-      connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//  private fun setupWifiWithPermissions() {
+//    val wifiPermissions = arrayOf(
+//      Manifest.permission.ACCESS_NETWORK_STATE,
+//      Manifest.permission.ACCESS_WIFI_STATE
+//    )
+//
+//    val missingPermissions = wifiPermissions.filter {
+//      ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+//    }
+//
+//    if (missingPermissions.isNotEmpty()) {
+//      ActivityCompat.requestPermissions(
+//        this,
+//        missingPermissions.toTypedArray(),
+//        WIFI_PERMISSION_REQUEST_CODE
+//      )
+//    } else {
+//      setupWifi()
+//    }
+//  }
 
-      val request = NetworkRequest.Builder()
-        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-        .build()
+//  @SuppressLint("MissingPermission")
+//  private fun setupWifi() {
+//    try {
+//      connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//
+//      val request = NetworkRequest.Builder()
+//        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+//        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+//        .build()
+//
+//      networkCallback = object : ConnectivityManager.NetworkCallback() {
+//        override fun onAvailable(network: Network) {
+//          Log.d("WiFi", "WiFi network available")
+//          updateCurrentWifiInfo()
+//        }
+//
+//        override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
+//          Log.d("WiFi", "WiFi capabilities changed")
+//          handleWifiCapabilities(networkCapabilities)
+//        }
+//
+//        override fun onLost(network: Network) {
+//          Log.d("WiFi", "WiFi network lost")
+//          ssid = null
+//        }
+//      }
+//
+//      connectivityManager.registerNetworkCallback(request, networkCallback)
+//      Log.d("WiFi", "WiFi monitoring started")
+//
+//    } catch (e: SecurityException) {
+//      Log.e("WiFi", "WiFi permissions denied", e)
+//    } catch (e: Exception) {
+//      Log.e("WiFi", "WiFi setup error", e)
+//    }
+//  }
 
-      networkCallback = object : ConnectivityManager.NetworkCallback() {
-        override fun onAvailable(network: Network) {
-          Log.d("WiFi", "WiFi network available")
-          updateCurrentWifiInfo()
-        }
+//  @SuppressLint("MissingPermission")
+//  private fun updateCurrentWifiInfo() {
+//    try {
+//      val activeNetwork = connectivityManager.activeNetwork
+//      val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
+//
+//      if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+//        handleWifiCapabilities(capabilities)
+//      } else {
+//        ssid = null
+//        Log.d("WiFi", "No active WiFi connection")
+//      }
+//    } catch (e: Exception) {
+//      Log.e("WiFi", "Error checking current WiFi", e)
+//    }
+//  }
 
-        override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
-          Log.d("WiFi", "WiFi capabilities changed")
-          handleWifiCapabilities(networkCapabilities)
-        }
+//  @SuppressLint("MissingPermission")
+//  private fun handleWifiCapabilities(networkCapabilities: NetworkCapabilities) {
+//    try {
+//      val transportInfo = networkCapabilities.transportInfo
+//      if (transportInfo is WifiInfo) {
+//        val rawSsid = transportInfo.ssid
+//
+//        ssid = when {
+//          rawSsid == "<unknown ssid>" || rawSsid == "null" -> {
+//            getSsidAlternative()
+//          }
+//          rawSsid.startsWith("\"") && rawSsid.endsWith("\"") -> {
+//            rawSsid.substring(1, rawSsid.length - 1)
+//          }
+//          else -> rawSsid
+//        }
+//
+//        Log.d("WiFi", "WiFi SSID: $ssid")
+//
+//        ssid?.let { networkName ->
+//          handler.post {
+//            showToast("Подключено к Wi-Fi: $networkName")
+//          }
+//        }
+//      } else {
+//        Log.d("WiFi", "Transport info is not WifiInfo: ${transportInfo?.javaClass}")
+//      }
+//    } catch (e: Exception) {
+//      Log.e("WiFi", "Error handling WiFi capabilities", e)
+//    }
+//  }
 
-        override fun onLost(network: Network) {
-          Log.d("WiFi", "WiFi network lost")
-          ssid = null
-        }
-      }
+//  @SuppressLint("MissingPermission", "Deprecation")
+//  private fun getSsidAlternative(): String? {
+//    return try {
+//      val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
+//      val connectionInfo = wifiManager?.connectionInfo
+//      val ssid = connectionInfo?.ssid
+//
+//      when {
+//        ssid == null -> null
+//        ssid == "<unknown ssid>" -> null
+//        ssid.startsWith("\"") && ssid.endsWith("\"") -> ssid.substring(1, ssid.length - 1)
+//        else -> ssid
+//      }
+//    } catch (e: Exception) {
+//      Log.e("WiFi", "Alternative SSID method failed", e)
+//      null
+//    }
+//  }
 
-      connectivityManager.registerNetworkCallback(request, networkCallback)
-      Log.d("WiFi", "WiFi monitoring started")
-
-    } catch (e: SecurityException) {
-      Log.e("WiFi", "WiFi permissions denied", e)
-    } catch (e: Exception) {
-      Log.e("WiFi", "WiFi setup error", e)
-    }
-  }
-
-  @SuppressLint("MissingPermission")
-  private fun updateCurrentWifiInfo() {
-    try {
-      val activeNetwork = connectivityManager.activeNetwork
-      val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
-
-      if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-        handleWifiCapabilities(capabilities)
-      } else {
-        ssid = null
-        Log.d("WiFi", "No active WiFi connection")
-      }
-    } catch (e: Exception) {
-      Log.e("WiFi", "Error checking current WiFi", e)
-    }
-  }
-
-  @SuppressLint("MissingPermission")
-  private fun handleWifiCapabilities(networkCapabilities: NetworkCapabilities) {
-    try {
-      val transportInfo = networkCapabilities.transportInfo
-      if (transportInfo is WifiInfo) {
-        val rawSsid = transportInfo.ssid
-
-        ssid = when {
-          rawSsid == "<unknown ssid>" || rawSsid == "null" -> {
-            getSsidAlternative()
-          }
-          rawSsid.startsWith("\"") && rawSsid.endsWith("\"") -> {
-            rawSsid.substring(1, rawSsid.length - 1)
-          }
-          else -> rawSsid
-        }
-
-        Log.d("WiFi", "WiFi SSID: $ssid")
-
-        ssid?.let { networkName ->
-          handler.post {
-            showToast("Подключено к Wi-Fi: $networkName")
-          }
-        }
-      } else {
-        Log.d("WiFi", "Transport info is not WifiInfo: ${transportInfo?.javaClass}")
-      }
-    } catch (e: Exception) {
-      Log.e("WiFi", "Error handling WiFi capabilities", e)
-    }
-  }
-
-  @SuppressLint("MissingPermission", "Deprecation")
-  private fun getSsidAlternative(): String? {
-    return try {
-      val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
-      val connectionInfo = wifiManager?.connectionInfo
-      val ssid = connectionInfo?.ssid
-
-      when {
-        ssid == null -> null
-        ssid == "<unknown ssid>" -> null
-        ssid.startsWith("\"") && ssid.endsWith("\"") -> ssid.substring(1, ssid.length - 1)
-        else -> ssid
-      }
-    } catch (e: Exception) {
-      Log.e("WiFi", "Alternative SSID method failed", e)
-      null
-    }
-  }
-
-  fun isWifiConnected(): Boolean = ssid != null
+//  fun isWifiConnected(): Boolean = ssid != null
 
   private fun clearAttitudeValues(updateView: Boolean = true) {
     roll = 0f
@@ -404,7 +418,7 @@ class MainActivity : AppCompatActivity() {
     positionCard.setOnLongClickListener {
       if (isConnected) {
         showConfirmation(message = "Начать калибровку гироскопа?", onPositive = {
-          bleManager.sendCommands("${B_CALIBRATE_GYRO.value}=1")
+          bleManager.send("${B_CALIBRATE_GYRO}=1")
         })
       }
       true
@@ -415,7 +429,7 @@ class MainActivity : AppCompatActivity() {
     voltageCard.setOnLongClickListener {
       if (isConnected) {
         showConfirmation(message = "Сбросить вольтаж?", onPositive = {
-          bleManager.sendCommands("${B_RESET_VOLTAGE.value}=1")
+          bleManager.send("${B_RESET_VOLTAGE}=1")
         })
       }
       true
@@ -442,7 +456,7 @@ class MainActivity : AppCompatActivity() {
         if (settingsLoaded)
           openSettings()
         else {
-          bleManager.sendCommands("${B_GET_SETTINGS.value}=1")
+          bleManager.send("${B_GET_SETTINGS}=1")
 
           settingsRequested = true
           handler.postDelayed({ settingsRequested = false }, 1000)
@@ -451,7 +465,7 @@ class MainActivity : AppCompatActivity() {
       }
     }
     SettingsActivity.setSendCallback { commands ->
-      bleManager.sendCommands(commands)
+      bleManager.send(commands)
 //      showToast("Settings sended")
     }
   }
@@ -459,7 +473,7 @@ class MainActivity : AppCompatActivity() {
   private fun setupEnabled() {
     controllerEnabled.setOnClickListener {
       if (isConnected) {
-        bleManager.sendCommands("${B_SET_ENABLED.value}=${if (controllerIsEnabled) 0 else 1}")
+        bleManager.send("${B_SET_ENABLED}=${if (controllerIsEnabled) 0 else 1}")
       }
     }
   }
@@ -628,11 +642,11 @@ class MainActivity : AppCompatActivity() {
           onPermissionsDenied()
         }
       }
-      WIFI_PERMISSION_REQUEST_CODE -> {
-        if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-          setupWifi()
-        }
-      }
+//      WIFI_PERMISSION_REQUEST_CODE -> {
+//        if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+//          setupWifi()
+//        }
+//      }
     }
   }
 
@@ -689,7 +703,7 @@ class MainActivity : AppCompatActivity() {
   private fun closeConnection() {
     controllerIsEnabled = false
 
-    SettingsActivity.getInstance()?.finish()
+    App.settingsActivity?.finish()
 
     progressFinish()
 
@@ -720,7 +734,7 @@ class MainActivity : AppCompatActivity() {
     lockScreen()
     connectionState = ConnectionState.CONNECTED
 
-    bleManager.sendCommands("${B_CONNECTED.value}=1")
+    bleManager.send("${B_CONNECTED}=1")
   }
 
   private fun onConnecting() {
@@ -793,7 +807,7 @@ class MainActivity : AppCompatActivity() {
       voltageOut = parser.getFloat(B_VOLTAGE_OUT, voltageOut)
     }
 
-    if (parser.getInt(B_SETTINGS, 0) == 1) {
+    if (parser.getInt(B_GET_SETTINGS) == 1) {
       if (SettingsManager.updateFromParser(parser)) {
         settingsLoaded = true;
 
@@ -824,7 +838,7 @@ class MainActivity : AppCompatActivity() {
       } else {
         progressFinish()
 
-        bleManager.sendCommands("${B_GET_POSITION.value}=1")
+        bleManager.send("${B_GET_POSITION}=1")
 
         if (value == -1)
           showToast("Gyroscope calibration failed")
@@ -852,15 +866,15 @@ class MainActivity : AppCompatActivity() {
 
   override fun onDestroy() {
     super.onDestroy()
-    instance = null
+    App.mainActivity = null
 
     disconnectManually()
 
-    try {
-      connectivityManager.unregisterNetworkCallback(networkCallback)
-    } catch (e: Exception) {
-      Log.e("WiFi", "Ошибка при отмене регистрации network callback", e)
-    }
+//    try {
+//      connectivityManager.unregisterNetworkCallback(networkCallback)
+//    } catch (e: Exception) {
+//      Log.e("WiFi", "Ошибка при отмене регистрации network callback", e)
+//    }
   }
 
   private fun showConfirmation(
@@ -893,11 +907,5 @@ class MainActivity : AppCompatActivity() {
       .setPositiveButton(positiveText) { dialog, which -> onPositive() }
       .setNegativeButton(negativeText) { dialog, which -> onNegative() }.setCancelable(isCancelable)
       .setOnDismissListener { onDismiss() }.show()
-  }
-
-  companion object {
-    private var instance: MainActivity? = null
-
-    fun getInstance(): MainActivity? = instance
   }
 }

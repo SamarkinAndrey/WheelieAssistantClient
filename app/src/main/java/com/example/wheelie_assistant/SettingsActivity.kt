@@ -24,7 +24,7 @@ class SettingsActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.settings_activity)
-    instance = this
+    App.settingsActivity = this
 
     initViews()
     setupViewPager()
@@ -36,7 +36,7 @@ class SettingsActivity : AppCompatActivity() {
   override fun onDestroy() {
     super.onDestroy()
 
-    instance = null
+    App.settingsActivity = null
   }
 
   private fun initViews() {
@@ -110,14 +110,11 @@ class SettingsActivity : AppCompatActivity() {
   }
 
   companion object {
-    private var instance: SettingsActivity? = null
     private var sendCallback: ((String) -> Unit)? = null
 
     fun setSendCallback(callback: (String) -> Unit) {
       sendCallback = callback
     }
-
-    fun getInstance(): SettingsActivity? = instance
   }
 
   fun getSaveLayout(): LinearLayout {

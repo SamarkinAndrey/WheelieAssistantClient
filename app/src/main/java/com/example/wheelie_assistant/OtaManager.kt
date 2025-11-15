@@ -5,8 +5,15 @@ import JsonParamParser
 import android.content.Context
 import android.util.Log
 import com.app.wheelie_assistant.BleManager
-import java.net.HttpURLConnection
-import java.net.URL
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.*
 
 class OtaManager(
   private val context: Context,
@@ -14,7 +21,6 @@ class OtaManager(
 ) {
   private val TAG = "OTAManager"
   private val VERSION_URL = "https://raw.githubusercontent.com/SamarkinAndrey/WheelieAssistantBinary/master/flash_download_tool/firmware/version.info"
-  private var remoteVersion: String? = null
   private var otaCallback: IOTACallback? = null
   private var isStarted = false
   private var inProgress = false
@@ -27,27 +33,46 @@ class OtaManager(
     fun onNotify(message: String)
   }
 
-  fun checkRemoteVersion(versionUrl: String? = null): Boolean {
-    return runCatching {
-      val url = URL(versionUrl?: VERSION_URL)
-      (url.openConnection() as HttpURLConnection).run {
-        requestMethod = "GET"
-        connectTimeout = 10000
-        readTimeout = 10000
+  fun getRemoteVersion(versionUrl: String? = null, callback: (String?) -> Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+      try {
+        val trustManager = object : X509TrustManager {
+          override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+          override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+          override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+        }
 
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-          inputStream.bufferedReader().use { reader ->
-            remoteVersion = reader.readText().trim()
-          }
-          true
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, arrayOf(trustManager), SecureRandom())
+
+        val client = OkHttpClient.Builder()
+          .sslSocketFactory(sslContext.socketFactory, trustManager)
+          .hostnameVerifier { _, _ -> true }
+          .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+          .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+          .build()
+
+        val request = Request.Builder()
+          .url(versionUrl ?: VERSION_URL)
+          .build()
+
+        val response = client.newCall(request).execute()
+        val result = if (response.isSuccessful) {
+          response.body.string().trim()
         } else {
-          println("HTTP GET failed, error: $responseCode")
-          false
+          null
+        }
+
+        withContext(Dispatchers.Main) {
+          callback(result)
+        }
+      } catch (e: Exception) {
+        Log.e(TAG, "Exception during HTTP request: ${e.message}", e)
+        withContext(Dispatchers.Main) {
+          callback(null)
         }
       }
-    }.onFailure { error ->
-      println("HTTP GET failed, error: ${error.message}")
-    }.getOrDefault(false)
+    }
   }
 
   fun compareVersions(version1: String, version2: String): Int {
@@ -63,10 +88,19 @@ class OtaManager(
     return split('.').map { it.toIntOrNull() ?: 0 }
   }
 
-  fun requestUpdate(callback: IOTACallback) {
+  fun requestUpdate(
+    ssid: String,
+    pass: String,
+    callback: IOTACallback
+  ) {
     otaCallback = callback
 
-    bleManager.sendCommands("${B_FIRMWARE_START.value}=1")
+    val request = JsonParamParser()
+    request.setInt(B_FIRMWARE_START, 1)
+    request.setString(B_WIFI_SSID, ssid)
+    request.setString(B_WIFI_PASS, pass)
+
+    bleManager.sendJsonParams(request)
 
     isStarted = true
   }

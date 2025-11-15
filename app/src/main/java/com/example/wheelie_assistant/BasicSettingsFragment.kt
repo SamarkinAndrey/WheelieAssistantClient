@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
-//import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.materialswitch.MaterialSwitch
 import kotlin.math.max
 
@@ -32,22 +31,6 @@ class BasicSettingsFragment : BaseSettingsFragment() {
     initViews(view)
     setupSliders()
     setSettings(SettingsManager.currentSettings)
-
-    val scrollLayout = view.findViewById<LinearLayout>(R.id.scroll_layout)
-    val activity = SettingsActivity.getInstance()
-
-    activity?.let {
-      val saveLayout = it.getSaveLayout()
-
-      saveLayout.post {
-        scrollLayout.setPadding(
-          scrollLayout.paddingStart,
-          scrollLayout.paddingTop,
-          scrollLayout.paddingEnd,
-          saveLayout.height
-        )
-      }
-    }
 
     return view
   }
