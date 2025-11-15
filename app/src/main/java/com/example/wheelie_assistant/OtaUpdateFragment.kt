@@ -1,5 +1,6 @@
 package com.app.wheelie_assistant
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -186,15 +187,17 @@ class OtaUpdateFragment : Fragment() {
     versionCurrentValue.text = versionCurrent ?: "ошибка"
     versionActualValue.text = versionActual ?: "ошибка"
 
-    updateLayout.visibility =
       if (!versionCurrent.isNullOrEmpty() &&
         !versionActual.isNullOrEmpty() &&
         otaManager != null &&
         otaManager!!.compareVersions(versionActual!!, versionCurrent!!) != 0
-      )
-        LinearLayout.VISIBLE
-      else
-        LinearLayout.GONE
+      ) {
+        updateLayout.visibility = LinearLayout.VISIBLE
+        versionActualValue.setTextColor(Color.parseColor("#E02828"))
+      } else {
+        updateLayout.visibility = LinearLayout.GONE
+        versionActualValue.setTextColor(Color.parseColor("#FFFFFF"))
+      }
   }
 
   private fun showToast(message: String) {
