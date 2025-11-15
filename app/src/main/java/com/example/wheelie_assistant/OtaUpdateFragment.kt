@@ -138,7 +138,7 @@ class OtaUpdateFragment : Fragment() {
   private val otaCallback = object : OtaManager.IOTACallback {
     override fun onStarted() {
       startUI();
-      updateStatus("Прошивка...")
+      updateStatus("Обновление прошивки...")
 
       prefManager?.let {
         it.save("wifi_ssid", ssidValue.text.toString())
@@ -151,13 +151,12 @@ class OtaUpdateFragment : Fragment() {
     }
 
     override fun onSuccess() {
-      resetIU()
       updateStatus("Успешно обновлено, перезагрузка...")
     }
 
     override fun onFailed(message: String) {
       resetIU()
-      updateStatus("Ошибка прошивки: $message")
+      updateStatus("Ошибка обновления: $message")
     }
 
     override fun onNotify(message: String) {
@@ -169,14 +168,14 @@ class OtaUpdateFragment : Fragment() {
     progressBar.progress = 0
     progressBar.visibility = ProgressBar.VISIBLE
     statusBar.visibility = EditText.VISIBLE
-    btnStartUpdate.isEnabled = false
+    btnStartUpdate.visibility = MaterialButton.GONE
   }
 
   private fun resetIU() {
     progressBar.visibility = ProgressBar.GONE
     progressBar.progress = 0
     statusBar.visibility = EditText.GONE
-    btnStartUpdate.isEnabled = true
+    btnStartUpdate.visibility = MaterialButton.VISIBLE
   }
 
   private fun updateStatus(text: String) {
@@ -191,7 +190,7 @@ class OtaUpdateFragment : Fragment() {
       if (!versionCurrent.isNullOrEmpty() &&
         !versionActual.isNullOrEmpty() &&
         otaManager != null &&
-        otaManager!!.compareVersions(versionActual!!, versionCurrent!!) > 0
+        otaManager!!.compareVersions(versionActual!!, versionCurrent!!) != 0
       )
         LinearLayout.VISIBLE
       else
