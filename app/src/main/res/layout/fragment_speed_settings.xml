@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="🚀 СКОРОСТЬ РЕАКЦИИ"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold"
             android:visibility="gone" />
@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             app:cardBackgroundColor="#37383B"
             app:cardCornerRadius="8dp"
-            app:strokeColor="#FFFFFF"
+            app:strokeColor="@color/white"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -50,7 +50,7 @@
                         android:layout_weight="1"
                         android:paddingStart="8dp"
                         android:text="Гистерезис"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -62,7 +62,7 @@
                         android:gravity="right"
                         android:paddingEnd="8dp"
                         android:text="0.3 Kp"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -90,7 +90,7 @@
                         android:layout_weight="1"
                         android:paddingStart="8dp"
                         android:text="Макс. угловая скорость"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -102,7 +102,7 @@
                         android:gravity="right"
                         android:paddingEnd="8dp"
                         android:text="25.0 °/с"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -129,7 +129,7 @@
                         android:layout_weight="1"
                         android:paddingStart="8dp"
                         android:text="Время определение тренда"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -141,7 +141,7 @@
                         android:gravity="right"
                         android:paddingEnd="8dp"
                         android:text="0.3 Kp"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -169,7 +169,7 @@
                         android:layout_weight="1"
                         android:paddingStart="8dp"
                         android:text="Время определение покоя"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -181,7 +181,7 @@
                         android:gravity="right"
                         android:paddingEnd="8dp"
                         android:text="25.0 °/с"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>

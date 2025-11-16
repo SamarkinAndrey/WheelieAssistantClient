@@ -25,7 +25,7 @@
                 android:layout_marginBottom="4dp"
                 android:paddingStart="8dp"
                 android:text="Настройки Wi-Fi соединения"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:textSize="14sp" />
 
             <com.google.android.material.card.MaterialCardView
@@ -34,7 +34,7 @@
                 android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="#37383B"
                 app:cardCornerRadius="8dp"
-                app:strokeColor="#FFFFFF"
+                app:strokeColor="@color/white"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -57,7 +57,7 @@
                             android:layout_weight="0.5"
                             android:gravity="center_vertical"
                             android:text="Название сети"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -67,7 +67,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
                             android:gravity="center_vertical|end"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -84,11 +84,11 @@
                             android:layout_weight="0.5"
                             android:gravity="center_vertical"
                             android:text="Пароль"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
-                        <EditText
+                        <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/passValue"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
                             android:ems="10"
                             android:gravity="center_vertical|end"
                             android:inputType="textPassword"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -116,7 +116,7 @@
                             android:layout_weight="0.6"
                             android:gravity="center_vertical"
                             android:text="Таймаут соединения"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -134,7 +134,7 @@
                                 android:ems="10"
                                 android:gravity="center_vertical|end"
                                 android:inputType="numberDecimal"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/white"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
@@ -159,7 +159,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
                             android:text="URL прошивки"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -186,7 +186,7 @@
                 android:layout_marginBottom="4dp"
                 android:paddingStart="8dp"
                 android:text="Информация о версиях"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:textSize="14sp" />
 
             <com.google.android.material.card.MaterialCardView
@@ -194,7 +194,7 @@
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="#37383B"
                 app:cardCornerRadius="8dp"
-                app:strokeColor="#FFFFFF"
+                app:strokeColor="@color/white"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -216,7 +216,7 @@
                             android:layout_marginBottom="8dp"
                             android:backgroundTint="#4D5963"
                             android:text="Выбрать файл"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:visibility="gone"
                             app:cornerRadius="8dp" />
 
@@ -225,7 +225,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Файл не выбран"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:textSize="14sp"
                             android:visibility="gone" />
 
@@ -235,7 +235,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:text="Размер: 0 KB"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:textSize="12sp"
                             android:visibility="gone" />
 
@@ -258,7 +258,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="0.7"
                                 android:text="Текущая версия"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/white"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
@@ -268,7 +268,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="0.3"
                                 android:gravity="end"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/white"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
@@ -284,7 +284,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="0.7"
                                 android:text="Актуальная версия"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/white"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
@@ -294,7 +294,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="0.3"
                                 android:gravity="end"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/white"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
@@ -319,17 +319,6 @@
                             android:progressTint="@color/red"
                             android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/tvStatus"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:gravity="center"
-                            android:text="Готов к обновлению"
-                            android:textColor="@color/white"
-                            android:textSize="12sp"
-                            android:visibility="gone" />
-
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnStartUpdate"
                             android:layout_width="wrap_content"
@@ -342,6 +331,17 @@
                             android:visibility="gone"
                             app:backgroundTint="#4D5963"
                             app:cornerRadius="8dp" />
+
+                        <TextView
+                            android:id="@+id/tvStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:gravity="center"
+                            android:text="Готов к обновлению"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:visibility="gone" />
 
                     </LinearLayout>
                 </LinearLayout>

@@ -4,7 +4,7 @@ import android.view.View
 import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
 
-class SpeedSettingsFragment : BaseSettingsFragment() {
+class SpeedSettingsFragment : SettingsFragment() {
   private lateinit var hysteresisValue: MaterialTextView
   private lateinit var maxSpeedValue: MaterialTextView
   private lateinit var trendDurationValue: MaterialTextView

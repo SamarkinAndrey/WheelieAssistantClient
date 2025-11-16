@@ -52,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
 
     viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
       override fun onPageSelected(position: Int) {
-        saveButton.isVisible = (adapter.getFragment(position) is BaseSettingsFragment)
+        saveButton.isVisible = (adapter.getFragment(position) is SettingsFragment)
       }
     })
   }
@@ -85,7 +85,7 @@ class SettingsActivity : AppCompatActivity() {
     val settings = Settings()
 
     supportFragmentManager.fragments.forEach { fragment ->
-      if (fragment is BaseSettingsFragment)
+      if (fragment is SettingsFragment)
         fragment.saveSettings(settings)
     }
 

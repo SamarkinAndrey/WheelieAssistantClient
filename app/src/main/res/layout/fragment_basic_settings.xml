@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="⚙️ ОСНОВНЫЕ НАСТРОЙКИ"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold"
             android:visibility="gone" />
@@ -30,7 +30,7 @@
             android:layout_marginBottom="16dp"
             app:cardBackgroundColor="#37383B"
             app:cardCornerRadius="8dp"
-            app:strokeColor="#FFFFFF"
+            app:strokeColor="@color/white"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -51,7 +51,7 @@
                         android:layout_weight="1"
                         android:paddingStart="8dp"
                         android:text="Период контроля"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -63,7 +63,7 @@
                         android:gravity="right"
                         android:paddingEnd="8dp"
                         android:text="10 мс"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -92,7 +92,7 @@
                         android:layout_weight="1"
                         android:paddingStart="8dp"
                         android:text="Время реакции мотора"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -103,7 +103,7 @@
                         android:gravity="right"
                         android:paddingEnd="8dp"
                         android:text="80 мс"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -130,7 +130,7 @@
                         android:layout_weight="1"
                         android:paddingStart="8dp"
                         android:text="Время упреждения"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -142,7 +142,7 @@
                         android:gravity="right"
                         android:paddingEnd="8dp"
                         android:text="90 мс"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -169,7 +169,7 @@
                         android:layout_weight="1"
                         android:paddingStart="8dp"
                         android:text="Гистререзис положения"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -181,7 +181,7 @@
                         android:gravity="right"
                         android:paddingEnd="8dp"
                         android:text="0.5°"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -205,7 +205,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="⚙️ НАПРАВЛЕНИЕ ОСЕЙ"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold"
             android:visibility="gone" />
@@ -215,7 +215,7 @@
             android:layout_height="wrap_content"
             app:cardBackgroundColor="#37383B"
             app:cardCornerRadius="8dp"
-            app:strokeColor="#FFFFFF"
+            app:strokeColor="@color/white"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -239,7 +239,7 @@
                         android:gravity="center_vertical"
                         android:paddingStart="8dp"
                         android:text="Инвертировать ось X"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -262,7 +262,7 @@
                         android:gravity="center_vertical"
                         android:paddingStart="8dp"
                         android:text="Инвертировать ось Y"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 

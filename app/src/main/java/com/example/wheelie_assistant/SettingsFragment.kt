@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 
-abstract class BaseSettingsFragment : Fragment() {
+abstract class SettingsFragment : Fragment() {
   abstract fun getFragmentID(): Int
 
   abstract fun loadSettings(settings: Settings)

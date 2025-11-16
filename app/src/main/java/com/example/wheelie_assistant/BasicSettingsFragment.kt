@@ -6,7 +6,7 @@ import com.google.android.material.textview.MaterialTextView
 import com.google.android.material.materialswitch.MaterialSwitch
 import kotlin.math.max
 
-class BasicSettingsFragment : BaseSettingsFragment() {
+class BasicSettingsFragment : SettingsFragment() {
 
   private lateinit var systemTickValue: MaterialTextView
   private lateinit var predictionHorizontValue: MaterialTextView

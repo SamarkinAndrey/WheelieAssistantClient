@@ -105,8 +105,9 @@ class OtaUpdateFragment : Fragment() {
     }
 
     versionCurrent = SettingsManager.currentSettings.firmware_ver
+    versionCurrentValue.text = versionCurrent ?: "ошибка"
 
-    checkRemoteVersion()
+    checkActualVersion()
   }
 
 //  private fun readFileInfo() {
@@ -135,6 +136,7 @@ class OtaUpdateFragment : Fragment() {
   private val wifiCallback = object : OtaManager.IWifiCallback {
     override fun onConnecting() {
       btnStartUpdate.isVisible = false
+      progressBar.isVisible = true
       setStatus("Подключение к ${ssidValue.text}...")
     }
 
@@ -148,6 +150,7 @@ class OtaUpdateFragment : Fragment() {
 
     override fun onError() {
       btnStartUpdate.isVisible = true
+      progressBar.isVisible = false
       setStatus("Ошибка подключения")
     }
   }
@@ -188,17 +191,17 @@ class OtaUpdateFragment : Fragment() {
       progressBar.isVisible = true
   }
 
-  fun checkRemoteVersion() {
+  fun checkActualVersion() {
+    versionActualValue.text = "запрос"
     otaManager?.getRemoteVersion { version ->
       versionActual = version
-      versionUpdated()
+      versionActualValue.text = versionActual ?: "ошибка"
+
+      compareVersions()
     }
   }
 
-  private fun versionUpdated() {
-    versionCurrentValue.text = versionCurrent ?: "ошибка"
-    versionActualValue.text = versionActual ?: "ошибка"
-
+  private fun compareVersions() {
     if (!versionCurrent.isNullOrEmpty() &&
       !versionActual.isNullOrEmpty() &&
       otaManager != null// &&
@@ -215,6 +218,7 @@ class OtaUpdateFragment : Fragment() {
       versionActualValue.setTextColor(requireContext().getColor(R.color.white))
     }
   }
+
   private fun showToast(message: String) {
     Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     Log.d("OTAManager", message)

@@ -5,7 +5,7 @@ import com.google.android.material.slider.RangeSlider
 import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
 
-class VoltageSettingsFragment : BaseSettingsFragment() {
+class VoltageSettingsFragment : SettingsFragment() {
   private lateinit var minVoltageValue: MaterialTextView
   private lateinit var stepRangeValue: MaterialTextView
 

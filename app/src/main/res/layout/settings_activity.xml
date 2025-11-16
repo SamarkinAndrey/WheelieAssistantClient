@@ -24,7 +24,7 @@
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_arrow_back"
-                android:tint="#FFFFFF" />
+                android:tint="@color/white" />
 
             <TextView
                 android:layout_width="0dp"
@@ -32,7 +32,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Настройки"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -75,12 +75,12 @@
             android:layout_height="54dp"
             android:layout_gravity="center"
             android:text="💾 СОХРАНИТЬ"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold"
             app:backgroundTint="#4D5963"
             app:cornerRadius="8dp"
-            app:strokeColor="#FFFFFF" />
+            app:strokeColor="@color/white" />
 
     </LinearLayout>
 </FrameLayout>
@@ -115,7 +115,7 @@
     <!--                android:layout_height="24dp"-->
     <!--                android:background="?attr/selectableItemBackgroundBorderless"-->
     <!--                android:src="@drawable/ic_arrow_back"-->
-    <!--                android:tint="#FFFFFF" />-->
+    <!--                android:tint="@color/white" />-->
 
     <!--            <TextView-->
     <!--                android:layout_width="0dp"-->
@@ -123,7 +123,7 @@
     <!--                android:layout_weight="1"-->
     <!--                android:gravity="center"-->
     <!--                android:text="Настройки"-->
-    <!--                android:textColor="#FFFFFF"-->
+    <!--                android:textColor="@color/white"-->
     <!--                android:textSize="20sp"-->
     <!--                android:textStyle="bold" />-->
 
@@ -157,7 +157,7 @@
     <!--                    android:layout_height="wrap_content"-->
     <!--                    android:layout_marginBottom="8dp"-->
     <!--                    android:text="⚙️ ОСНОВНЫЕ НАСТРОЙКИ"-->
-    <!--                    android:textColor="#FFFFFF"-->
+    <!--                    android:textColor="@color/white"-->
     <!--                    android:textSize="14sp"-->
     <!--                    android:textStyle="bold" />-->
 
@@ -167,7 +167,7 @@
     <!--                    android:layout_marginBottom="16dp"-->
     <!--                    app:cardBackgroundColor="@android:color/transparent"-->
     <!--                    app:cardCornerRadius="8dp"-->
-    <!--                    app:strokeColor="#FFFFFF"-->
+    <!--                    app:strokeColor="@color/white"-->
     <!--                    app:strokeWidth="1dp">-->
 
     <!--                    <LinearLayout-->
@@ -188,7 +188,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Период контроля"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -200,7 +200,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="10 мс"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -219,7 +219,7 @@
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
     <!--                            app:thumbElevation="0dp"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -238,7 +238,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Время реакции мотора"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -250,7 +250,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="80 мс"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -270,7 +270,7 @@
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
     <!--                            app:thumbElevation="0dp"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -287,7 +287,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Время упреждения"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -299,7 +299,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="90 мс"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -318,7 +318,7 @@
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
     <!--                            app:thumbElevation="0dp"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -335,7 +335,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Гистререзис положения"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -347,7 +347,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="0.5°"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -365,7 +365,7 @@
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
     <!--                            app:thumbElevation="0dp"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -383,7 +383,7 @@
     <!--                                android:gravity="center_vertical"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Инвертировать ось X"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -413,7 +413,7 @@
     <!--                                android:gravity="center_vertical"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Инвертировать ось Y"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -440,7 +440,7 @@
     <!--                    android:layout_height="wrap_content"-->
     <!--                    android:layout_marginBottom="8dp"-->
     <!--                    android:text="📐 УГЛОВЫЕ ПАРАМЕТРЫ"-->
-    <!--                    android:textColor="#FFFFFF"-->
+    <!--                    android:textColor="@color/white"-->
     <!--                    android:textSize="14sp"-->
     <!--                    android:textStyle="bold" />-->
 
@@ -450,7 +450,7 @@
     <!--                    android:layout_marginBottom="16dp"-->
     <!--                    app:cardBackgroundColor="@android:color/transparent"-->
     <!--                    app:cardCornerRadius="8dp"-->
-    <!--                    app:strokeColor="#FFFFFF"-->
+    <!--                    app:strokeColor="@color/white"-->
     <!--                    app:strokeWidth="1dp">-->
 
     <!--                    <LinearLayout-->
@@ -471,7 +471,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Целевой угол подъема"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -483,7 +483,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="25.0°"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -502,7 +502,7 @@
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
     <!--                            app:thumbElevation="0dp"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -520,7 +520,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Зона стабилизации"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -532,7 +532,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="0.5°"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -551,7 +551,7 @@
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
     <!--                            app:thumbElevation="0dp"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -569,7 +569,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Порог отключения"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -581,7 +581,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="-5.0°"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -600,7 +600,7 @@
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
     <!--                            app:thumbElevation="0dp"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -617,7 +617,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Опасный порог"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -629,7 +629,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="+5.0°"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -647,7 +647,7 @@
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
     <!--                            app:thumbElevation="0dp"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -662,7 +662,7 @@
     <!--                    android:layout_height="wrap_content"-->
     <!--                    android:layout_marginBottom="8dp"-->
     <!--                    android:text="⚡ НАПРЯЖЕНИЕ И ШАГИ"-->
-    <!--                    android:textColor="#FFFFFF"-->
+    <!--                    android:textColor="@color/white"-->
     <!--                    android:textSize="14sp"-->
     <!--                    android:textStyle="bold" />-->
 
@@ -672,7 +672,7 @@
     <!--                    android:layout_marginBottom="16dp"-->
     <!--                    app:cardBackgroundColor="@android:color/transparent"-->
     <!--                    app:cardCornerRadius="8dp"-->
-    <!--                    app:strokeColor="#FFFFFF"-->
+    <!--                    app:strokeColor="@color/white"-->
     <!--                    app:strokeWidth="1dp">-->
 
     <!--                    <LinearLayout-->
@@ -693,7 +693,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Порог включения"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -705,7 +705,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="1.5 В"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -724,7 +724,7 @@
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
     <!--                            app:thumbElevation="0dp"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -742,7 +742,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Диапазон шагов"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -754,7 +754,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="1 ед"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -770,7 +770,7 @@
     <!--                            app:haloColor="#E02828"-->
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -786,7 +786,7 @@
     <!--                    android:layout_height="wrap_content"-->
     <!--                    android:layout_marginBottom="8dp"-->
     <!--                    android:text="🚀 СКОРОСТЬ РЕАКЦИИ"-->
-    <!--                    android:textColor="#FFFFFF"-->
+    <!--                    android:textColor="@color/white"-->
     <!--                    android:textSize="14sp"-->
     <!--                    android:textStyle="bold"-->
     <!--                    android:visibility="visible" />-->
@@ -797,7 +797,7 @@
     <!--                    android:visibility="visible"-->
     <!--                    app:cardBackgroundColor="@android:color/transparent"-->
     <!--                    app:cardCornerRadius="8dp"-->
-    <!--                    app:strokeColor="#FFFFFF"-->
+    <!--                    app:strokeColor="@color/white"-->
     <!--                    app:strokeWidth="1dp">-->
 
     <!--                    <LinearLayout-->
@@ -818,7 +818,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Гистерезис"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -830,7 +830,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="0.3 Kp"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -849,7 +849,7 @@
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
     <!--                            app:thumbElevation="0dp"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -867,7 +867,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Макс. угловая скорость"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -879,7 +879,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="25.0 °/с"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -898,7 +898,7 @@
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
     <!--                            app:thumbElevation="0dp"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -915,7 +915,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Время определение тренда"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -927,7 +927,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="0.3 Kp"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -946,7 +946,7 @@
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
     <!--                            app:thumbElevation="0dp"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -964,7 +964,7 @@
     <!--                                android:layout_weight="1"-->
     <!--                                android:paddingStart="8dp"-->
     <!--                                android:text="Время определение покоя"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
 
@@ -976,7 +976,7 @@
     <!--                                android:gravity="right"-->
     <!--                                android:paddingEnd="8dp"-->
     <!--                                android:text="25.0 °/с"-->
-    <!--                                android:textColor="#FFFFFF"-->
+    <!--                                android:textColor="@color/white"-->
     <!--                                android:textSize="14sp"-->
     <!--                                android:textStyle="bold" />-->
     <!--                        </LinearLayout>-->
@@ -994,7 +994,7 @@
     <!--                            app:labelBehavior="gone"-->
     <!--                            app:thumbColor="#E02828"-->
     <!--                            app:thumbElevation="0dp"-->
-    <!--                            app:thumbStrokeColor="#FFFFFF"-->
+    <!--                            app:thumbStrokeColor="@color/white"-->
     <!--                            app:thumbStrokeWidth="1dp"-->
     <!--                            app:tickVisible="false"-->
     <!--                            app:trackColorActive="#E02828"-->
@@ -1027,11 +1027,11 @@
     <!--            android:layout_height="match_parent"-->
     <!--            android:layout_gravity="center"-->
     <!--            android:text="💾 СОХРАНИТЬ"-->
-    <!--            android:textColor="#FFFFFF"-->
+    <!--            android:textColor="@color/white"-->
     <!--            android:textStyle="bold"-->
     <!--            app:backgroundTint="#4D5963"-->
     <!--            app:cornerRadius="8dp"-->
-    <!--            app:strokeColor="#FFFFFF" />-->
+    <!--            app:strokeColor="@color/white" />-->
 
     <!--    </LinearLayout>-->
     <!--</FrameLayout>-->

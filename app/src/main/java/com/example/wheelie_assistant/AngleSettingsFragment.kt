@@ -4,7 +4,7 @@ import android.view.View
 import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
 
-class AngleSettingsFragment : BaseSettingsFragment() {
+class AngleSettingsFragment : SettingsFragment() {
   private lateinit var targetPitchValue: MaterialTextView
   private lateinit var deadZoneValue: MaterialTextView
   private lateinit var exitThresholdValue: MaterialTextView
