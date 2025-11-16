@@ -1,9 +1,6 @@
 package com.app.wheelie_assistant
 
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
 
@@ -18,17 +15,11 @@ class SpeedSettingsFragment : BaseSettingsFragment() {
   private lateinit var trendDurationSlider: Slider
   private lateinit var stableDurationSlider: Slider
 
-  override fun onCreateView(
-    inflater: LayoutInflater, container: ViewGroup?,
-    savedInstanceState: Bundle?
-  ): View? {
-    val view = inflater.inflate(R.layout.fragment_speed_settings, container, false)
+  override fun getFragmentID(): Int = R.layout.fragment_speed_settings
 
+  override fun onInit(view: View) {
     initViews(view)
     setupSliders()
-    setSettings(SettingsManager.currentSettings)
-
-    return view
   }
 
   private fun initViews(view: View) {
@@ -61,23 +52,21 @@ class SpeedSettingsFragment : BaseSettingsFragment() {
     }
   }
 
-  override fun setSettings(settings: Settings) {
+  override fun loadSettings(settings: Settings) {
     hysteresisSlider.value = settings.hysteresis
     maxSpeedSlider.value = settings.max_speed.toFloat()
     trendDurationSlider.value = settings.trend_duration.toFloat()
     stableDurationSlider.value = settings.stable_duration.toFloat()
-
-    updateTextValues()
   }
 
-  private fun updateTextValues() {
+  override fun updateTextValues() {
     hysteresisValue.text = "${"%.1f".format(hysteresisSlider.value)}°"
     maxSpeedValue.text = "${maxSpeedSlider.value.toInt()} °/мс"
     trendDurationValue.text = "${trendDurationSlider.value.toInt()} мс"
     stableDurationValue.text = "${stableDurationSlider.value.toInt()} мс"
   }
 
-  override fun getSettings(settings: Settings) {
+  override fun saveSettings(settings: Settings) {
     settings.hysteresis = hysteresisSlider.value
     settings.max_speed = maxSpeedSlider.value.toInt()
     settings.trend_duration = trendDurationSlider.value.toInt()

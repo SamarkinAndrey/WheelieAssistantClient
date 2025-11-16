@@ -316,7 +316,7 @@
                             android:layout_height="16dp"
                             android:paddingStart="16dp"
                             android:paddingEnd="16dp"
-                            android:progressTint="#E02828"
+                            android:progressTint="@color/red"
                             android:visibility="gone" />
 
                         <TextView
@@ -326,7 +326,7 @@
                             android:layout_marginBottom="8dp"
                             android:gravity="center"
                             android:text="Готов к обновлению"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:textSize="12sp"
                             android:visibility="gone" />
 
@@ -338,7 +338,7 @@
                             android:layout_marginBottom="8dp"
                             android:enabled="true"
                             android:text="Обновить"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:visibility="gone"
                             app:backgroundTint="#4D5963"
                             app:cornerRadius="8dp" />

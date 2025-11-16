@@ -1,10 +1,6 @@
 package com.app.wheelie_assistant
 
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.LinearLayout
 import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -22,17 +18,11 @@ class BasicSettingsFragment : BaseSettingsFragment() {
   private lateinit var predictionHorizontSlider: Slider
   private lateinit var gyroHysteresisSlider: Slider
 
-  override fun onCreateView(
-    inflater: LayoutInflater, container: ViewGroup?,
-    savedInstanceState: Bundle?
-  ): View? {
-    val view = inflater.inflate(R.layout.fragment_basic_settings, container, false)
+  override fun getFragmentID(): Int = R.layout.fragment_basic_settings
 
+  override fun onInit(view: View) {
     initViews(view)
     setupSliders()
-    setSettings(SettingsManager.currentSettings)
-
-    return view
   }
 
   private fun initViews(view: View) {
@@ -71,24 +61,22 @@ class BasicSettingsFragment : BaseSettingsFragment() {
     predictionHorizontSlider.valueFrom = valueFrom
   }
 
-  override fun setSettings(settings: Settings) {
+  override fun loadSettings(settings: Settings) {
     systemTickSlider.value = settings.system_tick.toFloat()
     predictionHorizontSlider.valueFrom = settings.system_tick.toFloat()
     predictionHorizontSlider.value = max(settings.prediction_horizont.toFloat(), settings.system_tick.toFloat())
     gyroHysteresisSlider.value = settings.gyro_hysteresis
     reversedPitchValue.isChecked = settings.reversed_pitch
     reversedRollValue.isChecked = settings.reversed_roll
-
-    updateTextValues()
   }
 
-  private fun updateTextValues() {
+  override fun updateTextValues() {
     systemTickValue.text = "${systemTickSlider.value.toInt()} мс"
     predictionHorizontValue.text = "${predictionHorizontSlider.value.toInt()} мс"
     gyroHysteresisValue.text = "${"%.1f".format(gyroHysteresisSlider.value)}°"
   }
 
-  override fun getSettings(settings: Settings) {
+  override fun saveSettings(settings: Settings) {
     settings.system_tick = systemTickSlider.value.toInt()
     settings.prediction_horizont = predictionHorizontSlider.value.toInt()
     settings.gyro_hysteresis = gyroHysteresisSlider.value

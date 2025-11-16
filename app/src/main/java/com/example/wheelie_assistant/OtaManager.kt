@@ -19,13 +19,25 @@ class OtaManager(
   private val context: Context,
   private val bleManager: BleManager
 ) {
-  private val TAG = "OTAManager"
-  private val VERSION_URL = "https://raw.githubusercontent.com/SamarkinAndrey/WheelieAssistantBinary/master/flash_download_tool/firmware/version.info"
-  private var otaCallback: IOTACallback? = null
-  private var isStarted = false
-  private var inProgress = false
+  private val VERSION_URL =
+    "https://raw.githubusercontent.com/SamarkinAndrey/WheelieAssistantBinary/master/flash_download_tool/firmware/version.info"
 
-  interface IOTACallback {
+  private val TAG = "OTAManager"
+
+  private var otaCallback: IOtaCallback? = null
+  private var wifiCallback: IWifiCallback? = null
+  private var isConnecting = false
+  private var inProgress = false
+  private var isStarted = false
+  private var isGetVersion = false
+
+  interface IWifiCallback {
+    fun onConnecting()
+    fun onConnected()
+    fun onError()
+  }
+
+  interface IOtaCallback {
     fun onStarted()
     fun onSuccess()
     fun onProgress(progress: Int)
@@ -34,6 +46,7 @@ class OtaManager(
   }
 
   fun getRemoteVersion(versionUrl: String? = null, callback: (String?) -> Unit) {
+    isGetVersion = true
     CoroutineScope(Dispatchers.IO).launch {
       try {
         val trustManager = object : X509TrustManager {
@@ -64,11 +77,13 @@ class OtaManager(
         }
 
         withContext(Dispatchers.Main) {
+          isGetVersion = false
           callback(result)
         }
       } catch (e: Exception) {
         Log.e(TAG, "Exception during HTTP request: ${e.message}", e)
         withContext(Dispatchers.Main) {
+          isGetVersion = false
           callback(null)
         }
       }
@@ -91,16 +106,18 @@ class OtaManager(
   fun requestUpdate(
     ssid: String,
     pass: String,
-    callback: IOTACallback
+    wifi_callback: IWifiCallback,
+    ota_callback: IOtaCallback
   ) {
-    otaCallback = callback
+    wifiCallback = wifi_callback
+    otaCallback = ota_callback
 
     val request = JsonParamParser()
-    request.setInt(B_FIRMWARE_START, 1)
+    request.setInt(B_OTA_START, 1)
     request.setString(B_WIFI_SSID, ssid)
     request.setString(B_WIFI_PASS, pass)
 
-    bleManager.sendJsonParams(request)
+    bleManager.send(request)
 
     isStarted = true
   }
@@ -111,38 +128,67 @@ class OtaManager(
 
     try {
       when {
-        parser.getInt(B_FIRMWARE_START) == 1 -> {
+        parser.getInt(B_WIFI_CONNECTING) == 1 -> {
+          isConnecting = true
+          wifiCallback?.onConnecting();
+        }
+
+        parser.getInt(B_WIFI_SUCCESS) == 1 -> {
+          isConnecting = false
+          wifiCallback?.onConnected()
+        }
+
+        parser.getInt(B_WIFI_ERROR) == 1 -> {
+          isConnecting = false
+          wifiCallback?.onError();
+          close()
+        }
+
+        parser.getInt(B_OTA_START) == 1 -> {
           inProgress = true
           otaCallback?.onStarted()
         }
 
-        parser.hasParam(B_FIRMWARE_SUCCESS) -> {
+        parser.hasParam(B_OTA_SUCCESS) -> {
           otaCallback?.onSuccess()
-          destroy()
+          close()
         }
 
-        parser.hasParam(B_FIRMWARE_PROGRESS) -> {
-          otaCallback?.onProgress(parser.getInt(B_FIRMWARE_PROGRESS))
+        parser.hasParam(B_OTA_PROGRESS) -> {
+          otaCallback?.onProgress(parser.getInt(B_OTA_PROGRESS))
         }
 
-        parser.hasParam(B_FIRMWARE_ERROR) -> {
-          otaCallback?.onFailed("Update error: ${parser.getString(B_FIRMWARE_MESSAGE, "Неизвестная ошибка")}")
-          destroy()
+        parser.hasParam(B_OTA_ERROR) -> {
+          otaCallback?.onFailed(
+            "Update error: ${
+              parser.getString(
+                B_OTA_MESSAGE,
+                "Неизвестная ошибка"
+              )
+            }"
+          )
+          close()
         }
       }
     } catch (e: Exception) {
       Log.e(TAG, "Ошибка обработки ответа", e)
       otaCallback?.onFailed("Ошибка: ${e.message}")
-      destroy()
+      close()
     }
   }
 
-  private fun destroy() {
+  private fun close() {
     isStarted = false
     inProgress = false
+    isConnecting = false
+    isGetVersion = false
+
     otaCallback = null
+    wifiCallback = null
   }
 
-  fun inProgress() = inProgress
   fun isStarted() = isStarted
+  fun inProgress() = inProgress
+  fun isConnecting(): Boolean = isConnecting
+  fun isGetVersion(): Boolean = isGetVersion
 }

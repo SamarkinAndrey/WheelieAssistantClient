@@ -1,10 +1,6 @@
 package com.app.wheelie_assistant
 
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.LinearLayout
 import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
 
@@ -19,17 +15,11 @@ class AngleSettingsFragment : BaseSettingsFragment() {
   private lateinit var exitThresholdSlider: Slider
   private lateinit var emergThresholdSlider: Slider
 
-  override fun onCreateView(
-    inflater: LayoutInflater, container: ViewGroup?,
-    savedInstanceState: Bundle?
-  ): View? {
-    val view = inflater.inflate(R.layout.fragment_angle_settings, container, false)
+  override fun getFragmentID(): Int = R.layout.fragment_angle_settings
 
+  override fun onInit(view: View) {
     initViews(view)
     setupSliders()
-    setSettings(SettingsManager.currentSettings)
-
-    return view
   }
 
   private fun initViews(view: View) {
@@ -62,23 +52,21 @@ class AngleSettingsFragment : BaseSettingsFragment() {
     }
   }
 
-  override fun setSettings(settings: Settings) {
+  override fun loadSettings(settings: Settings) {
     targetPitchSlider.value = settings.target_pitch
     deadZoneSlider.value = settings.dead_zone
     exitThresholdSlider.value = settings.exit_threshold
     emergThresholdSlider.value = settings.emerg_threshold
-
-    updateTextValues()
   }
 
-  private fun updateTextValues() {
+  override fun updateTextValues() {
     targetPitchValue.text = "${targetPitchSlider.value.toInt()}°"
     deadZoneValue.text = "${"%.1f".format(deadZoneSlider.value)}°"
     exitThresholdValue.text = "${"-%.1f".format(exitThresholdSlider.value)}°"
     emergThresholdValue.text = "${"+%.1f".format(emergThresholdSlider.value)}°"
   }
 
-  override fun getSettings(settings: Settings) {
+  override fun saveSettings(settings: Settings) {
     settings.target_pitch = targetPitchSlider.value
     settings.dead_zone = deadZoneSlider.value
     settings.exit_threshold = exitThresholdSlider.value

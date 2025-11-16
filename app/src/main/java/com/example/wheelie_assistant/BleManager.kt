@@ -164,7 +164,7 @@ class BleManager(context: Context) : BleManager(context) {
     }
   }
 
-  fun sendJsonParams(parser: JsonParamParser) {
+  fun send(parser: JsonParamParser) {
     if (parser.isEmpty())
       return;
 

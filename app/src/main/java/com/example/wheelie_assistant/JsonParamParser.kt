@@ -151,12 +151,3 @@ class JsonParamParser() {
     }
   }
 }
-
-fun isJsonString(str: String): Boolean {
-  return try {
-    JSONObject(str)
-    true
-  } catch (e: JSONException) {
-    false
-  }
-}

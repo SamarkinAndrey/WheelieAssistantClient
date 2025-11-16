@@ -1,5 +1,6 @@
 package com.app.wheelie_assistant
 
+import JsonParamParser
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -19,8 +20,6 @@ class SettingsActivity : AppCompatActivity() {
   private lateinit var backButton: AppCompatImageButton
   private lateinit var saveLayout: LinearLayout
 
-//  private val fragments = mutableListOf<BaseSettingsFragment>()
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.settings_activity)
@@ -30,7 +29,6 @@ class SettingsActivity : AppCompatActivity() {
     setupViewPager()
     setupTabs()
     setupClickListeners()
-//    loadSettings(SettingsManager.currentSettings)
   }
 
   override fun onDestroy() {
@@ -52,7 +50,6 @@ class SettingsActivity : AppCompatActivity() {
     val adapter = SettingsPagerAdapter(this)
     viewPager.adapter = adapter
 
-    // Получаем ссылки на фрагменты после создания адаптера
     viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
       override fun onPageSelected(position: Int) {
         saveButton.isVisible = (adapter.getFragment(position) is BaseSettingsFragment)
@@ -84,36 +81,33 @@ class SettingsActivity : AppCompatActivity() {
     }
   }
 
-//  private fun loadSettings(settings: Settings) {
-//    supportFragmentManager.fragments.forEach { fragment ->
-//      (fragment as BaseSettingsFragment).setSettings(settings)
-//    }
-//  }
-
   private fun saveSettings(): Boolean {
-    val settings = SettingsManager.currentSettings
+    val settings = Settings()
 
     supportFragmentManager.fragments.forEach { fragment ->
       if (fragment is BaseSettingsFragment)
-        fragment.getSettings(settings)
+        fragment.saveSettings(settings)
     }
 
-    if (!SettingsManager.validate(settings)) {
+    if (!settings.validate()) {
       Toast.makeText(this, "Ошибка валидации настроек", Toast.LENGTH_SHORT).show()
       return false
     }
 
     SettingsManager.currentSettings = settings
-    sendCallback?.invoke(SettingsManager.toJson(settings))
+
+    val parser = JsonParamParser()
+    SettingsManager.saveTo(parser)
+    saveCallback?.invoke(parser)
 
     return true
   }
 
   companion object {
-    private var sendCallback: ((String) -> Unit)? = null
+    private var saveCallback: ((JsonParamParser) -> Unit)? = null
 
-    fun setSendCallback(callback: (String) -> Unit) {
-      sendCallback = callback
+    fun setSaveCallback(callback: (JsonParamParser) -> Unit) {
+      saveCallback = callback
     }
   }
 

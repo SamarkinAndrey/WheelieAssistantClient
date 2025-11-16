@@ -1,13 +1,24 @@
 package com.app.wheelie_assistant
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 
 abstract class BaseSettingsFragment : Fragment() {
-  abstract fun setSettings(settings: Settings)
-  abstract fun getSettings(settings: Settings)
+  abstract fun getFragmentID(): Int
+
+  abstract fun loadSettings(settings: Settings)
+  abstract fun saveSettings(settings: Settings)
+
+  override fun onCreateView(
+    inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+  ): View? {
+    return inflater.inflate(getFragmentID(), container, false)
+  }
+
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
@@ -26,5 +37,12 @@ abstract class BaseSettingsFragment : Fragment() {
         )
       }
     }
+
+    onInit(view)
+    loadSettings(SettingsManager.currentSettings)
+    updateTextValues()
   }
+
+  abstract fun onInit(view: View)
+  abstract fun updateTextValues()
 }

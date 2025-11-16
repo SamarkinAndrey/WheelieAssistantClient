@@ -1,6 +1,5 @@
 package com.app.wheelie_assistant
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.wheelie_assistant.OtaManager
 import com.google.android.material.button.MaterialButton
@@ -37,10 +37,6 @@ class OtaUpdateFragment : Fragment() {
 
   private var versionCurrent: String? = null
   private var versionActual: String? = null
-    set(value) {
-      field = value
-      versionUpdate()
-    }
 
 //  private var fileUri: Uri? = null
 //  private var fileName: String? = null
@@ -67,7 +63,6 @@ class OtaUpdateFragment : Fragment() {
 
     initViews(view)
     setup()
-    resetIU()
 
     return view
   }
@@ -97,7 +92,10 @@ class OtaUpdateFragment : Fragment() {
 
     btnStartUpdate.setOnClickListener {
       otaManager?.requestUpdate(
-        ssidValue.text.toString(), passValue.text.toString(), otaCallback
+        ssidValue.text.toString(),
+        passValue.text.toString(),
+        wifiCallback,
+        otaCallback
       )
     }
 
@@ -108,9 +106,7 @@ class OtaUpdateFragment : Fragment() {
 
     versionCurrent = SettingsManager.currentSettings.firmware_ver
 
-    otaManager?.getRemoteVersion { version ->
-      versionActual = version
-    }
+    checkRemoteVersion()
   }
 
 //  private fun readFileInfo() {
@@ -136,70 +132,89 @@ class OtaUpdateFragment : Fragment() {
 //    updateStatus("Файл выбран. Нажмите «Начать обновление»")
 //  }
 
-  private val otaCallback = object : OtaManager.IOTACallback {
-    override fun onStarted() {
-      startUI();
-      updateStatus("Обновление прошивки...")
+  private val wifiCallback = object : OtaManager.IWifiCallback {
+    override fun onConnecting() {
+      btnStartUpdate.isVisible = false
+      setStatus("Подключение к ${ssidValue.text}...")
+    }
 
+    override fun onConnected() {
       prefManager?.let {
         it.save("wifi_ssid", ssidValue.text.toString())
         it.save("wifi_pass", passValue.text.toString())
       }
+      setStatus("Подключено к ${ssidValue.text}")
+    }
+
+    override fun onError() {
+      btnStartUpdate.isVisible = true
+      setStatus("Ошибка подключения")
+    }
+  }
+
+  private val otaCallback = object : OtaManager.IOtaCallback {
+    override fun onStarted() {
+      setStatus("Обновление прошивки...")
     }
 
     override fun onProgress(progress: Int) {
-      progressBar.progress = progress
+      setProgress(progress)
     }
 
     override fun onSuccess() {
-      updateStatus("Успешно обновлено, перезагрузка...")
+      setStatus("Успешно обновлено, перезагрузка...")
     }
 
     override fun onFailed(message: String) {
-      resetIU()
-      updateStatus("Ошибка обновления: $message")
+      setStatus("Ошибка обновления: $message")
     }
 
     override fun onNotify(message: String) {
-      updateStatus(message)
+      setStatus(message)
     }
   }
 
-  private fun startUI() {
-    progressBar.progress = 0
-    progressBar.visibility = ProgressBar.VISIBLE
-    statusBar.visibility = EditText.VISIBLE
-    btnStartUpdate.visibility = MaterialButton.GONE
-  }
-
-  private fun resetIU() {
-    progressBar.visibility = ProgressBar.GONE
-    progressBar.progress = 0
-    statusBar.visibility = EditText.GONE
-    btnStartUpdate.visibility = MaterialButton.VISIBLE
-  }
-
-  private fun updateStatus(text: String) {
+  private fun setStatus(text: String) {
     statusBar.text = text
+
+    if (!statusBar.isVisible)
+      statusBar.isVisible = true
   }
 
-  private fun versionUpdate() {
+  private fun setProgress(progress: Int) {
+    progressBar.progress = progress
+
+    if (!progressBar.isVisible)
+      progressBar.isVisible = true
+  }
+
+  fun checkRemoteVersion() {
+    otaManager?.getRemoteVersion { version ->
+      versionActual = version
+      versionUpdated()
+    }
+  }
+
+  private fun versionUpdated() {
     versionCurrentValue.text = versionCurrent ?: "ошибка"
     versionActualValue.text = versionActual ?: "ошибка"
 
-      if (!versionCurrent.isNullOrEmpty() &&
-        !versionActual.isNullOrEmpty() &&
-        otaManager != null &&
-        otaManager!!.compareVersions(versionActual!!, versionCurrent!!) != 0
-      ) {
-        updateLayout.visibility = LinearLayout.VISIBLE
-        versionActualValue.setTextColor(Color.parseColor("#E02828"))
-      } else {
-        updateLayout.visibility = LinearLayout.GONE
-        versionActualValue.setTextColor(Color.parseColor("#FFFFFF"))
-      }
+    if (!versionCurrent.isNullOrEmpty() &&
+      !versionActual.isNullOrEmpty() &&
+      otaManager != null// &&
+    //otaManager!!.compareVersions(versionActual!!, versionCurrent!!) != 0
+    ) {
+      versionActualValue.setTextColor(requireContext().getColor(R.color.red))
+      updateLayout.isVisible = true
+      progressBar.isVisible = false
+      statusBar.isVisible = false
+      progressBar.progress = 0
+      btnStartUpdate.isVisible = true
+    } else {
+      updateLayout.isVisible = false
+      versionActualValue.setTextColor(requireContext().getColor(R.color.white))
+    }
   }
-
   private fun showToast(message: String) {
     Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     Log.d("OTAManager", message)

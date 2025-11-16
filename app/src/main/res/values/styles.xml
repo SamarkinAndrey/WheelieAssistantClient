@@ -26,20 +26,20 @@
         <item name="android:background">@null</item>
         <item name="haloRadius">0dp</item>
         <item name="labelBehavior">gone</item>
-        <item name="thumbColor">#E02828</item>
+        <item name="thumbColor">@color/red</item>
         <item name="thumbElevation">0dp</item>
-        <item name="thumbStrokeColor">#FFFFFF</item>
+        <item name="thumbStrokeColor">@color/white</item>
         <item name="thumbStrokeWidth">1dp</item>
         <item name="tickVisible">false</item>
-        <item name="trackColorActive">#E02828</item>
-        <item name="trackColorInactive">#6E7881</item>
+        <item name="trackColorActive">@color/trackActive</item>
+        <item name="trackColorInactive">@color/trackInactive</item>
     </style>
 
     <style name="MaterialTabStyle" parent="Widget.MaterialComponents.TabLayout">
         <item name="android:background">#37383B</item>
         <item name="tabGravity">center</item>
         <item name="tabIndicator">@drawable/tab_indicator_slider</item>
-        <item name="tabIndicatorColor">#E02828</item>
+        <item name="tabIndicatorColor">@color/red</item>
         <item name="tabIndicatorFullWidth">true</item>
         <item name="tabIndicatorGravity">bottom</item>
         <item name="tabIndicatorAnimationMode">elastic</item>
@@ -47,7 +47,7 @@
         <item name="tabMinWidth">150dp</item>
         <item name="tabMode">scrollable</item>
         <item name="tabRippleColor">@android:color/transparent</item>
-        <item name="tabSelectedTextColor">#FFFFFF</item>
+        <item name="tabSelectedTextColor">@color/white</item>
         <item name="tabTextColor">#98999A</item>
         <item name="tabTextAppearance">@style/TabTextAppearance</item>
     </style>
