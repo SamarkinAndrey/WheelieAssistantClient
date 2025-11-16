@@ -60,7 +60,7 @@ class OtaUpdateFragment : SettingsFragment() {
   }
 
   override fun onLoadSettings(settings: Settings) {
-    versionCurrent = settings.firmware_ver
+    versionCurrent = settings.firmware_ver.ifBlank { null }
   }
 
   override fun onSaveSettings(settings: Settings) {
@@ -205,8 +205,8 @@ class OtaUpdateFragment : SettingsFragment() {
   }
 
   private fun compareVersions() {
-    val allowUpdate = (!versionCurrent.isNullOrEmpty() &&
-                                !versionActual.isNullOrEmpty() &&
+    val allowUpdate = (!versionCurrent.isNullOrBlank() &&
+                                !versionActual.isNullOrBlank() &&
                                 otaManager != null)
                                 // && otaManager!!.compareVersions(versionActual!!, versionCurrent!!) != 0
     setAllowUpdate(allowUpdate)
