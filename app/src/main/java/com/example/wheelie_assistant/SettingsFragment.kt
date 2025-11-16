@@ -1,31 +1,13 @@
 package com.app.wheelie_assistant
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.fragment.app.Fragment
 
-abstract class SettingsFragment : Fragment() {
-  abstract fun getFragmentID(): Int
-
-  abstract fun loadSettings(settings: Settings)
-  abstract fun saveSettings(settings: Settings)
-
-  override fun onCreateView(
-    inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-  ): View? {
-    return inflater.inflate(getFragmentID(), container, false)
-  }
-
+abstract class SettingsFragment : CustomFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-
-    val scrollLayout = view.findViewById<LinearLayout>(R.id.scroll_layout)
-    val activity = App.settingsActivity
-
-    activity?.let {
+    App.settingsActivity?.let {
+      val scrollLayout = view.findViewById<LinearLayout>(R.id.scroll_layout)
       val saveLayout = it.getSaveLayout()
 
       saveLayout.post {
@@ -38,11 +20,25 @@ abstract class SettingsFragment : Fragment() {
       }
     }
 
-    onInit(view)
-    loadSettings(SettingsManager.currentSettings)
-    updateTextValues()
+    super.onViewCreated(view, savedInstanceState)
+
+    loadSettings()
   }
 
-  abstract fun onInit(view: View)
-  abstract fun updateTextValues()
+  protected abstract fun onLoadSettings(settings: Settings)
+  protected abstract fun onSaveSettings(settings: Settings)
+  protected abstract fun onUpdateTextValues()
+
+  fun loadSettings(settings: Settings? = null) {
+    onLoadSettings(settings?: SettingsManager.currentSettings)
+    onUpdateTextValues()
+  }
+
+  fun saveSettings(settings: Settings? = null) {
+    onSaveSettings(settings?: SettingsManager.currentSettings)
+  }
+
+  fun updateTextValues() {
+    onUpdateTextValues()
+  }
 }

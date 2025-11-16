@@ -35,6 +35,7 @@ class App : Application() {
     var settingsActivity: SettingsActivity? = null
   }
 }
+
 class MainActivity : AppCompatActivity() {
   enum class ControllerState {
     IDLE,
@@ -551,7 +552,8 @@ class MainActivity : AppCompatActivity() {
   private fun closeConnection() {
     controllerIsEnabled = false
 
-    App.settingsActivity?.finish()
+    SettingsManager.currentSettings.clear()
+    App.settingsActivity?.loadSettings()
 
     progressFinish()
 
@@ -659,10 +661,25 @@ class MainActivity : AppCompatActivity() {
       SettingsManager.loadFrom(parser)
       settingsLoaded = true;
 
-      if (settingsRequested)
-        openSettings()
+      App.settingsActivity?.loadSettings()
+        ?: takeIf { settingsRequested }
+          ?.let {
+            settingsRequested = false
+            openSettings()
+          }
 
-      settingsRequested = false;
+
+      if (settingsRequested) {
+        settingsRequested = false;
+        openSettings()
+      }
+
+
+      settingsRequested
+      if (settingsRequested) {
+        settingsRequested = false;
+        openSettings()
+      }
     }
 
     if (parser.getInt(B_RESET_VOLTAGE, 0) == 1)

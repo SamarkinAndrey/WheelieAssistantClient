@@ -81,7 +81,14 @@ class SettingsActivity : AppCompatActivity() {
     }
   }
 
-  private fun saveSettings(): Boolean {
+  fun loadSettings() {
+    supportFragmentManager.fragments.forEach { fragment ->
+      if (fragment is SettingsFragment)
+        fragment.loadSettings()
+    }
+  }
+
+  fun saveSettings(): Boolean {
     val settings = Settings()
 
     supportFragmentManager.fragments.forEach { fragment ->

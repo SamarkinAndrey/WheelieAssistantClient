@@ -52,21 +52,21 @@ class AngleSettingsFragment : SettingsFragment() {
     }
   }
 
-  override fun loadSettings(settings: Settings) {
-    targetPitchSlider.value = settings.target_pitch
-    deadZoneSlider.value = settings.dead_zone
-    exitThresholdSlider.value = settings.exit_threshold
-    emergThresholdSlider.value = settings.emerg_threshold
+  override fun onLoadSettings(settings: Settings) {
+    targetPitchSlider.apply { value = settings.target_pitch.coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
+    deadZoneSlider.apply { value = settings.dead_zone.coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
+    exitThresholdSlider.apply { value = settings.exit_threshold.coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
+    emergThresholdSlider.apply { value = settings.emerg_threshold.coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
   }
 
-  override fun updateTextValues() {
+  override fun onUpdateTextValues() {
     targetPitchValue.text = "${targetPitchSlider.value.toInt()}°"
     deadZoneValue.text = "${"%.1f".format(deadZoneSlider.value)}°"
     exitThresholdValue.text = "${"-%.1f".format(exitThresholdSlider.value)}°"
     emergThresholdValue.text = "${"+%.1f".format(emergThresholdSlider.value)}°"
   }
 
-  override fun saveSettings(settings: Settings) {
+  override fun onSaveSettings(settings: Settings) {
     settings.target_pitch = targetPitchSlider.value
     settings.dead_zone = deadZoneSlider.value
     settings.exit_threshold = exitThresholdSlider.value

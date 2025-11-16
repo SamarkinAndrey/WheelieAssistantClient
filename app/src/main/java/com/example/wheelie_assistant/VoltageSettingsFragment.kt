@@ -41,12 +41,13 @@ class VoltageSettingsFragment : SettingsFragment() {
     }
   }
 
-  override fun loadSettings(settings: Settings) {
-    minVoltageSlider.value = settings.min_voltage
-    stepRangeSlider.values = listOf(settings.min_step.toFloat(), settings.max_step.toFloat())
+  override fun onLoadSettings(settings: Settings) {
+    minVoltageSlider.apply { value = settings.min_voltage.coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
+    stepRangeSlider.apply { values = listOf(settings.min_step.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)),
+                                            settings.max_step.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo))) }
   }
 
-  override fun updateTextValues() {
+  override fun onUpdateTextValues() {
     minVoltageValue.text = "${"%.1f".format(minVoltageSlider.value)} В"
 
     val values = stepRangeSlider.values
@@ -56,7 +57,7 @@ class VoltageSettingsFragment : SettingsFragment() {
       stepRangeValue.text = "${values[0].toInt()} кОм"
   }
 
-  override fun saveSettings(settings: Settings) {
+  override fun onSaveSettings(settings: Settings) {
     settings.min_voltage = minVoltageSlider.value
     settings.min_step = stepRangeSlider.values[0].toInt()
     settings.max_step = stepRangeSlider.values[1].toInt()

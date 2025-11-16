@@ -119,10 +119,9 @@ data class Settings(
     reversed_pitch = false
     reversed_roll = false
     firmware_ver = ""
-    firmware_ver = ""
   }
 
-  fun toDefault() {
+  fun default() {
     system_tick = 10
     prediction_horizont = 90
     gyro_hysteresis = 0.2f

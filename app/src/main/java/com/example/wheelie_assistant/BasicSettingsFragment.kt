@@ -4,7 +4,6 @@ import android.view.View
 import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
 import com.google.android.material.materialswitch.MaterialSwitch
-import kotlin.math.max
 
 class BasicSettingsFragment : SettingsFragment() {
 
@@ -61,22 +60,27 @@ class BasicSettingsFragment : SettingsFragment() {
     predictionHorizontSlider.valueFrom = valueFrom
   }
 
-  override fun loadSettings(settings: Settings) {
-    systemTickSlider.value = settings.system_tick.toFloat()
-    predictionHorizontSlider.valueFrom = settings.system_tick.toFloat()
-    predictionHorizontSlider.value = max(settings.prediction_horizont.toFloat(), settings.system_tick.toFloat())
-    gyroHysteresisSlider.value = settings.gyro_hysteresis
+  override fun onLoadSettings(settings: Settings) {
+    systemTickSlider.apply { value = settings.system_tick.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
+
+    predictionHorizontSlider.apply {
+      valueFrom = settings.system_tick.toFloat()
+      value = settings.prediction_horizont.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo))
+    }
+
+    gyroHysteresisSlider.apply { value = settings.gyro_hysteresis.coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
+
     reversedPitchValue.isChecked = settings.reversed_pitch
     reversedRollValue.isChecked = settings.reversed_roll
   }
 
-  override fun updateTextValues() {
+  override fun onUpdateTextValues() {
     systemTickValue.text = "${systemTickSlider.value.toInt()} мс"
     predictionHorizontValue.text = "${predictionHorizontSlider.value.toInt()} мс"
     gyroHysteresisValue.text = "${"%.1f".format(gyroHysteresisSlider.value)}°"
   }
 
-  override fun saveSettings(settings: Settings) {
+  override fun onSaveSettings(settings: Settings) {
     settings.system_tick = systemTickSlider.value.toInt()
     settings.prediction_horizont = predictionHorizontSlider.value.toInt()
     settings.gyro_hysteresis = gyroHysteresisSlider.value

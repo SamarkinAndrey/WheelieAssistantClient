@@ -52,21 +52,21 @@ class SpeedSettingsFragment : SettingsFragment() {
     }
   }
 
-  override fun loadSettings(settings: Settings) {
-    hysteresisSlider.value = settings.hysteresis
-    maxSpeedSlider.value = settings.max_speed.toFloat()
-    trendDurationSlider.value = settings.trend_duration.toFloat()
-    stableDurationSlider.value = settings.stable_duration.toFloat()
+  override fun onLoadSettings(settings: Settings) {
+    hysteresisSlider.apply { value = settings.hysteresis.coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
+    maxSpeedSlider.apply { value = settings.max_speed.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
+    trendDurationSlider.apply { value = settings.trend_duration.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
+    stableDurationSlider.apply { value = settings.stable_duration.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
   }
 
-  override fun updateTextValues() {
+  override fun onUpdateTextValues() {
     hysteresisValue.text = "${"%.1f".format(hysteresisSlider.value)}°"
     maxSpeedValue.text = "${maxSpeedSlider.value.toInt()} °/мс"
     trendDurationValue.text = "${trendDurationSlider.value.toInt()} мс"
     stableDurationValue.text = "${stableDurationSlider.value.toInt()} мс"
   }
 
-  override fun saveSettings(settings: Settings) {
+  override fun onSaveSettings(settings: Settings) {
     settings.hysteresis = hysteresisSlider.value
     settings.max_speed = maxSpeedSlider.value.toInt()
     settings.trend_duration = trendDurationSlider.value.toInt()

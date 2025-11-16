@@ -1,21 +1,17 @@
 package com.app.wheelie_assistant
 
-import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import com.example.wheelie_assistant.OtaManager
 import com.google.android.material.button.MaterialButton
 
-class OtaUpdateFragment : Fragment() {
+class OtaUpdateFragment : SettingsFragment() {
   private lateinit var btnSelectFile: MaterialButton
   private lateinit var btnStartUpdate: MaterialButton
   private lateinit var tvFileName: TextView
@@ -51,11 +47,9 @@ class OtaUpdateFragment : Fragment() {
 //    }
 //  }
 
-  override fun onCreateView(
-    inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-  ): View? {
-    val view = inflater.inflate(R.layout.fragment_ota_update, container, false)
+  override fun getFragmentID(): Int  = R.layout.fragment_ota_update
 
+  override fun onInit (view: View) {
     App.mainActivity?.let {
       otaManager = it.otaManager
       prefManager = it.prefManager
@@ -63,8 +57,18 @@ class OtaUpdateFragment : Fragment() {
 
     initViews(view)
     setup()
+  }
 
-    return view
+  override fun onLoadSettings(settings: Settings) {
+    versionCurrent = settings.firmware_ver
+  }
+
+  override fun onSaveSettings(settings: Settings) {
+    // заглушка
+  }
+
+  override fun onUpdateTextValues() {
+    versionCurrentValue.text = versionCurrent ?: "ошибка"
   }
 
   private fun initViews(view: View) {
@@ -103,9 +107,6 @@ class OtaUpdateFragment : Fragment() {
       ssidValue.setText(it.load("wifi_ssid"))
       passValue.setText(it.load("wifi_pass"))
     }
-
-    versionCurrent = SettingsManager.currentSettings.firmware_ver
-    versionCurrentValue.text = versionCurrent ?: "ошибка"
 
     checkActualVersion()
   }
@@ -192,7 +193,9 @@ class OtaUpdateFragment : Fragment() {
   }
 
   fun checkActualVersion() {
+    versionActual = null
     versionActualValue.text = "запрос"
+
     otaManager?.getRemoteVersion { version ->
       versionActual = version
       versionActualValue.text = versionActual ?: "ошибка"
@@ -202,21 +205,24 @@ class OtaUpdateFragment : Fragment() {
   }
 
   private fun compareVersions() {
-    if (!versionCurrent.isNullOrEmpty() &&
-      !versionActual.isNullOrEmpty() &&
-      otaManager != null// &&
-    //otaManager!!.compareVersions(versionActual!!, versionCurrent!!) != 0
-    ) {
+    val allowUpdate = (!versionCurrent.isNullOrEmpty() &&
+                                !versionActual.isNullOrEmpty() &&
+                                otaManager != null)
+                                // && otaManager!!.compareVersions(versionActual!!, versionCurrent!!) != 0
+    setAllowUpdate(allowUpdate)
+  }
+
+  private fun setAllowUpdate(allow: Boolean) {
+    if (allow) {
       versionActualValue.setTextColor(requireContext().getColor(R.color.red))
-      updateLayout.isVisible = true
       progressBar.isVisible = false
       statusBar.isVisible = false
       progressBar.progress = 0
       btnStartUpdate.isVisible = true
-    } else {
-      updateLayout.isVisible = false
+    } else
       versionActualValue.setTextColor(requireContext().getColor(R.color.white))
-    }
+
+    updateLayout.isVisible = allow
   }
 
   private fun showToast(message: String) {
