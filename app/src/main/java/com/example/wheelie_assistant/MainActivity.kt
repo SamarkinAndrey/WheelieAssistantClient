@@ -351,6 +351,31 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun updateControllerState() {
+    when (controllerState) {
+        ControllerState.IDLE -> {
+          controllerEnabled.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_green_light))
+        }
+        ControllerState.MONITORING -> {
+
+        }
+        ControllerState.WHEELIE -> {
+
+        }
+        ControllerState.EMERGENCY -> {
+
+        }
+
+      else -> {}
+    }
+
+    if (controllerState != ControllerState.IDLE) {
+      controllerEnabled.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_green_light))
+    } else {
+      controllerEnabled.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_red_light))
+      wheelieMode = false
+    }
+
+    if controllerState == ControllerState.WHEELIE
 
   }
 
