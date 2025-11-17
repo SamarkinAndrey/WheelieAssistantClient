@@ -54,11 +54,7 @@ class SettingsActivity : AppCompatActivity() {
       override fun onPageSelected(position: Int) {
         val fragment = adapter.getFragment(position)
 
-        if (fragment is SettingsFragment) {
-          saveButton.isVisible = !fragment.readOnly()
-        } else {
-          saveButton.isVisible = false
-        }
+        saveButton.isVisible = fragment is ICanSave
       }
     })
   }

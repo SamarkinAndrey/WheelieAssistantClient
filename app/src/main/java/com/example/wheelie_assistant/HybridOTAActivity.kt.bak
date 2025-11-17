@@ -1,0 +1,31 @@
+package com.example.wheelie_assistant
+
+class HybridOTAActivity : AppCompatActivity() {
+  private lateinit var otaManager: HybridOTAManager
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    otaManager = HybridOTAManager(this, bluetoothManager)
+
+    findViewById<Button>(R.id.btn_start_ota).setOnClickListener {
+      val firmwareUrl = "https://your-server.com/firmware.bin"
+
+      lifecycleScope.launch {
+        showProgress("Starting hybrid OTA...")
+        otaManager.startHybridOTA(firmwareUrl)
+      }
+    }
+  }
+
+  private fun showProgress(message: String) {
+    runOnUiThread {
+      findViewById<TextView>(R.id.tv_status).text = message
+    }
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    otaManager.cleanup()
+  }
+}

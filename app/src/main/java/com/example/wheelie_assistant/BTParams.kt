@@ -1,3 +1,5 @@
+import kotlin.String
+
 enum class BTParam {
   B_SYSTEM_TICK,
   B_PREDICTION_HORIZONT,
@@ -61,8 +63,5 @@ enum class BTParam {
   B_WIFI_ERROR;
 
   override fun toString(): String = this.ordinal.toString()
-  fun s(): String = this.toString()
-
   fun toInt(): Int = this.ordinal
-  fun i(): Int = this.toInt()
 }

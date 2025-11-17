@@ -4,9 +4,33 @@ import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 
-abstract class SettingsFragment : CustomFragment() {
-  protected var readOnly = false
+interface ICanLoad {
+  fun onLoadSettings(settings: Settings)
 
+  fun loadSettings(settings: Settings? = null) {
+    onLoadSettings(settings ?: SettingsManager.currentSettings)
+    onUpdateTextValues()
+  }
+
+  fun onUpdateTextValues() {
+    // TODO
+  }
+
+  fun updateTextValues() {
+    onUpdateTextValues()
+  }
+}
+
+interface ICanSave {
+  fun onSaveSettings(settings: Settings)
+
+  fun saveSettings(settings: Settings? = null) {
+    onSaveSettings(settings ?: SettingsManager.currentSettings)
+  }
+}
+
+abstract class InfoFragment : CustomFragment(), ICanLoad
+abstract class SettingsFragment : InfoFragment(), ICanSave {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     App.settingsActivity?.let {
       val scrollLayout = view.findViewById<LinearLayout>(R.id.scroll_layout)
@@ -25,24 +49,5 @@ abstract class SettingsFragment : CustomFragment() {
     super.onViewCreated(view, savedInstanceState)
 
     loadSettings()
-  }
-
-  protected abstract fun onLoadSettings(settings: Settings)
-  protected abstract fun onSaveSettings(settings: Settings)
-  protected abstract fun onUpdateTextValues()
-
-  fun loadSettings(settings: Settings? = null) {
-    onLoadSettings(settings?: SettingsManager.currentSettings)
-    onUpdateTextValues()
-  }
-
-  fun saveSettings(settings: Settings? = null) {
-    onSaveSettings(settings?: SettingsManager.currentSettings)
-  }
-
-  fun readOnly(): Boolean = readOnly
-
-  fun updateTextValues() {
-    onUpdateTextValues()
   }
 }

@@ -1,0 +1,261 @@
+package com.example.wheelie_assistant
+
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.util.Log
+import java.net.NetworkInterface
+import java.net.ServerSocket
+import java.net.Socket
+import java.io.*
+import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
+
+class HttpServer(
+  private val context: Context,
+  private val port: Int
+) {
+  private var serverSocket: ServerSocket? = null
+  private var executor = Executors.newFixedThreadPool(4) // Создаем при каждом старте
+  private val isRunning = AtomicBoolean(false)
+  private var firmwareFile: File? = null
+
+  fun start(firmware: File): Boolean {
+    if (isRunning.get()) {
+      Log.w("HttpServer", "Server is already running")
+      return false
+    }
+
+    if (executor.isShutdown || executor.isTerminated) {
+      executor = Executors.newFixedThreadPool(4)
+      Log.d("HttpServer", "Created new thread pool")
+    }
+
+    firmwareFile = firmware
+    isRunning.set(true)
+
+    return try {
+      executor.execute {
+        runServerLoop()
+      }
+      Log.d("HttpServer", "Server start command executed")
+      true
+    } catch (e: Exception) {
+      Log.e("HttpServer", "Failed to start server executor", e)
+      isRunning.set(false)
+      false
+    }
+  }
+
+  private fun runServerLoop() {
+    try {
+      serverSocket = ServerSocket(port)
+      Log.d("HttpServer", "Server started on port $port")
+      Log.d("HttpServer", "Server address: ${getAddress()}")
+
+      while (isRunning.get()) {
+        try {
+          val clientSocket = serverSocket?.accept()
+          clientSocket?.let { socket ->
+            // Проверяем, не завершен ли executor
+            if (!executor.isShutdown) {
+              executor.execute {
+                handleClient(socket)
+              }
+            } else {
+              Log.w("HttpServer", "Executor is shutdown, closing client socket")
+              socket.close()
+            }
+          }
+        } catch (e: IOException) {
+          if (isRunning.get()) {
+            Log.e("HttpServer", "Error accepting client", e)
+          }
+          break
+        }
+      }
+    } catch (e: IOException) {
+      Log.e("HttpServer", "Server socket error", e)
+    } finally {
+      safeCloseServerSocket()
+      Log.d("HttpServer", "Server loop finished")
+    }
+  }
+
+  private fun handleClient(socket: Socket) {
+    try {
+      val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+      val output = PrintWriter(socket.getOutputStream())
+
+      val request = input.readLine()
+      Log.d("HttpServer", "Request: $request from ${socket.inetAddress.hostAddress}")
+
+      when {
+        request?.contains("/firmware.bin") == true -> serveFirmware(output, socket)
+        request?.contains("/info") == true -> serveInfo(output)
+        else -> serveNotFound(output)
+      }
+    } catch (e: Exception) {
+      Log.e("HttpServer", "Client handling error", e)
+    } finally {
+      safeCloseSocket(socket)
+    }
+  }
+
+  private fun serveFirmware(output: PrintWriter, socket: Socket) {
+    if (firmwareFile?.exists() == true) {
+      try {
+        output.println("HTTP/1.1 200 OK")
+        output.println("Content-Type: application/octet-stream")
+        output.println("Content-Length: ${firmwareFile?.length()}")
+        output.println("Content-Disposition: attachment; filename=\"firmware.bin\"")
+        output.println()
+        output.flush()
+
+        FileInputStream(firmwareFile).use { inputStream ->
+          socket.getOutputStream().use { outputStream ->
+            inputStream.copyTo(outputStream)
+          }
+        }
+        Log.d("HttpServer", "Firmware served successfully")
+      } catch (e: Exception) {
+        Log.e("HttpServer", "Error serving firmware", e)
+      }
+    } else {
+      serveNotFound(output)
+    }
+  }
+
+  private fun serveInfo(output: PrintWriter) {
+    val info = """
+            {
+                "firmware_size": ${firmwareFile?.length()?: 0},
+                "firmware_name": "firmware.bin",
+                "server_address": "${getAddress()}"
+            }
+        """.trimIndent()
+
+    output.println("HTTP/1.1 200 OK")
+    output.println("Content-Type: application/json")
+    output.println("Content-Length: ${info.length}")
+    output.println()
+    output.println(info)
+    output.flush()
+  }
+
+  private fun serveNotFound(output: PrintWriter) {
+    output.println("HTTP/1.1 404 Not Found")
+    output.println("Content-Type: text/plain")
+    output.println()
+    output.println("Not Found")
+    output.flush()
+  }
+
+  fun stop() {
+    Log.d("HttpServer", "Stopping server...")
+
+    // Атомарно меняем состояние
+    if (isRunning.compareAndSet(true, false)) {
+      safeCloseServerSocket()
+
+      // Правильно завершаем executor
+      executor.shutdown()
+      try {
+        if (!executor.awaitTermination(2, java.util.concurrent.TimeUnit.SECONDS)) {
+          executor.shutdownNow()
+        }
+      } catch (e: InterruptedException) {
+        executor.shutdownNow()
+        Thread.currentThread().interrupt()
+      }
+
+      Log.d("HttpServer", "Server stopped completely")
+    }
+  }
+
+  private fun safeCloseServerSocket() {
+    try {
+      serverSocket?.close()
+      serverSocket = null
+    } catch (e: Exception) {
+      Log.e("HttpServer", "Error closing server socket", e)
+    }
+  }
+
+  private fun safeCloseSocket(socket: Socket) {
+    try {
+      socket.close()
+    } catch (e: Exception) {
+      Log.e("HttpServer", "Error closing client socket", e)
+    }
+  }
+
+  fun isRunning(): Boolean {
+    return isRunning.get() && !executor.isShutdown
+  }
+
+  fun getWifiIpAddress(): String {
+    return try {
+      val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+
+        if (capabilities != null &&
+          (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))) {
+
+          val linkProperties = connectivityManager.getLinkProperties(network)
+          linkProperties?.linkAddresses?.forEach { linkAddress ->
+            val address = linkAddress.address
+            if (!address.isLoopbackAddress && address.hostAddress?.contains('.') == true) {
+              return address.hostAddress
+            }
+          }
+        }
+      }
+
+      // Fallback
+      getLocalIpAddress()
+    } catch (e: Exception) {
+      Log.e("HttpServer", "Error getting WiFi IP", e)
+      getLocalIpAddress()
+    }
+  }
+
+  private fun getLocalIpAddress(): String {
+    return try {
+      val interfaces = NetworkInterface.getNetworkInterfaces()
+      while (interfaces.hasMoreElements()) {
+        val networkInterface = interfaces.nextElement()
+        if (!networkInterface.isUp || networkInterface.isLoopback) continue
+
+        val addresses = networkInterface.inetAddresses
+        while (addresses.hasMoreElements()) {
+          val address = addresses.nextElement()
+          if (!address.isLoopbackAddress && address.hostAddress?.contains('.') == true) {
+            return address.hostAddress
+          }
+        }
+      }
+      "127.0.0.1"
+    } catch (e: Exception) {
+      "127.0.0.1"
+    }
+  }
+
+  fun getAddress(): String {
+    val ipAddress = getWifiIpAddress()
+    val actualPort = serverSocket?.localPort ?: port
+    return "http://$ipAddress:$actualPort"
+  }
+
+  fun getOtaUrl(): String {
+    return "${getAddress()}/firmware.bin"
+  }
+
+  fun getPort(): Int {
+    return serverSocket?.localPort ?: port
+  }
+}

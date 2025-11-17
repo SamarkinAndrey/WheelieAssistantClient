@@ -1,7 +1,6 @@
 package com.app.wheelie_assistant
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +26,8 @@ import java.util.Locale
 import JsonParamParser
 import BTParam.*
 import android.app.Application
+import androidx.core.graphics.ColorUtils
+import androidx.core.view.isVisible
 import com.example.wheelie_assistant.OtaManager
 
 class App : Application() {
@@ -41,7 +42,10 @@ class MainActivity : AppCompatActivity() {
     IDLE,
     MONITORING,
     WHEELIE,
-    EMERGENCY
+    EMERGENCY;
+
+    override fun toString(): String = this.ordinal.toString()
+    fun toInt(): Int = this.ordinal
   }
 
   private lateinit var settingsButton: AppCompatImageButton
@@ -125,7 +129,7 @@ class MainActivity : AppCompatActivity() {
 
   lateinit var bleManager: BleManager
   lateinit var otaManager: OtaManager
-  lateinit var prefManager: PreferencesManager
+  lateinit var prefManager: PrefsManager
 
   val bluetoothPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
     arrayOf(
@@ -203,7 +207,7 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun setupPrefManager() {
-    prefManager = PreferencesManager(this)
+    prefManager = PrefsManager(this)
   }
 
   private fun clearAttitudeValues(updateView: Boolean = true) {
@@ -341,42 +345,39 @@ class MainActivity : AppCompatActivity() {
       controllerEnabled.setColorFilter(
         ContextCompat.getColor(
           this,
-          android.R.color.holo_green_light
+          R.color.green_light
         )
       )
     } else {
-      controllerEnabled.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_red_light))
+      controllerEnabled.setColorFilter(ContextCompat.getColor(this, R.color.red_light))
       wheelieMode = false
     }
   }
 
   private fun updateControllerState() {
-    when (controllerState) {
-        ControllerState.IDLE -> {
-          controllerEnabled.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_green_light))
-        }
-        ControllerState.MONITORING -> {
+    handler.post {
+      controllerEnabled.setColorFilter(ContextCompat.getColor(this,
+        if (controllerState == ControllerState.IDLE)
+          R.color.red_light
+        else
+          R.color.green_light
+      ))
 
-        }
-        ControllerState.WHEELIE -> {
-
-        }
-        ControllerState.EMERGENCY -> {
-
-        }
-
-      else -> {}
+      wheelieMode = controllerState in setOf(ControllerState.WHEELIE, ControllerState.EMERGENCY)
+      if (wheelieMode) {
+        wheelieIndicator.setImageResource(R.drawable.bike_test)
+      } else {
+        wheelieIndicator.setImageDrawable(null)
+      }
     }
 
-    if (controllerState != ControllerState.IDLE) {
-      controllerEnabled.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_green_light))
-    } else {
-      controllerEnabled.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_red_light))
-      wheelieMode = false
-    }
-
-    if controllerState == ControllerState.WHEELIE
-
+//    when (controllerState) {
+//        ControllerState.IDLE -> {}
+//        ControllerState.MONITORING -> {}
+//        ControllerState.WHEELIE -> {}
+//        ControllerState.EMERGENCY -> {}
+//        else -> {}
+//    }
   }
 
   private fun updateAttitudeView() {
@@ -470,22 +471,24 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  fun updateWheelieIndicator() {
-    if (wheelieMode) {
-      val settings = SettingsManager.currentSettings
-
-      val alpha = calculateAlpha(
-        settings.target_pitch - settings.exit_threshold,
-        settings.target_pitch,
-        settings.target_pitch + settings.emerg_threshold,
-        pitch
-      )
-
-      handler.post {
-        wheelieIndicator.alpha = alpha
-      }
-    }
-  }
+//  fun updateWheelieIndicator() {
+//    if (wheelieMode) {
+//      val settings = SettingsManager.currentSettings
+//
+//
+//
+//      val alpha = calculateAlpha(
+//        settings.target_pitch - settings.exit_threshold,
+//        settings.target_pitch,
+//        settings.target_pitch + settings.emerg_threshold,
+//        pitch
+//      )
+//
+//      handler.post {
+//        wheelieIndicator.alpha = alpha
+//      }
+//    }
+//  }
 
   fun calculateAlpha(min: Float, mid: Float, max: Float, cur: Float): Float {
     return when {
@@ -497,6 +500,58 @@ class MainActivity : AppCompatActivity() {
 
       else -> {
         1f - (cur - mid) / (max - mid)
+      }
+    }
+  }
+
+  fun updateWheelieIndicator() {
+    if (!wheelieMode)
+      return
+
+    val settings = SettingsManager.currentSettings
+
+    val min = settings.target_pitch - settings.exit_threshold
+    val mid = settings.target_pitch
+    val max = settings.target_pitch + settings.emerg_threshold
+    val cur = pitch
+
+    handler.post {
+      when {
+        cur < min -> {
+          wheelieIndicator.setColorFilter(Color.TRANSPARENT)
+          wheelieIndicator.alpha = 0f
+          wheelieIndicator.isVisible = false
+        }
+
+        cur in min..< mid -> {
+          val progress = (cur - min) / (mid - min)
+          val color = ColorUtils.blendARGB(
+            wheelieIndicator.context.getColor(R.color.orange_light),
+            wheelieIndicator.context.getColor(R.color.green_light),
+            progress
+          )
+          wheelieIndicator.setColorFilter(color)
+          wheelieIndicator.alpha = calculateAlpha(min, mid, max, cur)
+          wheelieIndicator.isVisible = true
+        }
+
+        cur in mid..< max -> {
+          val progress = (cur - mid) / (max - mid)
+          val color = ColorUtils.blendARGB(
+            wheelieIndicator.context.getColor(R.color.green_light),
+            wheelieIndicator.context.getColor(R.color.red_light),
+            progress
+          )
+          wheelieIndicator.setColorFilter(color)
+          wheelieIndicator.alpha = 1f
+          wheelieIndicator.isVisible = true
+        }
+
+        cur >= max -> {
+          wheelieIndicator.setColorFilter(wheelieIndicator.context.getColor(R.color.red_light))
+          wheelieIndicator.alpha = 1f
+          wheelieIndicator.isVisible = true
+        }
       }
     }
   }
@@ -641,7 +696,7 @@ class MainActivity : AppCompatActivity() {
           connectionIndicator.setImageResource(R.drawable.bluetooth_connected_24px)
           connectionIndicator.setColorFilter(
             ContextCompat.getColor(
-              this, android.R.color.holo_green_light
+              this, R.color.green_light
             )
           )
         }
@@ -650,7 +705,7 @@ class MainActivity : AppCompatActivity() {
           connectionIndicator.setImageResource(R.drawable.bluetooth_searching_24px)
           connectionIndicator.setColorFilter(
             ContextCompat.getColor(
-              this, android.R.color.holo_blue_light
+              this, R.color.blue_light
             )
           )
         }
@@ -659,7 +714,7 @@ class MainActivity : AppCompatActivity() {
           connectionIndicator.setImageResource(R.drawable.bluetooth_disabled_24px)
           connectionIndicator.setColorFilter(
             ContextCompat.getColor(
-              this, android.R.color.holo_red_light
+              this, R.color.red_light
             )
           )
         }

@@ -13,4 +13,6 @@
     <color name='green_light'>@android:color/holo_green_light</color>
     <color name='red_dark'>@android:color/holo_red_dark</color>
     <color name='red_light'>@android:color/holo_red_light</color>
+    <color name='orange_dark'>@android:color/holo_orange_dark</color>
+    <color name='orange_light'>@android:color/holo_orange_light</color>
 </resources>

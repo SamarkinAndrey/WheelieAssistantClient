@@ -14,7 +14,7 @@ import com.google.android.material.button.MaterialButton
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageButton
 
-class OtaUpdateFragment : SettingsFragment() {
+class OtaUpdateFragment : InfoFragment() {
   private lateinit var btnSelectFile: MaterialButton
   private lateinit var btnStartUpdate: MaterialButton
   private lateinit var tvFileName: TextView
@@ -34,7 +34,7 @@ class OtaUpdateFragment : SettingsFragment() {
   private lateinit var updateLayout: LinearLayout
 
   private var otaManager: OtaManager? = null
-  private var prefManager: PreferencesManager? = null
+  private var prefManager: PrefsManager? = null
 
   private var currentVersion: String? = null
     set(value) {
@@ -117,8 +117,6 @@ class OtaUpdateFragment : SettingsFragment() {
   override fun getFragmentID(): Int = R.layout.fragment_ota_update
 
   override fun onInit(view: View) {
-    readOnly = true
-
     App.mainActivity?.let {
       otaManager = it.otaManager
       prefManager = it.prefManager
@@ -133,13 +131,6 @@ class OtaUpdateFragment : SettingsFragment() {
   override fun onLoadSettings(settings: Settings) {
     currentVersion = settings.firmware_ver.ifBlank { null }
     checkActualVersion()
-  }
-
-  override fun onSaveSettings(settings: Settings) {
-    // заглушка
-  }
-
-  override fun onUpdateTextValues() {
   }
 
   private fun initViews(view: View) {
