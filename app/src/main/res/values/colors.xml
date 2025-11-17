@@ -7,4 +7,10 @@
     <color name='trackInactive'>#6E7881</color>
     <color name='thumbActive'>#20303C</color>
     <color name='thumbInactive'>#20303C</color>
+    <color name='blue_dark'>@android:color/holo_blue_dark</color>
+    <color name='blue_light'>@android:color/holo_blue_light</color>
+    <color name='green_dark'>@android:color/holo_green_dark</color>
+    <color name='green_light'>@android:color/holo_green_light</color>
+    <color name='red_dark'>@android:color/holo_red_dark</color>
+    <color name='red_light'>@android:color/holo_red_light</color>
 </resources>

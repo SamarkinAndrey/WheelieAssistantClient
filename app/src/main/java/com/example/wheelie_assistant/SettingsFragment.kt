@@ -5,6 +5,8 @@ import android.view.View
 import android.widget.LinearLayout
 
 abstract class SettingsFragment : CustomFragment() {
+  protected var readOnly = false
+
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     App.settingsActivity?.let {
       val scrollLayout = view.findViewById<LinearLayout>(R.id.scroll_layout)
@@ -37,6 +39,8 @@ abstract class SettingsFragment : CustomFragment() {
   fun saveSettings(settings: Settings? = null) {
     onSaveSettings(settings?: SettingsManager.currentSettings)
   }
+
+  fun readOnly(): Boolean = readOnly
 
   fun updateTextValues() {
     onUpdateTextValues()

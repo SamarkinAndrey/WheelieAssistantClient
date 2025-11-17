@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.app.wheelie_assistant"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.1"
@@ -95,7 +95,7 @@ dependencies {
     implementation("androidx.preference:preference-ktx:1.2.1")
 
     implementation("org.nanohttpd:nanohttpd:2.3.1")
-    implementation("com.squareup.okhttp3:okhttp:5.3.0")
+    implementation("com.squareup.okhttp3:okhttp:5.3.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
 //    implementation("com.google.code.gson:gson:2.13.2")

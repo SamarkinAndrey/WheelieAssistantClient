@@ -1,5 +1,6 @@
 package com.app.wheelie_assistant
 
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.View
 import android.widget.EditText
@@ -10,6 +11,8 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import com.example.wheelie_assistant.OtaManager
 import com.google.android.material.button.MaterialButton
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatImageButton
 
 class OtaUpdateFragment : SettingsFragment() {
   private lateinit var btnSelectFile: MaterialButton
@@ -19,20 +22,84 @@ class OtaUpdateFragment : SettingsFragment() {
   private lateinit var progressBar: ProgressBar
   private lateinit var statusBar: TextView
 
-  private lateinit var ssidValue: EditText
-  private lateinit var passValue: EditText
+  private lateinit var ssidValue: AppCompatEditText
+  private lateinit var passValue: AppCompatEditText
   private lateinit var timeoutValue: EditText
   private lateinit var urlValue: EditText
-  private lateinit var versionCurrentValue: TextView
-  private lateinit var versionActualValue: TextView
+  private lateinit var currentVersionValue: TextView
+  private lateinit var actualVersionValue: TextView
+
+  private lateinit var togglePassword: AppCompatImageButton
 
   private lateinit var updateLayout: LinearLayout
 
   private var otaManager: OtaManager? = null
   private var prefManager: PreferencesManager? = null
 
-  private var versionCurrent: String? = null
-  private var versionActual: String? = null
+  private var currentVersion: String? = null
+    set(value) {
+      field = value
+
+      currentVersionValue.text = value ?: "ошибка"
+      currentVersionValue.setTextColor(
+        requireContext().getColor(
+          if (value.isNullOrBlank())
+            R.color.red_light
+          else
+            R.color.white
+        )
+      )
+    }
+
+  private var actualVersion: String? = null
+
+  private fun checkIsNewVersion() {
+    val isNewVersion = !currentVersion.isNullOrBlank() &&
+                                !actualVersion.isNullOrBlank() &&
+                                otaManager != null // &&
+                                // otaManager!!.compareVersions(versionActual!!, versionCurrent!!) != 0
+
+    updateLayout.post {
+      if (isNewVersion) {
+        progressBar.isVisible = false
+        statusBar.isVisible = false
+        progressBar.progress = 0
+        btnStartUpdate.isVisible = true
+      }
+
+      actualVersionValue.text = actualVersion ?: "ошибка"
+      actualVersionValue.setTextColor(
+        requireContext().getColor(
+          if (isNewVersion)
+            R.color.green_light
+          else
+            if (actualVersion.isNullOrBlank())
+              R.color.red_light
+            else
+              R.color.white
+        )
+      )
+
+      updateLayout.isVisible = isNewVersion
+    }
+  }
+
+  private var isPasswordVisible: Boolean
+    get() = passValue.transformationMethod !is PasswordTransformationMethod
+    set(value) {
+      val selection = passValue.selectionEnd
+
+      passValue.transformationMethod =
+        if (value) null else PasswordTransformationMethod.getInstance()
+
+      togglePassword.setImageResource(
+        if (value)
+          R.drawable.eye_outline
+        else
+          R.drawable.eye_off_outline
+      )
+      passValue.setSelection(selection)
+    }
 
 //  private var fileUri: Uri? = null
 //  private var fileName: String? = null
@@ -47,9 +114,11 @@ class OtaUpdateFragment : SettingsFragment() {
 //    }
 //  }
 
-  override fun getFragmentID(): Int  = R.layout.fragment_ota_update
+  override fun getFragmentID(): Int = R.layout.fragment_ota_update
 
-  override fun onInit (view: View) {
+  override fun onInit(view: View) {
+    readOnly = true
+
     App.mainActivity?.let {
       otaManager = it.otaManager
       prefManager = it.prefManager
@@ -57,10 +126,13 @@ class OtaUpdateFragment : SettingsFragment() {
 
     initViews(view)
     setup()
+
+    isPasswordVisible = false
   }
 
   override fun onLoadSettings(settings: Settings) {
-    versionCurrent = settings.firmware_ver.ifBlank { null }
+    currentVersion = settings.firmware_ver.ifBlank { null }
+    checkActualVersion()
   }
 
   override fun onSaveSettings(settings: Settings) {
@@ -68,7 +140,6 @@ class OtaUpdateFragment : SettingsFragment() {
   }
 
   override fun onUpdateTextValues() {
-    versionCurrentValue.text = versionCurrent ?: "ошибка"
   }
 
   private fun initViews(view: View) {
@@ -83,8 +154,9 @@ class OtaUpdateFragment : SettingsFragment() {
     passValue = view.findViewById(R.id.passValue)
     timeoutValue = view.findViewById(R.id.timeoutValue)
     urlValue = view.findViewById(R.id.urlValue)
-    versionCurrentValue = view.findViewById(R.id.versionCurrent)
-    versionActualValue = view.findViewById(R.id.versionActual)
+    currentVersionValue = view.findViewById(R.id.versionCurrent)
+    actualVersionValue = view.findViewById(R.id.versionActual)
+    togglePassword = view.findViewById(R.id.togglePassword)
 
     updateLayout = view.findViewById(R.id.updateLayout)
   }
@@ -93,6 +165,10 @@ class OtaUpdateFragment : SettingsFragment() {
 //    btnSelectFile.setOnClickListener {
 //      selectFirmwareLauncher.launch("*/*")
 //    }
+
+    togglePassword.setOnClickListener {
+      isPasswordVisible = !isPasswordVisible
+    }
 
     btnStartUpdate.setOnClickListener {
       otaManager?.requestUpdate(
@@ -107,8 +183,6 @@ class OtaUpdateFragment : SettingsFragment() {
       ssidValue.setText(it.load("wifi_ssid"))
       passValue.setText(it.load("wifi_pass"))
     }
-
-    checkActualVersion()
   }
 
 //  private fun readFileInfo() {
@@ -193,36 +267,14 @@ class OtaUpdateFragment : SettingsFragment() {
   }
 
   fun checkActualVersion() {
-    versionActual = null
-    versionActualValue.text = "запрос"
+    actualVersion = null
+    actualVersionValue.text = "запрос"
+    actualVersionValue.setTextColor(requireContext().getColor(R.color.blue_light))
 
     otaManager?.getRemoteVersion { version ->
-      versionActual = version
-      versionActualValue.text = versionActual ?: "ошибка"
-
-      compareVersions()
+      actualVersion = version
+      checkIsNewVersion()
     }
-  }
-
-  private fun compareVersions() {
-    val allowUpdate = (!versionCurrent.isNullOrBlank() &&
-                                !versionActual.isNullOrBlank() &&
-                                otaManager != null)
-                                // && otaManager!!.compareVersions(versionActual!!, versionCurrent!!) != 0
-    setAllowUpdate(allowUpdate)
-  }
-
-  private fun setAllowUpdate(allow: Boolean) {
-    if (allow) {
-      versionActualValue.setTextColor(requireContext().getColor(R.color.red))
-      progressBar.isVisible = false
-      statusBar.isVisible = false
-      progressBar.progress = 0
-      btnStartUpdate.isVisible = true
-    } else
-      versionActualValue.setTextColor(requireContext().getColor(R.color.white))
-
-    updateLayout.isVisible = allow
   }
 
   private fun showToast(message: String) {

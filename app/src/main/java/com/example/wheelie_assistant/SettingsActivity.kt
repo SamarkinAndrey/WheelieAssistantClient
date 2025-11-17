@@ -52,7 +52,13 @@ class SettingsActivity : AppCompatActivity() {
 
     viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
       override fun onPageSelected(position: Int) {
-        saveButton.isVisible = (adapter.getFragment(position) is SettingsFragment)
+        val fragment = adapter.getFragment(position)
+
+        if (fragment is SettingsFragment) {
+          saveButton.isVisible = !fragment.readOnly()
+        } else {
+          saveButton.isVisible = false
+        }
       }
     })
   }

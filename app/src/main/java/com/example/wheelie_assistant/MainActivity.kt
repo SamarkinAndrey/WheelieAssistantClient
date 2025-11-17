@@ -552,8 +552,10 @@ class MainActivity : AppCompatActivity() {
   private fun closeConnection() {
     controllerIsEnabled = false
 
-    SettingsManager.currentSettings.clear()
-    App.settingsActivity?.loadSettings()
+    SettingsManager.clear()
+
+    App.settingsActivity?.finish()
+//    App.settingsActivity?.loadSettings()
 
     progressFinish()
 
@@ -661,25 +663,17 @@ class MainActivity : AppCompatActivity() {
       SettingsManager.loadFrom(parser)
       settingsLoaded = true;
 
-      App.settingsActivity?.loadSettings()
-        ?: takeIf { settingsRequested }
-          ?.let {
-            settingsRequested = false
-            openSettings()
-          }
-
-
       if (settingsRequested) {
         settingsRequested = false;
         openSettings()
       }
 
-
-      settingsRequested
-      if (settingsRequested) {
-        settingsRequested = false;
-        openSettings()
-      }
+//      App.settingsActivity?.loadSettings()
+//        ?: takeIf { settingsRequested }
+//          ?.let {
+//            settingsRequested = false
+//            openSettings()
+//          }
     }
 
     if (parser.getInt(B_RESET_VOLTAGE, 0) == 1)

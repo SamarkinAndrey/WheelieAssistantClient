@@ -20,43 +20,46 @@ data class Settings(
   var max_speed: Int = 0,
   var trend_duration: Int = 0,
   var stable_duration: Int = 0,
-  var firmware_ver: String = ""
+  var firmware_ver: String = "",
+  var wifi_timeout: Int = 0
 ) {
-  fun loadFrom(parser: JsonParamParser) {
-    if (parser.hasParam(B_SYSTEM_TICK))
-      system_tick = parser.getInt(B_SYSTEM_TICK, 0)
-    if (parser.hasParam(B_PREDICTION_HORIZONT))
-      prediction_horizont = parser.getInt(B_PREDICTION_HORIZONT, 0)
-    if (parser.hasParam(B_GYRO_HYSTERESIS))
-      gyro_hysteresis = parser.getFloat(B_GYRO_HYSTERESIS, 0f)
-    if (parser.hasParam(B_REVERSED_PITCH))
-      reversed_pitch = parser.getBoolean(B_REVERSED_PITCH, false)
-    if (parser.hasParam(B_REVERSED_ROLL))
-      reversed_roll = parser.getBoolean(B_REVERSED_ROLL, false)
-    if (parser.hasParam(B_TARGET_PITCH))
-      target_pitch = parser.getFloat(B_TARGET_PITCH, 0f)
-    if (parser.hasParam(B_DEAD_ZONE))
-      dead_zone = parser.getFloat(B_DEAD_ZONE, 0f)
-    if (parser.hasParam(B_EXIT_THRESHOLD))
-      exit_threshold = parser.getFloat(B_EXIT_THRESHOLD, 0f)
-    if (parser.hasParam(B_EMERG_THRESHOLD))
-      emerg_threshold = parser.getFloat(B_EMERG_THRESHOLD, 0f)
-    if (parser.hasParam(B_MIN_VOLTAGE))
-      min_voltage = parser.getFloat(B_MIN_VOLTAGE, 0f)
-    if (parser.hasParam(B_MIN_STEP))
-      min_step = parser.getInt(B_MIN_STEP, 0)
-    if (parser.hasParam(B_MAX_STEP))
-      max_step = parser.getInt(B_MAX_STEP, 0)
-    if (parser.hasParam(B_HYSTERESIS))
-      hysteresis = parser.getFloat(B_HYSTERESIS, 0f)
-    if (parser.hasParam(B_MAX_SPEED))
-      max_speed = parser.getInt(B_MAX_SPEED, 0)
-    if (parser.hasParam(B_TREND_DURATION))
-      trend_duration = parser.getInt(B_TREND_DURATION, 0)
-    if (parser.hasParam(B_STABLE_DURATION))
-      stable_duration = parser.getInt(B_STABLE_DURATION, 0)
-    if (parser.hasParam(B_FIRMWARE_VERSION))
-      firmware_ver = parser.getString(B_FIRMWARE_VERSION, "")
+  fun loadFrom(parser: JsonParamParser, checkParams: Boolean = true) {
+    if (checkParams && parser.hasParam(B_SYSTEM_TICK))
+      system_tick = parser.getInt(B_SYSTEM_TICK)
+    if (checkParams && parser.hasParam(B_PREDICTION_HORIZONT))
+      prediction_horizont = parser.getInt(B_PREDICTION_HORIZONT)
+    if (checkParams && parser.hasParam(B_GYRO_HYSTERESIS))
+      gyro_hysteresis = parser.getFloat(B_GYRO_HYSTERESIS)
+    if (checkParams && parser.hasParam(B_REVERSED_PITCH))
+      reversed_pitch = parser.getBoolean(B_REVERSED_PITCH)
+    if (checkParams && parser.hasParam(B_REVERSED_ROLL))
+      reversed_roll = parser.getBoolean(B_REVERSED_ROLL)
+    if (checkParams && parser.hasParam(B_TARGET_PITCH))
+      target_pitch = parser.getFloat(B_TARGET_PITCH)
+    if (checkParams && parser.hasParam(B_DEAD_ZONE))
+      dead_zone = parser.getFloat(B_DEAD_ZONE)
+    if (checkParams && parser.hasParam(B_EXIT_THRESHOLD))
+      exit_threshold = parser.getFloat(B_EXIT_THRESHOLD)
+    if (checkParams && parser.hasParam(B_EMERG_THRESHOLD))
+      emerg_threshold = parser.getFloat(B_EMERG_THRESHOLD)
+    if (checkParams && parser.hasParam(B_MIN_VOLTAGE))
+      min_voltage = parser.getFloat(B_MIN_VOLTAGE)
+    if (checkParams && parser.hasParam(B_MIN_STEP))
+      min_step = parser.getInt(B_MIN_STEP)
+    if (checkParams && parser.hasParam(B_MAX_STEP))
+      max_step = parser.getInt(B_MAX_STEP)
+    if (checkParams && parser.hasParam(B_HYSTERESIS))
+      hysteresis = parser.getFloat(B_HYSTERESIS)
+    if (checkParams && parser.hasParam(B_MAX_SPEED))
+      max_speed = parser.getInt(B_MAX_SPEED)
+    if (checkParams && parser.hasParam(B_TREND_DURATION))
+      trend_duration = parser.getInt(B_TREND_DURATION)
+    if (checkParams && parser.hasParam(B_STABLE_DURATION))
+      stable_duration = parser.getInt(B_STABLE_DURATION)
+    if (checkParams && parser.hasParam(B_FIRMWARE_VERSION))
+      firmware_ver = parser.getString(B_FIRMWARE_VERSION)
+    if (checkParams && parser.hasParam(B_WIFI_TIMEOUT))
+      wifi_timeout = parser.getInt(B_WIFI_TIMEOUT)
   }
 
   fun saveTo(parser: JsonParamParser) {
@@ -119,6 +122,7 @@ data class Settings(
     reversed_pitch = false
     reversed_roll = false
     firmware_ver = ""
+    wifi_timeout = 0
   }
 
   fun default() {
@@ -155,23 +159,12 @@ object SettingsManager {
   fun validate(): Boolean {
     return currentSettings.validate()
   }
-//
-//  fun saveSettings(): Boolean {
-//    App.mainActivity?.bleManager?.let {
-//      val parser = JsonParamParser()
-//      if (saveTo(parser)) {
-//        it.send(parser)
-//        return true
-//      }
-//    }
-//    return false
-//  }
-//
-//  fun loadSettings(): Boolean {
-//    App.mainActivity?.bleManager?.let {
-//      it.send("${B_GET_SETTINGS}=1")
-//      return true
-//    }
-//    return false
-//  }
+
+  fun clear() {
+    currentSettings.clear()
+  }
+
+  fun default() {
+    currentSettings.default()
+  }
 }
