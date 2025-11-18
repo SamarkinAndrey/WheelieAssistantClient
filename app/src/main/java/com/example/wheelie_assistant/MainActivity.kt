@@ -38,7 +38,7 @@ class App : Application() {
 }
 
 class MainActivity : AppCompatActivity() {
-  enum class ControllerState {
+  enum class SystemState {
     IDLE,
     MONITORING,
     WHEELIE,
@@ -46,6 +46,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun toString(): String = this.ordinal.toString()
     fun toInt(): Int = this.ordinal
+
+    companion object {
+      fun fromInt(value: Int): SystemState? = entries.getOrNull(value)
+    }
   }
 
   private lateinit var settingsButton: AppCompatImageButton
@@ -84,20 +88,18 @@ class MainActivity : AppCompatActivity() {
   private val PREFS_NAME = "Bluetooth"
   private val KEY_LAST_MAC = "last_mac_address"
 
-  private var settingsLoaded = false;
   private var settingsRequested = false;
 
-  private var controllerIsEnabled: Boolean = false
+  private var systemState: SystemState = SystemState.IDLE
     set(value) {
       field = value
-      updateIsEnabled()
+      updateSystemState()
     }
 
-  private var controllerState: ControllerState = ControllerState.IDLE
-    set(value) {
-      field = value
-      updateControllerState()
-    }
+  private fun stateIsIdle(): Boolean = systemState == SystemState.IDLE
+  private fun stateIsMonitoring(): Boolean = systemState == SystemState.MONITORING
+  private fun stateIsWheelie(): Boolean = systemState == SystemState.WHEELIE
+  private fun stateIsEmergency(): Boolean = systemState == SystemState.EMERGENCY
 
   private enum class ConnectionState {
     DISCONNECTED, CONNECTING, CONNECTED
@@ -114,12 +116,6 @@ class MainActivity : AppCompatActivity() {
 
   private val isConnected: Boolean
     get() = connectionState == ConnectionState.CONNECTED
-
-  private var wheelieMode: Boolean = false
-    set(value) {
-      field = value
-      updateWheelieMode()
-    }
 
   private var serverMac: String? = null
 
@@ -314,7 +310,7 @@ class MainActivity : AppCompatActivity() {
   private fun setupSettings() {
     settingsButton.setOnClickListener {
       if (isConnected) {
-        if (settingsLoaded)
+        if (SettingsManager.isLoaded())
           openSettings()
         else {
           bleManager.send("${B_GET_SETTINGS}=1")
@@ -334,50 +330,34 @@ class MainActivity : AppCompatActivity() {
 
   private fun setupEnabled() {
     controllerEnabled.setOnClickListener {
-      if (isConnected) {
-        bleManager.send("${B_SET_ENABLED}=${if (controllerIsEnabled) 0 else 1}")
-      }
+      if (!isConnected)
+        return@setOnClickListener
+
+      bleManager.send(
+        "${B_SET_STATE}=${
+          if (stateIsIdle())
+            SystemState.MONITORING
+          else
+            SystemState.IDLE
+        }"
+      )
     }
   }
 
-  private fun updateIsEnabled() {
-    if (controllerIsEnabled) {
+  private fun updateSystemState() {
+    handler.post {
       controllerEnabled.setColorFilter(
         ContextCompat.getColor(
           this,
-          R.color.green_light
+          if (stateIsIdle())
+            R.color.holo_red_light
+          else
+            R.color.holo_green_light
         )
       )
-    } else {
-      controllerEnabled.setColorFilter(ContextCompat.getColor(this, R.color.red_light))
-      wheelieMode = false
+
+      wheelieIndicator.isVisible = stateIsWheelie() || stateIsEmergency()
     }
-  }
-
-  private fun updateControllerState() {
-    handler.post {
-      controllerEnabled.setColorFilter(ContextCompat.getColor(this,
-        if (controllerState == ControllerState.IDLE)
-          R.color.red_light
-        else
-          R.color.green_light
-      ))
-
-      wheelieMode = controllerState in setOf(ControllerState.WHEELIE, ControllerState.EMERGENCY)
-      if (wheelieMode) {
-        wheelieIndicator.setImageResource(R.drawable.bike_test)
-      } else {
-        wheelieIndicator.setImageDrawable(null)
-      }
-    }
-
-//    when (controllerState) {
-//        ControllerState.IDLE -> {}
-//        ControllerState.MONITORING -> {}
-//        ControllerState.WHEELIE -> {}
-//        ControllerState.EMERGENCY -> {}
-//        else -> {}
-//    }
   }
 
   private fun updateAttitudeView() {
@@ -461,35 +441,6 @@ class MainActivity : AppCompatActivity() {
     return Color.HSVToColor(floatArrayOf(hue, 1f, 1f))
   }
 
-  private fun updateWheelieMode() {
-    handler.post {
-      if (wheelieMode) {
-        wheelieIndicator.setImageResource(R.drawable.bike_test)
-      } else {
-        wheelieIndicator.setImageDrawable(null)
-      }
-    }
-  }
-
-//  fun updateWheelieIndicator() {
-//    if (wheelieMode) {
-//      val settings = SettingsManager.currentSettings
-//
-//
-//
-//      val alpha = calculateAlpha(
-//        settings.target_pitch - settings.exit_threshold,
-//        settings.target_pitch,
-//        settings.target_pitch + settings.emerg_threshold,
-//        pitch
-//      )
-//
-//      handler.post {
-//        wheelieIndicator.alpha = alpha
-//      }
-//    }
-//  }
-
   fun calculateAlpha(min: Float, mid: Float, max: Float, cur: Float): Float {
     return when {
       cur <= min -> 0f
@@ -505,10 +456,10 @@ class MainActivity : AppCompatActivity() {
   }
 
   fun updateWheelieIndicator() {
-    if (!wheelieMode)
+    if (!wheelieIndicator.isVisible)
       return
 
-    val settings = SettingsManager.currentSettings
+    val settings = SettingsManager.settings
 
     val min = settings.target_pitch - settings.exit_threshold
     val mid = settings.target_pitch
@@ -520,37 +471,38 @@ class MainActivity : AppCompatActivity() {
         cur < min -> {
           wheelieIndicator.setColorFilter(Color.TRANSPARENT)
           wheelieIndicator.alpha = 0f
-          wheelieIndicator.isVisible = false
+//          wheelieIndicator.isVisible = false
         }
 
-        cur in min..< mid -> {
+        cur in min..<mid -> {
           val progress = (cur - min) / (mid - min)
           val color = ColorUtils.blendARGB(
-            wheelieIndicator.context.getColor(R.color.orange_light),
-            wheelieIndicator.context.getColor(R.color.green_light),
-            progress
-          )
-          wheelieIndicator.setColorFilter(color)
-          wheelieIndicator.alpha = calculateAlpha(min, mid, max, cur)
-          wheelieIndicator.isVisible = true
-        }
-
-        cur in mid..< max -> {
-          val progress = (cur - mid) / (max - mid)
-          val color = ColorUtils.blendARGB(
-            wheelieIndicator.context.getColor(R.color.green_light),
-            wheelieIndicator.context.getColor(R.color.red_light),
+            wheelieIndicator.context.getColor(R.color.yellow),
+            wheelieIndicator.context.getColor(R.color.green),
             progress
           )
           wheelieIndicator.setColorFilter(color)
           wheelieIndicator.alpha = 1f
-          wheelieIndicator.isVisible = true
+//          wheelieIndicator.alpha = calculateAlpha(min, mid, max, cur)
+//          wheelieIndicator.isVisible = true
+        }
+
+        cur in mid..<max -> {
+          val progress = (cur - mid) / (max - mid)
+          val color = ColorUtils.blendARGB(
+            wheelieIndicator.context.getColor(R.color.green),
+            wheelieIndicator.context.getColor(R.color.red),
+            progress
+          )
+          wheelieIndicator.setColorFilter(color)
+          wheelieIndicator.alpha = 1f
+//          wheelieIndicator.isVisible = true
         }
 
         cur >= max -> {
-          wheelieIndicator.setColorFilter(wheelieIndicator.context.getColor(R.color.red_light))
+          wheelieIndicator.setColorFilter(wheelieIndicator.context.getColor(R.color.red))
           wheelieIndicator.alpha = 1f
-          wheelieIndicator.isVisible = true
+//          wheelieIndicator.isVisible = true
         }
       }
     }
@@ -630,7 +582,7 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun closeConnection() {
-    controllerIsEnabled = false
+    systemState = SystemState.IDLE
 
     SettingsManager.clear()
 
@@ -643,8 +595,6 @@ class MainActivity : AppCompatActivity() {
     clearVoltageValues()
     clearVoltage()
     unlockScreen()
-
-    settingsLoaded = false;
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -696,7 +646,7 @@ class MainActivity : AppCompatActivity() {
           connectionIndicator.setImageResource(R.drawable.bluetooth_connected_24px)
           connectionIndicator.setColorFilter(
             ContextCompat.getColor(
-              this, R.color.green_light
+              this, R.color.holo_green_light
             )
           )
         }
@@ -705,7 +655,7 @@ class MainActivity : AppCompatActivity() {
           connectionIndicator.setImageResource(R.drawable.bluetooth_searching_24px)
           connectionIndicator.setColorFilter(
             ContextCompat.getColor(
-              this, R.color.blue_light
+              this, R.color.holo_blue_light
             )
           )
         }
@@ -714,7 +664,7 @@ class MainActivity : AppCompatActivity() {
           connectionIndicator.setImageResource(R.drawable.bluetooth_disabled_24px)
           connectionIndicator.setColorFilter(
             ContextCompat.getColor(
-              this, R.color.red_light
+              this, R.color.holo_red_light
             )
           )
         }
@@ -722,26 +672,28 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  private fun processData(parser: JsonParamParser) {
+  private fun processData(params: JsonParamParser) {
     if (otaManager.isStarted()) {
-      otaManager.processUpdate(parser)
+      otaManager.processUpdate(params)
 
       return
     }
 
-    if (parser.hasParam(B_ENABLED))
-      controllerIsEnabled = parser.getInt(B_ENABLED) == 1
-
-    if (!progressIsShowing()) {
-      pitch = round(parser.getFloat(B_PITCH, pitch) * 10) / 10;
-      roll = round(parser.getFloat(B_ROLL, roll) * 10) / 10;
-      voltageIn = parser.getFloat(B_VOLTAGE_IN, voltageIn)
-      voltageOut = parser.getFloat(B_VOLTAGE_OUT, voltageOut)
+    if (params.hasParam(B_GET_STATE)) {
+      SystemState.fromInt(params.getInt(B_GET_STATE))?.run {
+        systemState = this
+      }
     }
 
-    if (parser.getInt(B_GET_SETTINGS) == 1) {
-      SettingsManager.loadFrom(parser)
-      settingsLoaded = true;
+    if (!progressIsShowing()) {
+      pitch = round(params.getFloat(B_PITCH, pitch) * 10) / 10;
+      roll = round(params.getFloat(B_ROLL, roll) * 10) / 10;
+      voltageIn = params.getFloat(B_VOLTAGE_IN, voltageIn)
+      voltageOut = params.getFloat(B_VOLTAGE_OUT, voltageOut)
+    }
+
+    if (params.getInt(B_GET_SETTINGS) == 1) {
+      SettingsManager.loadFrom(params)
 
       if (settingsRequested) {
         settingsRequested = false;
@@ -756,17 +708,20 @@ class MainActivity : AppCompatActivity() {
 //          }
     }
 
-    if (parser.getInt(B_RESET_VOLTAGE, 0) == 1)
+    if (params.getInt(B_SET_SETTINGS, 0) == 1)
+      showToast("Настройки сохранены")
+
+    if (params.getInt(B_RESET_VOLTAGE, 0) == 1)
       clearVoltage()
 
-    if (parser.hasParam(B_VOLTAGE_MIN))
-      voltageMin = parser.getFloat(B_VOLTAGE_MIN)
+    if (params.hasParam(B_VOLTAGE_MIN))
+      voltageMin = params.getFloat(B_VOLTAGE_MIN)
 
-    if (parser.hasParam(B_VOLTAGE_MAX))
-      voltageMax = parser.getFloat(B_VOLTAGE_MAX)
+    if (params.hasParam(B_VOLTAGE_MAX))
+      voltageMax = params.getFloat(B_VOLTAGE_MAX)
 
-    if (parser.hasParam(B_CALIBRATE_GYRO)) {
-      val value = parser.getInt(B_CALIBRATE_GYRO)
+    if (params.hasParam(B_CALIBRATE_GYRO)) {
+      val value = params.getInt(B_CALIBRATE_GYRO)
 
       if (value == 1) {
         clearAttitudeValues()
@@ -782,14 +737,8 @@ class MainActivity : AppCompatActivity() {
       }
     }
 
-    if (parser.hasParam(B_CALIBRATE_GYRO_PROG))
-      progressSet(parser.getInt(B_CALIBRATE_GYRO_PROG))
-
-    if (parser.getInt(B_SET_SETTINGS, 0) == 1)
-      showToast("Настройки сохранены")
-
-    if (parser.hasParam(B_WHEELIE))
-      wheelieMode = parser.getInt(B_WHEELIE) == 1
+    if (params.hasParam(B_CALIBRATE_GYRO_PROG))
+      progressSet(params.getInt(B_CALIBRATE_GYRO_PROG))
 
     updateAttitudeView()
     updateVoltageDisplays()

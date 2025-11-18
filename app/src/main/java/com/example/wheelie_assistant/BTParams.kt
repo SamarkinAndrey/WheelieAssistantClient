@@ -27,10 +27,6 @@ enum class BTParam {
   B_VOLTAGE_MIN,
   B_VOLTAGE_MAX,
 
-  B_ENABLED,
-  B_GET_ENABLED,
-  B_SET_ENABLED,
-
   B_GET_SETTINGS,
   B_SET_SETTINGS,
 
@@ -39,8 +35,6 @@ enum class BTParam {
 
   B_GET_VOLTAGE,
   B_GET_POSITION,
-
-  B_WHEELIE,
 
   B_CALIBRATE_GYRO,
   B_CALIBRATE_GYRO_PROG,
@@ -60,8 +54,14 @@ enum class BTParam {
 
   B_WIFI_CONNECTING,
   B_WIFI_SUCCESS,
-  B_WIFI_ERROR;
+  B_WIFI_ERROR,
+
+  B_GET_STATE,
+  B_SET_STATE;
 
   override fun toString(): String = this.ordinal.toString()
   fun toInt(): Int = this.ordinal
+  companion object {
+    fun fromInt(ordinal: Int): BTParam? = entries.getOrNull(ordinal)
+  }
 }

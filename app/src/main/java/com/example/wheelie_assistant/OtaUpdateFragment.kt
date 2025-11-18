@@ -36,6 +36,11 @@ class OtaUpdateFragment : InfoFragment() {
   private var otaManager: OtaManager? = null
   private var prefManager: PrefsManager? = null
 
+  override fun onPause() {
+    super.onPause()
+    isPasswordVisible = false
+  }
+
   private var currentVersion: String? = null
     set(value) {
       field = value
@@ -44,7 +49,7 @@ class OtaUpdateFragment : InfoFragment() {
       currentVersionValue.setTextColor(
         requireContext().getColor(
           if (value.isNullOrBlank())
-            R.color.red_light
+            R.color.holo_red_light
           else
             R.color.white
         )
@@ -71,10 +76,10 @@ class OtaUpdateFragment : InfoFragment() {
       actualVersionValue.setTextColor(
         requireContext().getColor(
           if (isNewVersion)
-            R.color.green_light
+            R.color.holo_green_light
           else
             if (actualVersion.isNullOrBlank())
-              R.color.red_light
+              R.color.holo_red_light
             else
               R.color.white
         )
@@ -260,7 +265,7 @@ class OtaUpdateFragment : InfoFragment() {
   fun checkActualVersion() {
     actualVersion = null
     actualVersionValue.text = "запрос"
-    actualVersionValue.setTextColor(requireContext().getColor(R.color.blue_light))
+    actualVersionValue.setTextColor(requireContext().getColor(R.color.holo_blue_light))
 
     otaManager?.getRemoteVersion { version ->
       actualVersion = version

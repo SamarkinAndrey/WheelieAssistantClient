@@ -8,7 +8,7 @@ interface ICanLoad {
   fun onLoadSettings(settings: Settings)
 
   fun loadSettings(settings: Settings? = null) {
-    onLoadSettings(settings ?: SettingsManager.currentSettings)
+    onLoadSettings(settings ?: SettingsManager.settings)
     onUpdateTextValues()
   }
 
@@ -25,11 +25,18 @@ interface ICanSave {
   fun onSaveSettings(settings: Settings)
 
   fun saveSettings(settings: Settings? = null) {
-    onSaveSettings(settings ?: SettingsManager.currentSettings)
+    onSaveSettings(settings ?: SettingsManager.settings)
   }
 }
 
-abstract class InfoFragment : CustomFragment(), ICanLoad
+abstract class InfoFragment : CustomFragment(), ICanLoad {
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+
+    loadSettings()
+  }
+}
+
 abstract class SettingsFragment : InfoFragment(), ICanSave {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     App.settingsActivity?.let {
@@ -47,7 +54,5 @@ abstract class SettingsFragment : InfoFragment(), ICanSave {
     }
 
     super.onViewCreated(view, savedInstanceState)
-
-    loadSettings()
   }
 }

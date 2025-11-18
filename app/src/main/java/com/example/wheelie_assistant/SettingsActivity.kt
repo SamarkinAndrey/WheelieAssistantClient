@@ -85,16 +85,16 @@ class SettingsActivity : AppCompatActivity() {
 
   fun loadSettings() {
     supportFragmentManager.fragments.forEach { fragment ->
-      if (fragment is SettingsFragment)
+      if (fragment is ICanLoad)
         fragment.loadSettings()
     }
   }
 
   fun saveSettings(): Boolean {
-    val settings = Settings()
+    val settings  = SettingsManager.settings
 
     supportFragmentManager.fragments.forEach { fragment ->
-      if (fragment is SettingsFragment)
+      if (fragment is ICanSave)
         fragment.saveSettings(settings)
     }
 
@@ -103,7 +103,7 @@ class SettingsActivity : AppCompatActivity() {
       return false
     }
 
-    SettingsManager.currentSettings = settings
+    SettingsManager.settings = settings
 
     val parser = JsonParamParser()
     SettingsManager.saveTo(parser)

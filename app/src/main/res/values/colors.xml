@@ -2,17 +2,87 @@
 <resources>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+
+    <color name="gray_50">#FAFAFA</color>
+    <color name="gray_100">#F5F5F5</color>
+    <color name="gray_200">#EEEEEE</color>
+    <color name="gray_300">#E0E0E0</color>
+    <color name="gray_400">#BDBDBD</color>
+    <color name="gray_500">#9E9E9E</color>
+    <color name="gray_600">#757575</color>
+    <color name="gray_700">#616161</color>
+    <color name="gray_800">#424242</color>
+    <color name="gray_900">#212121</color>
+
     <color name="red">#E02828</color>
-    <color name='trackActive'>#E02828</color>
-    <color name='trackInactive'>#6E7881</color>
-    <color name='thumbActive'>#20303C</color>
-    <color name='thumbInactive'>#20303C</color>
-    <color name='blue_dark'>@android:color/holo_blue_dark</color>
-    <color name='blue_light'>@android:color/holo_blue_light</color>
-    <color name='green_dark'>@android:color/holo_green_dark</color>
-    <color name='green_light'>@android:color/holo_green_light</color>
-    <color name='red_dark'>@android:color/holo_red_dark</color>
-    <color name='red_light'>@android:color/holo_red_light</color>
-    <color name='orange_dark'>@android:color/holo_orange_dark</color>
-    <color name='orange_light'>@android:color/holo_orange_light</color>
+    <color name="red_dark">#B71C1C</color>
+    <color name="red_light">#F44336</color>
+
+    <color name="green">#4CAF50</color>
+    <color name="green_dark">#388E3C</color>
+    <color name="green_light">#81C784</color>
+
+    <color name="blue">#2196F3</color>
+    <color name="blue_dark">#1976D2</color>
+    <color name="blue_light">#64B5F6</color>
+
+    <color name="orange">#FF9800</color>
+    <color name="orange_dark">#F57C00</color>
+    <color name="orange_light">#FFB74D</color>
+
+    <color name="purple">#9C27B0</color>
+    <color name="purple_dark">#7B1FA2</color>
+    <color name="purple_light">#BA68C8</color>
+
+    <color name="yellow">#FFEB3B</color>
+    <color name="yellow_dark">#FBC02D</color>
+    <color name="yellow_light">#FFF176</color>
+
+    <color name="primary">#2196F3</color>
+    <color name="primary_dark">#1976D2</color>
+    <color name="primary_light">#64B5F6</color>
+
+    <color name="secondary">#FF4081</color>
+    <color name="secondary_dark">#F50057</color>
+    <color name="secondary_light">#FF80AB</color>
+
+    <color name="accent">#FF4081</color>
+
+    <color name="success">#4CAF50</color>
+    <color name="warning">#FF9800</color>
+    <color name="error">#F44336</color>
+    <color name="info">#2196F3</color>
+
+    <color name="background">#FFFFFF</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="background_dark">#121212</color>
+
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_hint">#BDBDBD</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary_dark">#BDBDBD</color>
+
+    <color name="divider">#E0E0E0</color>
+    <color name="divider_dark">#424242</color>
+    <color name="border">#E0E0E0</color>
+
+    <color name="disabled">#E0E0E0</color>
+    <color name="pressed">#E0E0E0</color>
+    <color name="selected">#2196F3</color>
+    <color name="focused">#2196F3</color>
+
+    <color name="trackActive">#E02828</color>
+    <color name="trackInactive">#6E7881</color>
+    <color name="thumbActive">#20303C</color>
+    <color name="thumbInactive">#20303C</color>
+
+    <color name="holo_blue_dark">@android:color/holo_blue_dark</color>
+    <color name="holo_blue_light">@android:color/holo_blue_light</color>
+    <color name="holo_green_dark">@android:color/holo_green_dark</color>
+    <color name="holo_green_light">@android:color/holo_green_light</color>
+    <color name="holo_red_dark">@android:color/holo_red_dark</color>
+    <color name="holo_red_light">@android:color/holo_red_light</color>
+    <color name="holo_orange_dark">@android:color/holo_orange_dark</color>
+    <color name="holo_orange_light">@android:color/holo_orange_light</color>
 </resources>
