@@ -49,7 +49,7 @@ class OtaUpdateFragment : InfoFragment() {
       currentVersionValue.setTextColor(
         requireContext().getColor(
           if (value.isNullOrBlank())
-            R.color.holo_red_light
+            R.color.red
           else
             R.color.white
         )
@@ -76,10 +76,10 @@ class OtaUpdateFragment : InfoFragment() {
       actualVersionValue.setTextColor(
         requireContext().getColor(
           if (isNewVersion)
-            R.color.holo_green_light
+            R.color.green
           else
             if (actualVersion.isNullOrBlank())
-              R.color.holo_red_light
+              R.color.red
             else
               R.color.white
         )
@@ -265,7 +265,7 @@ class OtaUpdateFragment : InfoFragment() {
   fun checkActualVersion() {
     actualVersion = null
     actualVersionValue.text = "запрос"
-    actualVersionValue.setTextColor(requireContext().getColor(R.color.holo_blue_light))
+    actualVersionValue.setTextColor(requireContext().getColor(R.color.blue))
 
     otaManager?.getRemoteVersion { version ->
       actualVersion = version
