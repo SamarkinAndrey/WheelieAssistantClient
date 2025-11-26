@@ -25,7 +25,7 @@ android {
             keyPassword = "2p0r1o8w"
         }
         getByName("debug") {
-            // debug конфиг остается как есть
+            //
         }
     }
 
@@ -33,7 +33,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs.getByName("release") // ← используем release конфиг
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -85,7 +85,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.appcompat:appcompat-resources:1.7.1")
-    implementation("com.google.android.material:material:1.14.0-alpha06")
+    implementation("com.google.android.material:material:1.14.0-alpha07")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("no.nordicsemi.android:ble:2.11.0")
     implementation("no.nordicsemi.android:ble-ktx:2.11.0")
@@ -95,7 +95,7 @@ dependencies {
     implementation("androidx.preference:preference-ktx:1.2.1")
 
     implementation("org.nanohttpd:nanohttpd:2.3.1")
-    implementation("com.squareup.okhttp3:okhttp:5.3.1")
+    implementation("com.squareup.okhttp3:okhttp:5.3.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
 //    implementation("com.google.code.gson:gson:2.13.2")
