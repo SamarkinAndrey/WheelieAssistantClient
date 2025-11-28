@@ -28,7 +28,6 @@ import BTParam.*
 import android.app.Application
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
-import com.example.wheelie_assistant.OtaManager
 
 class App : Application() {
   companion object {

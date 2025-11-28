@@ -1,10 +1,9 @@
-package com.example.wheelie_assistant
+package com.app.wheelie_assistant
 
 import BTParam.*
 import JsonParamParser
 import android.content.Context
 import android.util.Log
-import com.app.wheelie_assistant.BleManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
