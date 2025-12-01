@@ -3,7 +3,7 @@ package com.app.wheelie_assistant
 import android.content.Context
 import android.content.SharedPreferences
 
-class PrefsManager(private val context: Context) {
+class AppPrefsManager(private val context: Context) {
 
   private val sharedPrefs: SharedPreferences by lazy {
     context.getSharedPreferences("app_string_settings", Context.MODE_PRIVATE)

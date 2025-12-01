@@ -32,8 +32,8 @@ class OtaUpdateFragment : InfoFragment() {
 
   private lateinit var updateLayout: LinearLayout
 
-  private var otaManager: OtaManager? = null
-  private var prefManager: PrefsManager? = null
+  private var otaManager: AppOtaManager? = null
+  private var prefManager: AppPrefsManager? = null
 
   override fun onPause() {
     super.onPause()
@@ -203,7 +203,7 @@ class OtaUpdateFragment : InfoFragment() {
 //    updateStatus("Файл выбран. Нажмите «Начать обновление»")
 //  }
 
-  private val wifiCallback = object : OtaManager.IWifiCallback {
+  private val wifiCallback = object : AppOtaManager.IWifiCallback {
     override fun onConnecting() {
       btnStartUpdate.isVisible = false
       progressBar.isVisible = true
@@ -225,7 +225,7 @@ class OtaUpdateFragment : InfoFragment() {
     }
   }
 
-  private val otaCallback = object : OtaManager.IOtaCallback {
+  private val otaCallback = object : AppOtaManager.IOtaCallback {
     override fun onStarted() {
       setStatus("Обновление прошивки...")
     }

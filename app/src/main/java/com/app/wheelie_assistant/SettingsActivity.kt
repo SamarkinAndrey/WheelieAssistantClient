@@ -1,6 +1,5 @@
 package com.app.wheelie_assistant
 
-import JsonParamParser
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.Toast

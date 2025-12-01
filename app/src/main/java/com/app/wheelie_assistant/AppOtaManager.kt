@@ -1,7 +1,6 @@
 package com.app.wheelie_assistant
 
-import BTParam.*
-import JsonParamParser
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
@@ -13,10 +12,11 @@ import okhttp3.Request
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
+import com.app.wheelie_assistant.BTParam.*
 
-class OtaManager(
+class AppOtaManager(
   private val context: Context,
-  private val bleManager: BleManager
+  private val bleManager: AppBleManager
 ) {
   private val VERSION_URL =
     "https://raw.githubusercontent.com/SamarkinAndrey/WheelieAssistantBinary/master/flash_download_tool/firmware/version.info"
@@ -48,11 +48,13 @@ class OtaManager(
     isGetVersion = true
     CoroutineScope(Dispatchers.IO).launch {
       try {
-        val trustManager = object : X509TrustManager {
-          override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
-          override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
-          override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
-        }
+        val trustManager =
+          @SuppressLint("CustomX509TrustManager")
+          object : X509TrustManager {
+            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+          }
 
         val sslContext = SSLContext.getInstance("TLS")
         sslContext.init(null, arrayOf(trustManager), SecureRandom())
@@ -105,11 +107,11 @@ class OtaManager(
   fun requestUpdate(
     ssid: String,
     pass: String,
-    wifi_callback: IWifiCallback,
-    ota_callback: IOtaCallback
+    wifiCallback: IWifiCallback,
+    otaCallback: IOtaCallback
   ) {
-    wifiCallback = wifi_callback
-    otaCallback = ota_callback
+    this@AppOtaManager.wifiCallback = wifiCallback
+    this@AppOtaManager.otaCallback = otaCallback
 
     val request = JsonParamParser()
     request.setInt(B_OTA_START, 1)

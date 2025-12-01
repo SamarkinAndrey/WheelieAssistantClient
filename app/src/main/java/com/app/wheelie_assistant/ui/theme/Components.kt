@@ -137,30 +137,31 @@ fun MaterialTabs(
   }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MaterialSliderExact(
-  value: Float,
-  onValueChange: (Float) -> Unit,
+fun MaterialRangeSlider(
+  value: ClosedFloatingPointRange<Float>,
+  onValueChange: (ClosedFloatingPointRange<Float>) -> Unit,
   modifier: Modifier = Modifier,
   valueRange: ClosedFloatingPointRange<Float>,
   steps: Int
 ) {
-  Slider(
+  RangeSlider(
     value = value,
     onValueChange = onValueChange,
+    onValueChangeFinished = null,
+    enabled = true,
     valueRange = valueRange,
     steps = steps,
-
     modifier = modifier,
-
     colors = SliderDefaults.colors(
-      thumbColor = ThumbActive,                // #20303C
-      disabledThumbColor = ThumbActive,
-      activeTrackColor = TrackActive,          // #E02828
-      inactiveTrackColor = TrackInactive,      // #6E7881
-      disabledActiveTrackColor = TrackInactive,
-      disabledInactiveTrackColor = TrackInactive//,
-//      haloColor = Color.Transparent            // 1:1 haloRadius=0dp
+      thumbColor = Red,
+      activeTrackColor = TrackActive,
+      inactiveTrackColor = TrackInactive,
+      activeTickColor = Color.Transparent,
+      inactiveTickColor = Color.Transparent,
+      disabledActiveTickColor = Color.Transparent,
+      disabledInactiveTickColor = Color.Transparent
     )
   )
 }

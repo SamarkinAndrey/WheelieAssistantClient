@@ -1,7 +1,6 @@
 package com.app.wheelie_assistant
 
-import JsonParamParser
-import BTParam.*
+import com.app.wheelie_assistant.BTParam.*
 
 data class Settings(
   var system_tick: Int = 0,

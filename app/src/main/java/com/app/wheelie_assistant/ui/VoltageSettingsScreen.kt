@@ -15,14 +15,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.app.wheelie_assistant.ui.theme.MaterialRangeSlider
 import com.app.wheelie_assistant.ui.theme.MaterialSlider
-import com.app.wheelie_assistant.ui.theme.MaterialSliderExact
 
 @Preview
 @Composable
 fun VoltageSettingsScreen(
   minVoltage: Float = 1.5f,
-  stepRange: ClosedFloatingPointRange<Float> = 1f..1f,
+  stepRange: ClosedFloatingPointRange<Float> = 1f..4f,
   onMinVoltageChanged: (Float) -> Unit = {},
   onStepRangeChanged: (ClosedFloatingPointRange<Float>) -> Unit = {}
 ) {
@@ -119,11 +119,11 @@ fun VoltageSettingsScreen(
         }
 
         // RangeSlider для диапазона шагов - ТЕПЕРЬ ПРАВИЛЬНО
-        RangeSlider(
-          value = stepRange,
+        MaterialRangeSlider(
+          value = 1f..4f,
           onValueChange = onStepRangeChanged,
           valueRange = 1f..10f,
-          steps = 8, // шаг 1.0: (10 - 1) - 1 = 8
+          steps = 9, // шаг 1.0: (10 - 1) - 1 = 8
           modifier = Modifier.fillMaxWidth()
         )
       }

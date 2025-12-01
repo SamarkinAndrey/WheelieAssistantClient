@@ -1,6 +1,14 @@
 package com.app.wheelie_assistant
 
 import android.Manifest
+import android.app.Application
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -12,31 +20,38 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import android.content.Intent
-import kotlin.math.abs
-import kotlin.math.round
 import android.widget.ProgressBar
 import android.graphics.Color
 import android.graphics.drawable.LayerDrawable
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.card.MaterialCardView
 import java.util.Locale
-import JsonParamParser
-import BTParam.*
-import android.app.Application
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
+import kotlin.math.abs
+import kotlin.math.round
+import com.app.wheelie_assistant.BTParam.*
+import java.lang.ref.WeakReference
 
 class App : Application() {
   companion object {
-    var mainActivity: MainActivity? = null
-    var settingsActivity: SettingsActivity? = null
+    private var _mainActivityRef: WeakReference<MainActivity>? = null
+    private var _settingsActivityRef: WeakReference<SettingsActivity>? = null
+
+    var mainActivity: MainActivity?
+      get() = _mainActivityRef?.get()
+      set(value) { _mainActivityRef = if (value != null) WeakReference(value) else null }
+
+    var settingsActivity: SettingsActivity?
+      get() = _settingsActivityRef?.get()
+      set(value) { _settingsActivityRef = if (value != null) WeakReference(value) else null }
   }
 }
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
   enum class SystemState {
     IDLE,
     MONITORING,
@@ -84,10 +99,7 @@ class MainActivity : AppCompatActivity() {
   private var voltageMin: Float = Float.POSITIVE_INFINITY
   private var voltageMax: Float = Float.NEGATIVE_INFINITY
 
-  private val PREFS_NAME = "Bluetooth"
-  private val KEY_LAST_MAC = "last_mac_address"
-
-  private var settingsRequested = false;
+  private var settingsRequested = false
 
   private var systemState: SystemState = SystemState.IDLE
     set(value) {
@@ -116,15 +128,20 @@ class MainActivity : AppCompatActivity() {
   private val isConnected: Boolean
     get() = connectionState == ConnectionState.CONNECTED
 
-  private var serverMac: String? = null
-
   private val handler = Handler(Looper.getMainLooper())
   private val PERMISSION_REQUEST_CODE = 123
-  private val BLUETOOTH_ENABLE_REQUEST_CODE = 124
 
-  lateinit var bleManager: BleManager
-  lateinit var otaManager: OtaManager
-  lateinit var prefManager: PrefsManager
+  lateinit var bleManager: AppBleManager
+  lateinit var otaManager: AppOtaManager
+  lateinit var prefManager: AppPrefsManager
+  lateinit var scanManager: AppBleScanManager
+
+  private val bluetoothManager by lazy {
+    getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+  }
+
+  private val bluetoothAdapter: BluetoothAdapter?
+    get() = bluetoothManager.adapter
 
   val bluetoothPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
     arrayOf(
@@ -137,6 +154,48 @@ class MainActivity : AppCompatActivity() {
       Manifest.permission.ACCESS_FINE_LOCATION,
       Manifest.permission.ACCESS_COARSE_LOCATION
     )
+  }
+
+  private val btStateReceiver = object : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+      if (BluetoothAdapter.ACTION_STATE_CHANGED == intent.action) {
+        when (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1)) {
+          BluetoothAdapter.STATE_ON -> {
+            Log.d("MainActivity", "BluetoothAdapter.STATE_ON")
+
+            handler.postDelayed({
+              if (hasAllPermissions() && isBluetoothEnabled())
+                scanManager.startScan(this@MainActivity)
+            }, 1000)
+          }
+          BluetoothAdapter.STATE_OFF -> {
+            Log.d("MainActivity", "BluetoothAdapter.STATE_OFF")
+
+            connectionState = ConnectionState.DISCONNECTED
+            clearUI()
+
+            scanManager.stopScan()
+//            bleManager.close()
+
+            //bleManager.disconnect().enqueue()
+          }
+        }
+      }
+    }
+  }
+
+  private val bluetoothEnableLauncher = registerForActivityResult(
+    ActivityResultContracts.StartActivityForResult()
+  ) { result ->
+    if (result.resultCode == RESULT_OK) {
+      handler.post {
+        if (hasAllPermissions()) {
+          scanManager.startScan(this)
+        }
+      }
+    } else {
+      showToast("Bluetooth is required to connect to devices")
+    }
   }
 
   private fun lockScreen() {
@@ -159,6 +218,9 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
+
+    registerReceiver(btStateReceiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED))
+
     App.mainActivity = this
 
     initViews()
@@ -170,18 +232,21 @@ class MainActivity : AppCompatActivity() {
     clearVoltageValues()
     clearVoltage()
 
-    if (hasAllPermissions())
-      bleManager.startAutoConnect()
+    scanManager = AppBleScanManager(this, AppBleManager.SERVICE_UUID)
+
+    if (hasAllPermissions() && isBluetoothEnabled()) {
+      scanManager.startScan(this)
+    }
   }
 
   private fun setupBleManager() {
-    bleManager = BleManager(this)
-    bleManager.setDataCallback { parser ->
+    bleManager = AppBleManager(this)
+    bleManager.onRead = { parser ->
       processData(parser)
     }
-    bleManager.setConnectionCallback { connectionStatus ->
+    bleManager.onState = { state ->
       handler.post {
-        when (connectionStatus) {
+        when (state) {
           "READY" -> onConnected()
           "DISCONNECTED" -> onDisconnected()
           "CONNECTING" -> onConnecting()
@@ -189,49 +254,70 @@ class MainActivity : AppCompatActivity() {
         }
       }
     }
-    bleManager.setWriteErrorCallback { errorMessage ->
+    bleManager.onWriteError = { message ->
       handler.post {
-        showToast(errorMessage)
-        Log.e("MainActivity", "Write error: $errorMessage")
+        showToast(message)
+        Log.e("MainActivity", "Write error: $message")
       }
     }
   }
 
   private fun setupOtaManager() {
-    otaManager = OtaManager(this, bleManager)
+    otaManager = AppOtaManager(this, bleManager)
   }
 
   private fun setupPrefManager() {
-    prefManager = PrefsManager(this)
+    prefManager = AppPrefsManager(this)
+  }
+
+  override fun onDeviceFound(device: BluetoothDevice, rssi: Int) {
+    Log.d("MainActivity", "Device found: ${device.address}")
+    scanManager.stopScan()
+    bleManager.connect(device)
+      .retry(3, 100)
+      .useAutoConnect(true)
+      .enqueue()
+  }
+
+  override fun onScanStarted() {
+    Log.d("MainActivity", "Scan started")
+    connectionState = ConnectionState.CONNECTING
+  }
+
+  override fun onScanStopped() {
+    Log.d("MainActivity", "Scan stopped")
+  }
+
+  override fun onScanFailed(errorCode: Int) {
+    Log.e("MainActivity", "Scan failed: $errorCode")
+    connectionState = ConnectionState.DISCONNECTED
+    handler.postDelayed({
+      if (hasAllPermissions() && isBluetoothEnabled()) {
+        scanManager.startScan(this)
+      }
+    }, 1000)
+  }
+
+  private fun isBluetoothEnabled(): Boolean {
+    return bluetoothAdapter?.isEnabled == true
   }
 
   private fun clearAttitudeValues(updateView: Boolean = true) {
     roll = 0f
     pitch = 0f
-
-    if (updateView)
-      updateAttitudeView()
+    if (updateView) updateAttitudeView()
   }
 
   private fun clearVoltageValues(updateView: Boolean = true) {
     voltageIn = 0f
     voltageOut = 0f
-
-    if (updateView)
-      updateVoltageDisplays()
+    if (updateView) updateVoltageDisplays()
   }
 
   private fun clearVoltage() {
     voltageMin = Float.POSITIVE_INFINITY
     voltageMax = Float.NEGATIVE_INFINITY
   }
-
-//  private fun connectToLastDevice() {
-//    serverMac = loadLastMacAddress()
-//    if (!serverMac.isNullOrEmpty()) {
-//      connectToServer()
-//    }
-//  }
 
   private fun initViews() {
     tvThrottleIn = findViewById(R.id.tvThrottleIn)
@@ -291,19 +377,37 @@ class MainActivity : AppCompatActivity() {
       true
     }
   }
-
   private fun setupConnectionIndicator() {
     connectionIndicator.setOnClickListener {
       if (isConnected || isConnecting) {
         disconnectManually()
       } else {
-        if (hasAllPermissions())
-          bleManager.startAutoConnect()
-        else
+        if (hasAllPermissions() && isBluetoothEnabled()) {
+          scanManager.startScan(this)
+        } else if (!isBluetoothEnabled()) {
+          requestEnableBluetooth()
+        } else {
           requestBluetoothPermissions()
+        }
       }
     }
     updateConnectionStatus()
+  }
+
+  private fun requestEnableBluetooth() {
+    val adapter = bluetoothAdapter ?: run {
+      showToast("Bluetooth не поддерживается на этом устройстве")
+      return
+    }
+
+    if (!adapter.isEnabled) {
+      val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+      bluetoothEnableLauncher.launch(enableBtIntent)
+    } else {
+      if (hasAllPermissions()) {
+        scanManager.startScan(this)
+      }
+    }
   }
 
   private fun setupSettings() {
@@ -313,25 +417,20 @@ class MainActivity : AppCompatActivity() {
           openSettings()
         else {
           bleManager.send("${B_GET_SETTINGS}=1")
-
           settingsRequested = true
           handler.postDelayed({ settingsRequested = false }, 1000)
         }
-//      showToast("Settings requested")
       }
     }
     SettingsActivity.setSaveCallback { parser ->
       parser.setInt(B_SET_SETTINGS, 1)
       bleManager.send(parser)
-//      showToast("Settings sended")
     }
   }
 
   private fun setupEnabled() {
     controllerEnabled.setOnClickListener {
-      if (!isConnected)
-        return@setOnClickListener
-
+      if (!isConnected) return@setOnClickListener
       bleManager.send(
         "${B_SET_STATE}=${
           if (stateIsIdle())
@@ -354,7 +453,6 @@ class MainActivity : AppCompatActivity() {
             R.color.holo_green_light
         )
       )
-
       wheelieIndicator.isVisible = stateIsWheelie() || stateIsEmergency()
     }
   }
@@ -396,15 +494,11 @@ class MainActivity : AppCompatActivity() {
       tvThrottleIn.text = "${String.format("%.2f", voltageIn)}"
       tvThrottleOut.text = "${String.format("%.2f", voltageOut)}"
 
-//      progressThrottleIn.setProgress(
-//        ((voltageIn - voltageMin) / (voltageMax - voltageMin) * 100).toInt().coerceIn(0, 100), true
-//      )
-//      progressThrottleOut.setProgress(
-//        ((voltageOut - voltageMin) / (voltageMax - voltageMin) * 100).toInt().coerceIn(0, 100), true
-//      )
+      // avoid division by zero
+      val denom = (voltageMax - voltageMin).let { if (it == 0f || it.isInfinite() || it.isNaN()) 1f else it }
 
-      val normalizedThrottleIn = (voltageIn - voltageMin) / (voltageMax - voltageMin)
-      val normalizedThrottleOut = (voltageOut - voltageMin) / (voltageMax - voltageMin)
+      val normalizedThrottleIn = (voltageIn - voltageMin) / denom
+      val normalizedThrottleOut = (voltageOut - voltageMin) / denom
 
       progressThrottleIn.progress = (normalizedThrottleIn * 100).toInt().coerceIn(0, 100)
       progressThrottleOut.progress = (normalizedThrottleOut * 100).toInt().coerceIn(0, 100)
@@ -431,7 +525,9 @@ class MainActivity : AppCompatActivity() {
       }
       bar.progressDrawable = progressDrawable
     } catch (e: Exception) {
-      bar.progressDrawable.setTint(color)
+      try {
+        bar.progressDrawable.setTint(color)
+      } catch (_: Exception) { /* ignore */ }
     }
   }
 
@@ -447,7 +543,6 @@ class MainActivity : AppCompatActivity() {
       cur <= mid -> {
         (cur - min) / (mid - min)
       }
-
       else -> {
         1f - (cur - mid) / (max - mid)
       }
@@ -455,24 +550,18 @@ class MainActivity : AppCompatActivity() {
   }
 
   fun updateWheelieIndicator() {
-    if (!wheelieIndicator.isVisible)
-      return
-
+    if (!wheelieIndicator.isVisible) return
     val settings = SettingsManager.settings
-
     val min = settings.target_pitch - settings.exit_threshold
     val mid = settings.target_pitch
     val max = settings.target_pitch + settings.emerg_threshold
     val cur = pitch
-
     handler.post {
       when {
         cur < min -> {
           wheelieIndicator.setColorFilter(Color.TRANSPARENT)
           wheelieIndicator.alpha = 0f
-//          wheelieIndicator.isVisible = false
         }
-
         cur in min..<mid -> {
           val progress = (cur - min) / (mid - min)
           val color = ColorUtils.blendARGB(
@@ -482,10 +571,7 @@ class MainActivity : AppCompatActivity() {
           )
           wheelieIndicator.setColorFilter(color)
           wheelieIndicator.alpha = 1f
-//          wheelieIndicator.alpha = calculateAlpha(min, mid, max, cur)
-//          wheelieIndicator.isVisible = true
         }
-
         cur in mid..<max -> {
           val progress = (cur - mid) / (max - mid)
           val color = ColorUtils.blendARGB(
@@ -495,13 +581,10 @@ class MainActivity : AppCompatActivity() {
           )
           wheelieIndicator.setColorFilter(color)
           wheelieIndicator.alpha = 1f
-//          wheelieIndicator.isVisible = true
         }
-
         cur >= max -> {
           wheelieIndicator.setColorFilter(wheelieIndicator.context.getColor(R.color.red))
           wheelieIndicator.alpha = 1f
-//          wheelieIndicator.isVisible = true
         }
       }
     }
@@ -522,7 +605,6 @@ class MainActivity : AppCompatActivity() {
     requestCode: Int, permissions: Array<out String>, grantResults: IntArray
   ) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
     when (requestCode) {
       PERMISSION_REQUEST_CODE -> {
         if (hasAllPermissions()) {
@@ -536,105 +618,70 @@ class MainActivity : AppCompatActivity() {
 
   private fun onPermissionsGranted() {
     showToast("Bluetooth permissions granted")
-
-    bleManager.startAutoConnect()
-
-//    if (!serverMac.isNullOrEmpty()) {
-//      //connectToServer()
-//    } else {
-//      bleManager.startAutoConnect()
-//    }
+    if (isBluetoothEnabled()) {
+      scanManager.startScan(this)
+    } else {
+      requestEnableBluetooth()
+    }
   }
 
   private fun onPermissionsDenied() {
     showToast("Bluetooth permissions required")
-
-//    connectionState = ConnectionState.DISCONNECTED
-  }
-
-  private fun saveLastMacAddress(macAddress: String?) {
-    macAddress?.let { prefManager.save(KEY_LAST_MAC, macAddress) }
-  }
-
-  private fun loadLastMacAddress(): String? {
-    return prefManager.load(KEY_LAST_MAC).ifEmpty { null }
-  }
-
-  private fun clearLastMacAddress() {
-    prefManager.remove(KEY_LAST_MAC)
   }
 
   private fun disconnectManually() {
     Log.d("MainActivity", "Manual disconnect initiated")
-    closeConnection()
-    bleManager.disconnectDevice()
-  }
-
-  private fun normalizeMacAddress(mac: String): String? {
-    val cleanMac = mac.replace("[:\\-\\.]".toRegex(), "").uppercase()
-
-    if (!cleanMac.matches("[0-9A-F]{12}".toRegex())) {
-      return null
+    connectionState = ConnectionState.DISCONNECTED
+    try {
+      scanManager.stopScan()
+      bleManager.disconnect().enqueue()
+      clearUI()
+    } catch (e: Exception) {
+      Log.e("MainActivity", "disconnectManually error: ${e.message}")
+      clearUI()
     }
-
-    return cleanMac.chunked(2).joinToString(":")
   }
 
-  private fun closeConnection() {
+  private fun clearUI() {
+    Log.d("MainActivity", "clearUI()")
     systemState = SystemState.IDLE
-
     SettingsManager.clear()
-
     App.settingsActivity?.finish()
-//    App.settingsActivity?.loadSettings()
-
     progressFinish()
-
     clearAttitudeValues()
     clearVoltageValues()
     clearVoltage()
     unlockScreen()
   }
 
-  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
-    if (requestCode == BLUETOOTH_ENABLE_REQUEST_CODE) {
-      if (resultCode == RESULT_OK) {
-        handler.post { bleManager.startAutoConnect() }
-      } else {
-        showToast("Bluetooth is required to connect to devices")
-      }
-    }
-  }
-
   private fun onConnected() {
-    if (connectionState == ConnectionState.CONNECTED)
-      return
-
-    saveLastMacAddress(serverMac)
+    if (connectionState == ConnectionState.CONNECTED) return
+    Log.d("MainActivity", "onConnected()")
     lockScreen()
     connectionState = ConnectionState.CONNECTED
-
     bleManager.send("${B_CONNECTED}=1")
   }
 
   private fun onConnecting() {
-    if (connectionState == ConnectionState.CONNECTING)
-      return
-
+    if (connectionState == ConnectionState.CONNECTING) return
+    Log.d("MainActivity", "onConnecting()")
     connectionState = ConnectionState.CONNECTING
   }
 
   private fun onConnectionLost() {
-    closeConnection()
-    onConnecting()
+    Log.e("MainActivity", "onConnectionLost()")
+    clearUI()
+    connectionState = ConnectionState.DISCONNECTED
+    handler.postDelayed({
+      if (hasAllPermissions() && isBluetoothEnabled()) {
+        scanManager.startScan(this)
+      }
+    }, 1000)
   }
 
   private fun onDisconnected() {
-    if (connectionState == ConnectionState.DISCONNECTED)
-      return
-
-    closeConnection()
+    if (connectionState == ConnectionState.DISCONNECTED) return
+    clearUI()
     connectionState = ConnectionState.DISCONNECTED
   }
 
@@ -644,27 +691,19 @@ class MainActivity : AppCompatActivity() {
         ConnectionState.CONNECTED -> {
           connectionIndicator.setImageResource(R.drawable.bluetooth_connected_24px)
           connectionIndicator.setColorFilter(
-            ContextCompat.getColor(
-              this, R.color.holo_green_light
-            )
+            ContextCompat.getColor(this, R.color.holo_green_light)
           )
         }
-
         ConnectionState.CONNECTING -> {
           connectionIndicator.setImageResource(R.drawable.bluetooth_searching_24px)
           connectionIndicator.setColorFilter(
-            ContextCompat.getColor(
-              this, R.color.holo_blue_light
-            )
+            ContextCompat.getColor(this, R.color.holo_blue_light)
           )
         }
-
         ConnectionState.DISCONNECTED -> {
           connectionIndicator.setImageResource(R.drawable.bluetooth_disabled_24px)
           connectionIndicator.setColorFilter(
-            ContextCompat.getColor(
-              this, R.color.holo_red_light
-            )
+            ContextCompat.getColor(this, R.color.holo_red_light)
           )
         }
       }
@@ -674,7 +713,6 @@ class MainActivity : AppCompatActivity() {
   private fun processData(params: JsonParamParser) {
     if (otaManager.isStarted()) {
       otaManager.processUpdate(params)
-
       return
     }
 
@@ -685,26 +723,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     if (!progressIsShowing()) {
-      pitch = round(params.getFloat(B_PITCH, pitch) * 10) / 10;
-      roll = round(params.getFloat(B_ROLL, roll) * 10) / 10;
+      pitch = round(params.getFloat(B_PITCH, pitch) * 10) / 10
+      roll = round(params.getFloat(B_ROLL, roll) * 10) / 10
       voltageIn = params.getFloat(B_VOLTAGE_IN, voltageIn)
       voltageOut = params.getFloat(B_VOLTAGE_OUT, voltageOut)
     }
 
     if (params.getInt(B_GET_SETTINGS) == 1) {
       SettingsManager.loadFrom(params)
-
       if (settingsRequested) {
-        settingsRequested = false;
+        settingsRequested = false
         openSettings()
       }
-
-//      App.settingsActivity?.loadSettings()
-//        ?: takeIf { settingsRequested }
-//          ?.let {
-//            settingsRequested = false
-//            openSettings()
-//          }
     }
 
     if (params.getInt(B_SET_SETTINGS, 0) == 1)
@@ -721,16 +751,12 @@ class MainActivity : AppCompatActivity() {
 
     if (params.hasParam(B_CALIBRATE_GYRO)) {
       val value = params.getInt(B_CALIBRATE_GYRO)
-
       if (value == 1) {
         clearAttitudeValues()
-
         progressStart(this, "Калибровка гироскопа...", 1000 * 20)
       } else {
         progressFinish()
-
         bleManager.send("${B_GET_POSITION}=1")
-
         if (value == -1)
           showToast("Gyroscope calibration failed")
       }
@@ -752,8 +778,13 @@ class MainActivity : AppCompatActivity() {
   override fun onDestroy() {
     super.onDestroy()
     App.mainActivity = null
-
     disconnectManually()
+    scanManager.release()
+    try {
+      unregisterReceiver(btStateReceiver)
+    } catch (e: Exception) {
+      Log.d("MainActivity", "btStateReceiver unregister failed: ${e.message}")
+    }
   }
 
   private fun showConfirmation(
