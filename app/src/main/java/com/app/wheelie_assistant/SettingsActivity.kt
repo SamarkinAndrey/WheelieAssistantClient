@@ -22,6 +22,7 @@ class SettingsActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.settings_activity)
+
     App.settingsActivity = this
 
     initViews()
@@ -33,7 +34,8 @@ class SettingsActivity : AppCompatActivity() {
   override fun onDestroy() {
     super.onDestroy()
 
-    App.settingsActivity = null
+    if (App.settingsActivity === this)
+      App.settingsActivity = null
   }
 
   private fun initViews() {

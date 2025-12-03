@@ -1,7 +1,6 @@
 package com.app.wheelie_assistant
 
 import android.Manifest
-import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
@@ -34,22 +33,6 @@ import androidx.core.view.isVisible
 import kotlin.math.abs
 import kotlin.math.round
 import com.app.wheelie_assistant.BTParam.*
-import java.lang.ref.WeakReference
-
-class App : Application() {
-  companion object {
-    private var _mainActivityRef: WeakReference<MainActivity>? = null
-    private var _settingsActivityRef: WeakReference<SettingsActivity>? = null
-
-    var mainActivity: MainActivity?
-      get() = _mainActivityRef?.get()
-      set(value) { _mainActivityRef = if (value != null) WeakReference(value) else null }
-
-    var settingsActivity: SettingsActivity?
-      get() = _settingsActivityRef?.get()
-      set(value) { _settingsActivityRef = if (value != null) WeakReference(value) else null }
-  }
-}
 
 class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
   enum class SystemState {
@@ -131,10 +114,17 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
   private val handler = Handler(Looper.getMainLooper())
   private val PERMISSION_REQUEST_CODE = 123
 
-  lateinit var bleManager: AppBleManager
-  lateinit var otaManager: AppOtaManager
-  lateinit var prefManager: AppPrefsManager
-  lateinit var scanManager: AppBleScanManager
+  private val bleManager: AppBleManager
+    get() = (application as App).bleManager
+
+  private val scanManager: AppBleScanManager
+    get() = (application as App).scanManager
+
+  private val otaManager: AppOtaManager
+    get() = (application as App).otaManager
+
+  private val prefManager: AppPrefsManager
+    get() = (application as App).prefManager
 
   private val bluetoothManager by lazy {
     getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
@@ -162,22 +152,14 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
         when (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1)) {
           BluetoothAdapter.STATE_ON -> {
             Log.d("MainActivity", "BluetoothAdapter.STATE_ON")
-
-            handler.postDelayed({
-              if (hasAllPermissions() && isBluetoothEnabled())
-                scanManager.startScan(this@MainActivity)
-            }, 1000)
+            bleManager.reset()
+            startBleScan()
           }
           BluetoothAdapter.STATE_OFF -> {
             Log.d("MainActivity", "BluetoothAdapter.STATE_OFF")
-
-            connectionState = ConnectionState.DISCONNECTED
-            clearUI()
-
+            bleManager.reset()
             scanManager.stopScan()
-//            bleManager.close()
-
-            //bleManager.disconnect().enqueue()
+            onDisconnected()
           }
         }
       }
@@ -188,11 +170,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
     ActivityResultContracts.StartActivityForResult()
   ) { result ->
     if (result.resultCode == RESULT_OK) {
-      handler.post {
-        if (hasAllPermissions()) {
-          scanManager.startScan(this)
-        }
-      }
+      startBleScan()
     } else {
       showToast("Bluetooth is required to connect to devices")
     }
@@ -219,28 +197,21 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    registerReceiver(btStateReceiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED))
-
     App.mainActivity = this
+
+    registerReceiver(btStateReceiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED))
 
     initViews()
     initProgressBars()
     setupBleManager()
-    setupOtaManager()
-    setupPrefManager()
     clearAttitudeValues()
     clearVoltageValues()
     clearVoltage()
 
-    scanManager = AppBleScanManager(this, AppBleManager.SERVICE_UUID)
-
-    if (hasAllPermissions() && isBluetoothEnabled()) {
-      scanManager.startScan(this)
-    }
+    startBleScan()
   }
 
   private fun setupBleManager() {
-    bleManager = AppBleManager(this)
     bleManager.onRead = { parser ->
       processData(parser)
     }
@@ -262,20 +233,13 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
     }
   }
 
-  private fun setupOtaManager() {
-    otaManager = AppOtaManager(this, bleManager)
-  }
-
-  private fun setupPrefManager() {
-    prefManager = AppPrefsManager(this)
-  }
-
   override fun onDeviceFound(device: BluetoothDevice, rssi: Int) {
     Log.d("MainActivity", "Device found: ${device.address}")
     scanManager.stopScan()
+
     bleManager.connect(device)
       .retry(3, 100)
-      .useAutoConnect(true)
+      .useAutoConnect(false)
       .enqueue()
   }
 
@@ -290,12 +254,10 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
 
   override fun onScanFailed(errorCode: Int) {
     Log.e("MainActivity", "Scan failed: $errorCode")
+    bleManager.reset()
+
     connectionState = ConnectionState.DISCONNECTED
-    handler.postDelayed({
-      if (hasAllPermissions() && isBluetoothEnabled()) {
-        scanManager.startScan(this)
-      }
-    }, 1000)
+    startBleScan(1000)
   }
 
   private fun isBluetoothEnabled(): Boolean {
@@ -383,7 +345,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
         disconnectManually()
       } else {
         if (hasAllPermissions() && isBluetoothEnabled()) {
-          scanManager.startScan(this)
+          startBleScan()
         } else if (!isBluetoothEnabled()) {
           requestEnableBluetooth()
         } else {
@@ -404,9 +366,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
       val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
       bluetoothEnableLauncher.launch(enableBtIntent)
     } else {
-      if (hasAllPermissions()) {
-        scanManager.startScan(this)
-      }
+      startBleScan()
     }
   }
 
@@ -550,8 +510,11 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
   }
 
   fun updateWheelieIndicator() {
-    if (!wheelieIndicator.isVisible) return
+    if (!wheelieIndicator.isVisible)
+      return
+
     val settings = SettingsManager.settings
+
     val min = settings.target_pitch - settings.exit_threshold
     val mid = settings.target_pitch
     val max = settings.target_pitch + settings.emerg_threshold
@@ -619,7 +582,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
   private fun onPermissionsGranted() {
     showToast("Bluetooth permissions granted")
     if (isBluetoothEnabled()) {
-      scanManager.startScan(this)
+      startBleScan()
     } else {
       requestEnableBluetooth()
     }
@@ -670,13 +633,17 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
 
   private fun onConnectionLost() {
     Log.e("MainActivity", "onConnectionLost()")
-    clearUI()
-    connectionState = ConnectionState.DISCONNECTED
+
+    onDisconnected()
+
+    startBleScan(1000)
+  }
+
+  private fun startBleScan(delay: Long = 0) {
     handler.postDelayed({
-      if (hasAllPermissions() && isBluetoothEnabled()) {
+      if (hasAllPermissions() && isBluetoothEnabled())
         scanManager.startScan(this)
-      }
-    }, 1000)
+    }, delay)
   }
 
   private fun onDisconnected() {
@@ -777,9 +744,10 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
 
   override fun onDestroy() {
     super.onDestroy()
-    App.mainActivity = null
-    disconnectManually()
-    scanManager.release()
+
+    if (App.mainActivity === this)
+      App.mainActivity = null
+
     try {
       unregisterReceiver(btStateReceiver)
     } catch (e: Exception) {

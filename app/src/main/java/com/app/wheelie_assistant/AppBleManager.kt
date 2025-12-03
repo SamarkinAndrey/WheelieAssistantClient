@@ -25,7 +25,6 @@ class AppBleManager(context: Context) : BleManager(context) {
 
   private var rxChar: BluetoothGattCharacteristic? = null
   private var txChar: BluetoothGattCharacteristic? = null
-
   private val parser = JsonParamParser()
 
   var onRead: ((JsonParamParser) -> Unit)? = null
@@ -167,5 +166,22 @@ class AppBleManager(context: Context) : BleManager(context) {
       log(Log.ERROR, "Write failed: ${e.message}")
       onWriteError?.invoke("Write failed: ${e.message}")
     }
+  }
+
+  fun reset() {
+    try {
+      cancelQueue()
+    } catch (_: Exception) { }
+
+    try {
+      disconnect().enqueue()
+    } catch (_: Exception) { }
+
+    try {
+      close()
+    } catch (_: Exception) { }
+
+    rxChar = null
+    txChar = null
   }
 }

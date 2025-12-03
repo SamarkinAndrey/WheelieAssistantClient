@@ -23,15 +23,10 @@ class AppBleScanManager(
     fun onScanFailed(errorCode: Int)
   }
 
+  private val bluetoothManager: BluetoothManager? = context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
+  private val bluetoothAdapter: BluetoothAdapter? = bluetoothManager?.adapter
   private var callback: Callback? = null
   private var isScanning = false
-  private val bluetoothManager: BluetoothManager?
-  private val bluetoothAdapter: BluetoothAdapter?
-
-  init {
-    bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
-    bluetoothAdapter = bluetoothManager?.adapter
-  }
 
   private val scanCallback = object : ScanCallback() {
     override fun onScanResult(callbackType: Int, result: ScanResult) {
@@ -57,6 +52,11 @@ class AppBleScanManager(
   }
 
   fun startScan(callback: Callback): Boolean {
+    if (isScanning) {
+      callback.onScanFailed(ScanCallback.SCAN_FAILED_ALREADY_STARTED)
+      return false
+    }
+
     if (!hasPermissions()) {
       callback.onScanFailed(ScanCallback.SCAN_FAILED_INTERNAL_ERROR)
       return false
@@ -67,8 +67,6 @@ class AppBleScanManager(
       callback.onScanFailed(ScanCallback.SCAN_FAILED_INTERNAL_ERROR)
       return false
     }
-
-    stopScan()
 
     this.callback = callback
 
@@ -105,10 +103,10 @@ class AppBleScanManager(
     try {
       val scanner = BluetoothLeScannerCompat.getScanner()
       scanner.stopScan(scanCallback)
+      isScanning = false
     } catch (e: Exception) {
       //
     } finally {
-      isScanning = false
       callback?.onScanStopped()
       callback = null
     }

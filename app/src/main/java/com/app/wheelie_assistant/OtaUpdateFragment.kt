@@ -32,8 +32,14 @@ class OtaUpdateFragment : InfoFragment() {
 
   private lateinit var updateLayout: LinearLayout
 
-  private var otaManager: AppOtaManager? = null
-  private var prefManager: AppPrefsManager? = null
+  private val bleManager: AppBleManager
+    get() =  (requireActivity().application as App).bleManager
+
+  private val otaManager: AppOtaManager
+    get() = (requireActivity().application as App).otaManager
+
+  private val prefManager: AppPrefsManager
+    get() = (requireActivity().application as App).prefManager
 
   override fun onPause() {
     super.onPause()
@@ -59,9 +65,7 @@ class OtaUpdateFragment : InfoFragment() {
 
   private fun checkIsNewVersion() {
     val isNewVersion = !currentVersion.isNullOrBlank() &&
-                                !actualVersion.isNullOrBlank() &&
-                                otaManager != null // &&
-                                // otaManager!!.compareVersions(versionActual!!, versionCurrent!!) != 0
+                                !actualVersion.isNullOrBlank()
 
     updateLayout.post {
       if (isNewVersion) {
@@ -121,11 +125,6 @@ class OtaUpdateFragment : InfoFragment() {
   override fun getFragmentID(): Int = R.layout.fragment_ota_update
 
   override fun onInit(view: View) {
-    App.mainActivity?.let {
-      otaManager = it.otaManager
-      prefManager = it.prefManager
-    }
-
     initViews(view)
     setup()
 
@@ -174,7 +173,7 @@ class OtaUpdateFragment : InfoFragment() {
       )
     }
 
-    prefManager?.let {
+    prefManager.let {
       ssidValue.setText(it.load("wifi_ssid"))
       passValue.setText(it.load("wifi_pass"))
     }
@@ -266,7 +265,7 @@ class OtaUpdateFragment : InfoFragment() {
     actualVersionValue.text = "запрос"
     actualVersionValue.setTextColor(requireContext().getColor(R.color.blue))
 
-    otaManager?.getRemoteVersion { version ->
+    otaManager.getRemoteVersion { version ->
       actualVersion = version
       checkIsNewVersion()
     }
