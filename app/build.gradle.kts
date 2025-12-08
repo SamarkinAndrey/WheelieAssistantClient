@@ -108,14 +108,14 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
-    implementation("androidx.compose.ui:ui:1.9.5")
-    implementation("androidx.compose.material:material:1.9.5")
+    implementation("androidx.compose.ui:ui:1.10.0")
+    implementation("androidx.compose.material:material:1.10.0")
     implementation("androidx.compose.material3:material3:1.4.0")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.9.5")
-    implementation("androidx.activity:activity-compose:1.12.0")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.10.0")
+    implementation("androidx.activity:activity-compose:1.12.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.10.0")
-    implementation("androidx.compose.foundation:foundation:1.9.5")
+    implementation("androidx.compose.foundation:foundation:1.10.0")
 
 //    implementation("com.google.code.gson:gson:2.13.2")
 //    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
@@ -123,7 +123,7 @@ dependencies {
 //    implementation("androidx.work:work-runtime-ktx:2.11.0")
 //    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
-    debugImplementation("androidx.compose.ui:ui-tooling:1.9.5")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.10.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
