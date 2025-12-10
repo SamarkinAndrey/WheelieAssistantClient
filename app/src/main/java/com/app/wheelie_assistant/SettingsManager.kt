@@ -1,6 +1,7 @@
 package com.app.wheelie_assistant
 
 import com.app.wheelie_assistant.BTParam.*
+import kotlin.math.round
 
 data class Settings(
   var system_tick: Int = 0,
@@ -64,17 +65,17 @@ data class Settings(
   fun saveTo(parser: JsonParamParser) {
     parser.setInt(B_SYSTEM_TICK, system_tick)
     parser.setInt(B_PREDICTION_HORIZONT, prediction_horizont)
-    parser.setFloat(B_GYRO_HYSTERESIS, gyro_hysteresis)
+    parser.setFloat(B_GYRO_HYSTERESIS, round(gyro_hysteresis * 100) / 100)
     parser.setBoolean(B_REVERSED_PITCH, reversed_pitch)
     parser.setBoolean(B_REVERSED_ROLL, reversed_roll)
-    parser.setFloat(B_TARGET_PITCH, target_pitch)
-    parser.setFloat(B_DEAD_ZONE, dead_zone)
-    parser.setFloat(B_EXIT_THRESHOLD, exit_threshold)
-    parser.setFloat(B_EMERG_THRESHOLD, emerg_threshold)
-    parser.setFloat(B_MIN_VOLTAGE, min_voltage)
+    parser.setFloat(B_TARGET_PITCH, round(target_pitch * 100) / 100)
+    parser.setFloat(B_DEAD_ZONE, round(dead_zone * 100) / 100)
+    parser.setFloat(B_EXIT_THRESHOLD, round(exit_threshold * 100) / 100)
+    parser.setFloat(B_EMERG_THRESHOLD, round(emerg_threshold * 100) / 100)
+    parser.setFloat(B_MIN_VOLTAGE, round(min_voltage * 100) / 100)
     parser.setInt(B_MIN_STEP, min_step)
     parser.setInt(B_MAX_STEP, max_step)
-    parser.setFloat(B_HYSTERESIS, hysteresis)
+    parser.setFloat(B_HYSTERESIS, round(hysteresis * 100) / 100)
     parser.setInt(B_MAX_SPEED, max_speed)
     parser.setInt(B_TREND_DURATION, trend_duration)
     parser.setInt(B_STABLE_DURATION, stable_duration)
