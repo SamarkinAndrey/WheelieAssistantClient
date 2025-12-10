@@ -1,7 +1,6 @@
 package com.app.wheelie_assistant
 
 import com.app.wheelie_assistant.BTParam.*
-import kotlin.math.round
 
 data class Settings(
   var system_tick: Int = 0,
