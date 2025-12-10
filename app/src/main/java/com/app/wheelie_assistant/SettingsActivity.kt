@@ -75,8 +75,10 @@ class SettingsActivity : AppCompatActivity() {
 
   private fun setupClickListeners() {
     saveButton.setOnClickListener {
-      if (saveSettings())
-        finish()
+      saveSettings()
+
+//      if (saveSettings())
+//        finish()
     }
 
     backButton.setOnClickListener {

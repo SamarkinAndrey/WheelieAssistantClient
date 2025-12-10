@@ -3,6 +3,7 @@ package com.app.wheelie_assistant
 import org.json.JSONObject
 import org.json.JSONException
 import android.util.Log
+import kotlin.math.round
 
 class JsonParamParser() {
   private val root = JSONObject()
@@ -57,7 +58,7 @@ class JsonParamParser() {
   }
 
   fun getFloat(param: Int, defaultValue: Float = 0.0f): Float {
-    return root.optDouble(param.toString(), defaultValue.toDouble()).toFloat()
+    return round(root.optDouble(param.toString(), defaultValue.toDouble()).toFloat() * 100) / 100
   }
 
   fun getFloat(param: BTParam, defaultValue: Float = 0.0f): Float {
@@ -114,7 +115,7 @@ class JsonParamParser() {
   }
 
   fun setFloat(param: Int, value: Float) {
-    root.put(param.toString(), value.toDouble())
+    root.put(param.toString(), round(value.toDouble() * 100) / 100)
   }
 
   fun setFloat(param: BTParam, value: Float) {

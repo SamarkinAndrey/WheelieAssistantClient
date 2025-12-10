@@ -1,39 +1,28 @@
 package com.app.wheelie_assistant
 
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import android.view.View
-import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageButton
 
 class OtaUpdateFragment : InfoFragment() {
-  private lateinit var btnSelectFile: MaterialButton
   private lateinit var btnStartUpdate: MaterialButton
-  private lateinit var tvFileName: TextView
-  private lateinit var tvFileSize: TextView
   private lateinit var progressBar: ProgressBar
   private lateinit var statusBar: TextView
 
   private lateinit var ssidValue: AppCompatEditText
   private lateinit var passValue: AppCompatEditText
-  private lateinit var timeoutValue: EditText
-  private lateinit var urlValue: EditText
   private lateinit var currentVersionValue: TextView
   private lateinit var actualVersionValue: TextView
 
   private lateinit var togglePassword: AppCompatImageButton
 
   private lateinit var updateLayout: LinearLayout
-
-  private val bleManager: AppBleManager
-    get() =  (requireActivity().application as App).bleManager
 
   private val otaManager: AppOtaManager
     get() = (requireActivity().application as App).otaManager
@@ -137,17 +126,12 @@ class OtaUpdateFragment : InfoFragment() {
   }
 
   private fun initViews(view: View) {
-    btnSelectFile = view.findViewById(R.id.btnSelectFile)
     btnStartUpdate = view.findViewById(R.id.btnStartUpdate)
-    tvFileName = view.findViewById(R.id.tvFileName)
-    tvFileSize = view.findViewById(R.id.tvFileSize)
     progressBar = view.findViewById(R.id.progressBar)
     statusBar = view.findViewById(R.id.tvStatus)
 
     ssidValue = view.findViewById(R.id.ssidValue)
     passValue = view.findViewById(R.id.passValue)
-    timeoutValue = view.findViewById(R.id.timeoutValue)
-    urlValue = view.findViewById(R.id.urlValue)
     currentVersionValue = view.findViewById(R.id.versionCurrent)
     actualVersionValue = view.findViewById(R.id.versionActual)
     togglePassword = view.findViewById(R.id.togglePassword)
@@ -165,7 +149,7 @@ class OtaUpdateFragment : InfoFragment() {
     }
 
     btnStartUpdate.setOnClickListener {
-      otaManager?.requestUpdate(
+      otaManager.requestUpdate(
         ssidValue.text.toString(),
         passValue.text.toString(),
         wifiCallback,
@@ -210,7 +194,7 @@ class OtaUpdateFragment : InfoFragment() {
     }
 
     override fun onConnected() {
-      prefManager?.let {
+      prefManager.let {
         it.save("wifi_ssid", ssidValue.text.toString())
         it.save("wifi_pass", passValue.text.toString())
       }
@@ -269,10 +253,5 @@ class OtaUpdateFragment : InfoFragment() {
       actualVersion = version
       checkIsNewVersion()
     }
-  }
-
-  private fun showToast(message: String) {
-    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    Log.d("OTAManager", message)
   }
 }
