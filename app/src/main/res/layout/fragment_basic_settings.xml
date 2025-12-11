@@ -75,8 +75,8 @@
                     android:layout_marginBottom="12dp"
                     android:elevation="0dp"
                     android:stepSize="5.0"
-                    android:value="5.0"
-                    android:valueFrom="5.0"
+                    android:value="10.0"
+                    android:valueFrom="10.0"
                     android:valueTo="100.0" />
 
                 <!-- Время реакции мотора -->
