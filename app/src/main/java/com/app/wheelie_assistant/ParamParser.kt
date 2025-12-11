@@ -1,7 +1,9 @@
+package com.app.wheelie_assistant
+
 import org.json.JSONObject
 import org.json.JSONException
 
-class paramParser {
+class ParamParser {
   data class Parameter(val name: String, val value: String? = null)
 
   companion object {

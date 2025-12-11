@@ -2,6 +2,7 @@ package com.app.wheelie_assistant
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 class AppPrefsManager(private val context: Context) {
 
@@ -10,7 +11,7 @@ class AppPrefsManager(private val context: Context) {
   }
 
   fun save(key: String, value: String) {
-    sharedPrefs.edit().putString(key, value).apply()
+    sharedPrefs.edit { putString(key, value) }
   }
 
   fun load(key: String, defaultValue: String = ""): String {
@@ -22,10 +23,10 @@ class AppPrefsManager(private val context: Context) {
   }
 
   fun remove(key: String) {
-    sharedPrefs.edit().remove(key).apply()
+    sharedPrefs.edit { remove(key) }
   }
 
   fun clear() {
-    sharedPrefs.edit().clear().apply()
+    sharedPrefs.edit { clear() }
   }
 }

@@ -10,7 +10,6 @@ import no.nordicsemi.android.ble.observer.ConnectionObserver
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import paramParser
 import java.util.*
 
 class AppBleManager(context: Context) : BleManager(context) {
@@ -148,7 +147,7 @@ class AppBleManager(context: Context) : BleManager(context) {
     var buf: String = jsonString
     try {
       if (!isJson(buf)) {
-        val p = paramParser()
+        val p = ParamParser()
         if (!p.parse(buf)) return
         buf = p.toJson()
       }

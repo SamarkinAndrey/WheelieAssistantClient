@@ -2,8 +2,6 @@ package com.app.wheelie_assistant
 
 import android.app.Application
 import java.lang.ref.WeakReference
-import com.app.wheelie_assistant.MainActivity
-import com.app.wheelie_assistant.SettingsActivity
 
 class App : Application() {
 

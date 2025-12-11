@@ -62,23 +62,19 @@ class PositionRenderer : GLSurfaceView.Renderer {
   override fun onDrawFrame(gl: GL10?) {
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-    // Камера смотрит строго сзади (по оси Z)
     Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 3f, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
     Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
 
-    // Сначала рисуем статическое перекрестие
     crosshair.draw(vPMatrix)
 
-    // Затем рисуем стрелку самолета, которая вращается
     Matrix.setIdentityM(rotationMatrix, 0)
-    Matrix.rotateM(rotationMatrix, 0, roll, 0f, 0f, 1f) // Крен вокруг Z
-    Matrix.rotateM(rotationMatrix, 0, -pitch, 1f, 0f, 0f) // Тангаж вокруг X
+    Matrix.rotateM(rotationMatrix, 0, roll, 0f, 0f, 1f)
+    Matrix.rotateM(rotationMatrix, 0, -pitch, 1f, 0f, 0f)
 
     aircraftArrow.draw(vPMatrix, rotationMatrix)
   }
 }
 
-// Класс для цифровых обозначений углов
 class AngleLabels {
   private var program: Int
   private var positionHandle: Int
@@ -121,7 +117,6 @@ class AngleLabels {
     colorHandle = GLES20.glGetAttribLocation(program, "aColor")
     mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix")
 
-    // Создаем упрощенные цифры (просто точки для демонстрации)
     val vertices = createSimpleDigitVertices()
 
     vertexBuffer =
@@ -131,7 +126,6 @@ class AngleLabels {
           position(0)
         }
 
-    // Белый цвет для всех цифр
     val colors = FloatArray(vertices.size / 3 * 4) {
       1.0f; 1.0f; 1.0f; 1.0f
     }
@@ -154,7 +148,6 @@ class AngleLabels {
     GLES20.glEnableVertexAttribArray(colorHandle)
     GLES20.glVertexAttribPointer(colorHandle, 4, GLES20.GL_FLOAT, false, 0, colorBuffer)
 
-    // Рисуем обозначения углов
     GLES20.glLineWidth(1.5f)
     GLES20.glDrawArrays(GLES20.GL_LINES, 0, vertexBuffer.capacity() / 3)
 
@@ -164,11 +157,7 @@ class AngleLabels {
   private fun createSimpleDigitVertices(): FloatArray {
     val vertices = mutableListOf<Float>()
 
-    // Упрощенные обозначения - просто линии для демонстрации
-    // Угол крена справа (горизонтально)
     addSimpleText(vertices, "ROLL", 1.3f, 0.0f, 0.08f)
-
-    // Угол тангажа сверху (горизонтально)
     addSimpleText(vertices, "PITCH", 0.0f, 1.3f, 0.08f)
 
     return vertices.toFloatArray()
@@ -177,15 +166,12 @@ class AngleLabels {
   private fun addSimpleText(
     vertices: MutableList<Float>, text: String, x: Float, y: Float, size: Float
   ) {
-    // Упрощенная реализация - просто горизонтальная линия с текстом
     when (text) {
       "ROLL" -> {
-        // Горизонтальная линия для ROLL
         addLine(vertices, x, y, x + size * 3, y)
       }
 
       "PITCH" -> {
-        // Горизонтальная линия для PITCH
         addLine(vertices, x, y, x + size * 3, y)
       }
     }
@@ -203,7 +189,6 @@ class AngleLabels {
   }
 }
 
-// Класс для статического перекрестия (указателей горизонта/вертикали)
 class Crosshair {
   private var program: Int
   private var positionHandle: Int
@@ -213,31 +198,22 @@ class Crosshair {
   private val vertexBuffer: java.nio.FloatBuffer
   private val colorBuffer: java.nio.FloatBuffer
 
-  // Перекрестие в виде линий горизонта и вертикали БЕЗ отметок
   private val vertices = floatArrayOf(
-    // Горизонтальная линия - левая часть (от -1.6 до -0.8)
     -2.7f, 0.0f, 0.0f, -1.7f, 0.0f, 0.0f,
-
-    // Горизонтальная линия - правая часть (от 0.8 до 1.6)
     1.7f, 0.0f, 0.0f, 2.7f, 0.0f, 0.0f,
-
-    // Вертикальная линия - нижняя часть (от -1.6 до -0.8)
     0.0f, -2.7f, 0.0f, 0.0f, -1.7f, 0.0f,
-
-    // Вертикальная линия - верхняя часть (от 0.8 до 1.6)
     0.0f, 1.7f, 0.0f, 0.0f, 2.7f, 0.0f
   )
 
-  // Белый цвет для всего перекрестия
   private val colors = floatArrayOf(
-    1.0f, 1.0f, 1.0f, 1.0f,  // начало левой горизонтали
-    1.0f, 1.0f, 1.0f, 1.0f,  // конец левой горизонтали
-    1.0f, 1.0f, 1.0f, 1.0f,  // начало правой горизонтали
-    1.0f, 1.0f, 1.0f, 1.0f,  // конец правой горизонтали
-    1.0f, 1.0f, 1.0f, 1.0f,  // начало нижней вертикали
-    1.0f, 1.0f, 1.0f, 1.0f,  // конец нижней вертикали
-    1.0f, 1.0f, 1.0f, 1.0f,  // начало верхней вертикали
-    1.0f, 1.0f, 1.0f, 1.0f   // конец верхней вертикали
+    1.0f, 1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f, 1.0f
   )
 
   init {
@@ -299,7 +275,6 @@ class Crosshair {
     GLES20.glEnableVertexAttribArray(colorHandle)
     GLES20.glVertexAttribPointer(colorHandle, 4, GLES20.GL_FLOAT, false, 0, colorBuffer)
 
-    // Рисуем все линии перекрестия
     GLES20.glLineWidth(2.0f)
     GLES20.glDrawArrays(GLES20.GL_LINES, 0, vertices.size / 3)
 
@@ -323,28 +298,17 @@ class ObjectTriangle {
   private val vertexBuffer: java.nio.FloatBuffer
   private val colorBuffer: java.nio.FloatBuffer
 
-  // Равнобедренный треугольник, направленный вперед (по оси Z)
-  // При roll=0, pitch=0 виден как горизонтальная линия (вид сзади)
-
-//    private val vertices = floatArrayOf(
-//        // Вершины треугольника
-//        0.0f, 0.0f, 1.0f,   // Нос (верхняя точка) - вперед по Z
-//        -0.5f, 0.0f, 0.0f,  // Левое крыло
-//        0.5f, 0.0f, 0.0f    // Правое крыло
-//    )
-
   private val vertices = floatArrayOf(
     // Вершины треугольника
-    0.0f, 0.0f, 1.5f,   // Нос (верхняя точка) - вперед по Z
+    0.0f, 0.0f, 1.5f,   // Нос (верхняя точка)
     -1.0f, 0.0f, 0.0f,  // Левое крыло
     1.0f, 0.0f, 0.0f    // Правое крыло
   )
 
-  // Белый цвет для всего треугольника
   private val colors = floatArrayOf(
-    1.0f, 1.0f, 1.0f, 1.0f,  // нос
-    1.0f, 1.0f, 1.0f, 1.0f,  // левое крыло
-    1.0f, 1.0f, 1.0f, 1.0f   // правое крыло
+    1.0f, 1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f, 1.0f
   )
 
   init {
@@ -409,10 +373,8 @@ class ObjectTriangle {
     GLES20.glEnableVertexAttribArray(colorHandle)
     GLES20.glVertexAttribPointer(colorHandle, 4, GLES20.GL_FLOAT, false, 0, colorBuffer)
 
-    // Рисуем треугольник
     GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3)
 
-    // Рисуем контур треугольника (линии)
     GLES20.glLineWidth(2.0f)
     GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, 3)
 
