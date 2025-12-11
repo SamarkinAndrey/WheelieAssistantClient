@@ -3,22 +3,22 @@ package com.app.wheelie_assistant
 import com.app.wheelie_assistant.BTParam.*
 
 data class Settings(
-  var system_tick: Int = 0,
-  var prediction_horizont: Int = 0,
-  var gyro_hysteresis: Float = 0f,
+  var system_tick: Int = Defaults.SYSTEM_TICK,
+  var prediction_horizont: Int = Defaults.PREDICT_HORIZONT,
+  var gyro_hysteresis: Float = Defaults.GYRO_HYSTERESIS,
   var reversed_pitch: Boolean = false,
   var reversed_roll: Boolean = false,
-  var target_pitch: Float = 0f,
-  var dead_zone: Float = 0f,
-  var exit_threshold: Float = 0f,
-  var emerg_threshold: Float = 0f,
-  var min_voltage: Float = 0f,
-  var min_step: Int = 0,
-  var max_step: Int = 0,
-  var hysteresis: Float = 0f,
-  var max_speed: Int = 0,
-  var trend_duration: Int = 0,
-  var stable_duration: Int = 0,
+  var target_pitch: Float = Defaults.TARGET_PITCH,
+  var dead_zone: Float = Defaults.DEAD_ZONE,
+  var exit_threshold: Float = Defaults.EXIT_THRESHOLD,
+  var emerg_threshold: Float = Defaults.EMERG_THRESHOLD,
+  var min_voltage: Float = Defaults.MIN_VOLTAGE,
+  var min_step: Int = Defaults.MIN_STEP,
+  var max_step: Int = Defaults.MAX_STEP,
+  var hysteresis: Float = Defaults.HYSTERESIS,
+  var max_speed: Int = Defaults.MAX_SPEED,
+  var trend_duration: Int = Defaults.TREND_DURATION,
+  var stable_duration: Int = Defaults.STABLE_DURATION,
   var firmware_ver: String = "",
   var wifi_timeout: Int = 0
 ) {
@@ -82,22 +82,20 @@ data class Settings(
 
   fun validate(): Boolean {
     return try {
-      (system_tick in 5..100) &&
-        (prediction_horizont in system_tick..250) &&
-        (gyro_hysteresis in 0.0f..5.0f) &&
-        (reversed_pitch in false..true) &&
-        (reversed_roll in false..true) &&
-        (target_pitch in 15.0f..65.0f) &&
-        (dead_zone in 0.0f..5.0f) &&
-        (exit_threshold in 0.0f..10.0f) &&
-        (emerg_threshold in 0.0f..10.0f) &&
-        (min_voltage in 0.0f..5.0f) &&
-        (min_step in 1..10) &&
-        (max_step in min_step..10) &&
-        (hysteresis in 0.0f..1.0f) &&
-        (max_speed in 0..500) &&
-        (trend_duration in 0..500) &&
-        (stable_duration in 0..500)
+      (system_tick in Limits.SYSTEM_TICK_MIN..Limits.SYSTEM_TICK_MAX) &&
+        (prediction_horizont in Limits.PREDICT_HORIZONT_MIN..Limits.PREDICT_HORIZONT_MAX) &&
+        (gyro_hysteresis in Limits.GYRO_HYSTERESIS_MIN..Limits.GYRO_HYSTERESIS_MAX) &&
+        (target_pitch in Limits.TARGET_PITCH_MIN..Limits.TARGET_PITCH_MAX) &&
+        (dead_zone in Limits.DEAD_ZONE_MIN..Limits.DEAD_ZONE_MAX) &&
+        (exit_threshold in Limits.EXIT_THRESHOLD_MIN..Limits.EXIT_THRESHOLD_MAX) &&
+        (emerg_threshold in Limits.EMERG_THRESHOLD_MIN..Limits.EMERG_THRESHOLD_MAX) &&
+        (min_voltage in Limits.MIN_VOLTAGE_MIN..Limits.MIN_VOLTAGE_MAX) &&
+        (min_step in Limits.STEP_MIN..Limits.STEP_MAX) &&
+        (max_step in min_step..Limits.STEP_MAX) &&
+        (hysteresis in Limits.HYSTERESIS_MIN..Limits.HYSTERESIS_MAX) &&
+        (max_speed in Limits.MAX_SPEED_MIN..Limits.MAX_SPEED_MAX) &&
+        (trend_duration in Limits.TREND_DURATION_MIN..Limits.TREND_DURATION_MAX) &&
+        (stable_duration in Limits.STABLE_DURATION_MIN..Limits.STABLE_DURATION_MAX)
     } catch (e: Exception) {
       false
     }
@@ -125,22 +123,22 @@ data class Settings(
   }
 
   fun default() {
-    system_tick = 10
-    prediction_horizont = 90
-    gyro_hysteresis = 0.2f
+    system_tick = Defaults.SYSTEM_TICK
+    prediction_horizont = Defaults.PREDICT_HORIZONT
+    gyro_hysteresis = Defaults.GYRO_HYSTERESIS
     reversed_pitch = false
     reversed_roll = false
-    target_pitch = 25.0f
-    dead_zone = 0.5f
-    exit_threshold = 5.0f
-    emerg_threshold = 5.0f
-    min_voltage = 1.5f
-    min_step = 1
-    max_step = 4
-    hysteresis = 0.3f
-    max_speed = 200
-    trend_duration = 50
-    stable_duration = 300
+    target_pitch = Defaults.TARGET_PITCH
+    dead_zone = Defaults.DEAD_ZONE
+    exit_threshold = Defaults.EXIT_THRESHOLD
+    emerg_threshold = Defaults.EMERG_THRESHOLD
+    min_voltage = Defaults.MIN_VOLTAGE
+    min_step = Defaults.MIN_STEP
+    max_step = Defaults.MAX_STEP
+    hysteresis = Defaults.HYSTERESIS
+    max_speed = Defaults.MAX_SPEED
+    trend_duration = Defaults.TREND_DURATION
+    stable_duration = Defaults.STABLE_DURATION
   }
 }
 
@@ -171,7 +169,7 @@ object SettingsManager {
     loaded = false
   }
 
-//  fun settings(): Settings = settings
+  //  fun settings(): Settings = settings
 
   fun isLoaded() = loaded
 }

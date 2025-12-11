@@ -2,6 +2,69 @@ package com.app.wheelie_assistant
 
 import kotlin.String
 
+object Defaults {
+  const val SYSTEM_TICK: Int = 10
+  const val PREDICT_HORIZONT: Int = 90
+
+  const val GYRO_HYSTERESIS: Float = 0.2f
+
+  const val TARGET_PITCH: Float = 25.0f
+  const val DEAD_ZONE: Float = 0.5f
+  const val EXIT_THRESHOLD: Float = 5.0f
+  const val EMERG_THRESHOLD: Float = 5.0f
+
+  const val MIN_VOLTAGE: Float = 1.5f
+
+  const val MIN_STEP: Int = 1
+  const val MAX_STEP: Int = 4
+
+  const val HYSTERESIS: Float = 0.3f
+  const val MAX_SPEED: Int = 200
+  const val TREND_DURATION: Int = 50
+  const val STABLE_DURATION: Int = 300
+}
+
+object Limits {
+  const val SYSTEM_TICK_MIN: Int = 10
+  const val SYSTEM_TICK_MAX: Int = 100
+
+  const val PREDICT_HORIZONT_MIN: Int = SYSTEM_TICK_MIN
+  const val PREDICT_HORIZONT_MAX: Int = 250
+
+  const val TARGET_PITCH_MIN: Float = 15.0f
+  const val TARGET_PITCH_MAX: Float = 65.0f
+
+  const val DEAD_ZONE_MIN: Float = 0.0f
+  const val DEAD_ZONE_MAX: Float = 5.0f
+
+  const val EXIT_THRESHOLD_MIN: Float = 0.0f
+  const val EXIT_THRESHOLD_MAX: Float = 10.0f
+
+  const val EMERG_THRESHOLD_MIN: Float = 0.0f
+  const val EMERG_THRESHOLD_MAX: Float = 10.0f
+
+  const val MIN_VOLTAGE_MIN: Float = 0.0f
+  const val MIN_VOLTAGE_MAX: Float = 5.0f
+
+  const val STEP_MIN: Int = 1
+  const val STEP_MAX: Int = 10
+
+  const val HYSTERESIS_MIN: Float = 0.0f
+  const val HYSTERESIS_MAX: Float = 1.0f
+
+  const val MAX_SPEED_MIN: Int = 0
+  const val MAX_SPEED_MAX: Int = 500
+
+  const val TREND_DURATION_MIN: Int = 0
+  const val TREND_DURATION_MAX: Int = 500
+
+  const val STABLE_DURATION_MIN: Int = 0
+  const val STABLE_DURATION_MAX: Int = 500
+
+  const val GYRO_HYSTERESIS_MIN: Float = 0.0f
+  const val GYRO_HYSTERESIS_MAX: Float = 5.0f
+}
+
 enum class BTParam {
   B_SYSTEM_TICK,
   B_PREDICTION_HORIZONT,
