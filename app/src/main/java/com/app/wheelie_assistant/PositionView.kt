@@ -55,8 +55,11 @@ class PositionRenderer : GLSurfaceView.Renderer {
 
   override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
     GLES20.glViewport(0, 0, width, height)
-    val ratio = width.toFloat() / height.toFloat()
-    Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1f, 1f, 1f, 10f)
+
+//    val ratio = width.toFloat() / height.toFloat()
+//    Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1f, 1f, 1f, 10f)
+
+    Matrix.orthoM(projectionMatrix, 0, -3f, 3f, -3f, 3f, 1f, 10f)
   }
 
   override fun onDrawFrame(gl: GL10?) {
@@ -68,6 +71,10 @@ class PositionRenderer : GLSurfaceView.Renderer {
     crosshair.draw(vPMatrix)
 
     Matrix.setIdentityM(rotationMatrix, 0)
+
+    val scale = 1.1f
+    Matrix.scaleM(rotationMatrix, 0, scale, scale, scale)
+
     Matrix.rotateM(rotationMatrix, 0, roll, 0f, 0f, 1f)
     Matrix.rotateM(rotationMatrix, 0, -pitch, 1f, 0f, 0f)
 
