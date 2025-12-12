@@ -153,7 +153,7 @@
         android:layout_weight="1">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/topRow"
+            android:id="@+id/row_top"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/pitchValue"
@@ -162,15 +162,29 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <Space
-                android:id="@+id/space_left"
+            <TextView
+                android:id="@+id/tvChipTemp"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="8dp"
+                android:gravity="center_horizontal|top"
+                android:textColor="@color/red"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="0.2" />
+
+<!--            <Space-->
+<!--                android:id="@+id/space_top_left"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_marginStart="8dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintWidth_percent="0.2" />-->
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/pitch_indicator_up"
@@ -180,13 +194,13 @@
                 android:src="@drawable/arrow_drop_up_24px"
                 android:tint="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/frame_right"
-                app:layout_constraintStart_toEndOf="@id/space_left"
+                app:layout_constraintEnd_toStartOf="@id/frame_top_right"
+                app:layout_constraintStart_toEndOf="@id/tvChipTemp"
                 app:layout_constraintTop_toTopOf="parent" />
 
 
             <FrameLayout
-                android:id="@+id/frame_right"
+                android:id="@+id/frame_top_right"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="8dp"
@@ -217,7 +231,7 @@
             app:layout_constraintBottom_toTopOf="@id/pitch_indicator_down"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topRow"
+            app:layout_constraintTop_toBottomOf="@id/row_top"
             app:layout_constraintVertical_weight="1" />
 
         <androidx.appcompat.widget.AppCompatImageView

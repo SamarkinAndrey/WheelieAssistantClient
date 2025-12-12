@@ -67,6 +67,8 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
   private lateinit var tvThrottleIn: TextView
   private lateinit var tvThrottleOut: TextView
 
+  private lateinit var tvChipTemp: TextView
+
   private lateinit var positionCard: MaterialCardView
   private lateinit var voltageCard: MaterialCardView
 
@@ -78,6 +80,8 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
 
   private var voltageIn: Float = 0f
   private var voltageOut: Float = 0f
+
+  private var chipTemp: Int = 0
 
   private var voltageMin: Float = Float.POSITIVE_INFINITY
   private var voltageMax: Float = Float.NEGATIVE_INFINITY
@@ -284,6 +288,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
   private fun initViews() {
     tvThrottleIn = findViewById(R.id.tvThrottleIn)
     tvThrottleOut = findViewById(R.id.tvThrottleOut)
+    tvChipTemp =  findViewById(R.id.tvChipTemp)
     progressThrottleIn = findViewById(R.id.progressVoltageIn)
     progressThrottleOut = findViewById(R.id.progressVoltageOut)
     positionView = findViewById(R.id.positionView)
@@ -472,6 +477,10 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
       updateProgressBarColor(progressThrottleIn, colorIn)
       updateProgressBarColor(progressThrottleOut, colorOut)
     }
+  }
+
+  private fun updateChipTemp() {
+    tvChipTemp.text = "$chipTemp°C"
   }
 
   private fun updateProgressBarColor(bar: ProgressBar, color: Int) {
@@ -694,6 +703,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
       roll = round(params.getFloat(B_ROLL, roll) * 10) / 10
       voltageIn = params.getFloat(B_VOLTAGE_IN, voltageIn)
       voltageOut = params.getFloat(B_VOLTAGE_OUT, voltageOut)
+      chipTemp = params.getInt(B_CHIP_TEMP, chipTemp)
     }
 
     if (params.getInt(B_GET_SETTINGS) == 1) {
@@ -734,6 +744,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
 
     updateAttitudeView()
     updateVoltageDisplays()
+    updateChipTemp()
     updateWheelieIndicator()
   }
 
