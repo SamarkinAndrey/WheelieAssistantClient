@@ -208,9 +208,8 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
     initViews()
     initProgressBars()
     setupBleManager()
-    clearAttitudeValues()
-    clearVoltageValues()
-    clearVoltage()
+
+    clearAll()
 
     startBleScan()
   }
@@ -232,6 +231,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
     bleManager.onWriteError = { message ->
       handler.post {
         showToast(message)
+
         Log.e("MainActivity", "Write error: $message")
       }
     }
@@ -239,6 +239,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
 
   override fun onDeviceFound(device: BluetoothDevice, rssi: Int) {
     Log.d("MainActivity", "Device found: ${device.address}")
+
     scanManager.stopScan()
 
     bleManager.connect(device)
@@ -249,6 +250,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
 
   override fun onScanStarted() {
     Log.d("MainActivity", "Scan started")
+
     connectionState = ConnectionState.CONNECTING
   }
 
@@ -258,9 +260,11 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
 
   override fun onScanFailed(errorCode: Int) {
     Log.e("MainActivity", "Scan failed: $errorCode")
+
     bleManager.reset()
 
     connectionState = ConnectionState.DISCONNECTED
+
     startBleScan(1000)
   }
 
@@ -271,13 +275,24 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
   private fun clearAttitudeValues(updateView: Boolean = true) {
     roll = 0f
     pitch = 0f
-    if (updateView) updateAttitudeView()
+
+    if (updateView)
+      updateAttitudeView()
   }
 
   private fun clearVoltageValues(updateView: Boolean = true) {
     voltageIn = 0f
     voltageOut = 0f
-    if (updateView) updateVoltageDisplays()
+
+    if (updateView)
+      updateVoltageDisplays()
+  }
+
+  private fun clearChipTemp(updateView: Boolean = true) {
+    chipTemp = 0
+
+    if (updateView)
+      updateChipTemp()
   }
 
   private fun clearVoltage() {
@@ -285,10 +300,17 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
     voltageMax = Float.NEGATIVE_INFINITY
   }
 
+  private fun clearAll() {
+    clearAttitudeValues()
+    clearVoltageValues()
+    clearChipTemp()
+    clearVoltage()
+  }
+
   private fun initViews() {
     tvThrottleIn = findViewById(R.id.tvThrottleIn)
     tvThrottleOut = findViewById(R.id.tvThrottleOut)
-    tvChipTemp =  findViewById(R.id.tvChipTemp)
+    tvChipTemp = findViewById(R.id.tvChipTemp)
     progressThrottleIn = findViewById(R.id.progressVoltageIn)
     progressThrottleOut = findViewById(R.id.progressVoltageOut)
     positionView = findViewById(R.id.positionView)
@@ -410,8 +432,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
   private fun updateSystemState() {
     handler.post {
       controllerEnabled.setColorFilter(
-        ContextCompat.getColor(
-          this,
+        getColor(
           if (stateIsIdle())
             R.color.holo_red_light
           else
@@ -480,7 +501,26 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
   }
 
   private fun updateChipTemp() {
-    tvChipTemp.text = "$chipTemp°C"
+    handler.post {
+      tvChipTemp.text = "$chipTemp°C"
+
+      tvChipTemp.setTextColor(
+        when (chipTemp) {
+          in 1..49 -> {
+            getColor(R.color.holo_green_light)
+          }
+          in 50..79 -> {
+            getGradientColor(
+              position = (chipTemp - 50).toFloat() / (79 - 50).toFloat(),
+              startColor = getColor(R.color.holo_green_light),
+              endColor = getColor(R.color.holo_red_light))
+          }
+          else -> {
+            getColor(R.color.holo_red_light)
+          }
+        }
+      )
+    }
   }
 
   private fun updateProgressBarColor(bar: ProgressBar, color: Int) {
@@ -500,9 +540,39 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
     }
   }
 
-  private fun getGradientColor(position: Float): Int {
-    val hue = 120 * (1 - position.coerceIn(0f, 1f))
-    return Color.HSVToColor(floatArrayOf(hue, 1f, 1f))
+  private fun getGradientColor(
+    position: Float,
+    startColor: Int? = null,
+    endColor: Int? = null,
+    startHue: Float = 120f,
+    endHue: Float = 0f,
+    saturation: Float = 1f,
+    value: Float = 1f
+  ): Int {
+    val pos = position.coerceIn(0f, 1f)
+
+    return if (startColor != null && endColor != null) {
+      val startA = Color.alpha(startColor)
+      val startR = Color.red(startColor)
+      val startG = Color.green(startColor)
+      val startB = Color.blue(startColor)
+
+      val endA = Color.alpha(endColor)
+      val endR = Color.red(endColor)
+      val endG = Color.green(endColor)
+      val endB = Color.blue(endColor)
+
+      val alpha = (startA + (endA - startA) * pos).toInt()
+      val red = (startR + (endR - startR) * pos).toInt()
+      val green = (startG + (endG - startG) * pos).toInt()
+      val blue = (startB + (endB - startB) * pos).toInt()
+
+      Color.argb(alpha, red, green, blue)
+    } else {
+      val hue = startHue + (endHue - startHue) * pos
+
+      Color.HSVToColor(floatArrayOf(hue, saturation, value))
+    }
   }
 
   fun calculateAlpha(min: Float, mid: Float, max: Float, cur: Float): Float {
@@ -560,6 +630,13 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
         }
       }
     }
+  }
+
+  private fun updateAll() {
+    updateAttitudeView()
+    updateVoltageDisplays()
+    updateChipTemp()
+    updateWheelieIndicator()
   }
 
   private fun requestBluetoothPermissions() {
@@ -620,9 +697,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
     SettingsManager.clear()
     App.settingsActivity?.finish()
     progressFinish()
-    clearAttitudeValues()
-    clearVoltageValues()
-    clearVoltage()
+    clearAll();
     unlockScreen()
   }
 
@@ -667,19 +742,19 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
         ConnectionState.CONNECTED -> {
           connectionIndicator.setImageResource(R.drawable.bluetooth_connected_24px)
           connectionIndicator.setColorFilter(
-            ContextCompat.getColor(this, R.color.holo_green_light)
+            getColor(R.color.holo_green_light)
           )
         }
         ConnectionState.CONNECTING -> {
           connectionIndicator.setImageResource(R.drawable.bluetooth_searching_24px)
           connectionIndicator.setColorFilter(
-            ContextCompat.getColor(this, R.color.holo_blue_light)
+            getColor(R.color.holo_blue_light)
           )
         }
         ConnectionState.DISCONNECTED -> {
           connectionIndicator.setImageResource(R.drawable.bluetooth_disabled_24px)
           connectionIndicator.setColorFilter(
-            ContextCompat.getColor(this, R.color.holo_red_light)
+            getColor(R.color.holo_red_light)
           )
         }
       }
@@ -742,10 +817,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
     if (params.hasParam(B_CALIBRATE_GYRO_PROG))
       progressSet(params.getInt(B_CALIBRATE_GYRO_PROG))
 
-    updateAttitudeView()
-    updateVoltageDisplays()
-    updateChipTemp()
-    updateWheelieIndicator()
+    updateAll()
   }
 
   private fun openSettings() {

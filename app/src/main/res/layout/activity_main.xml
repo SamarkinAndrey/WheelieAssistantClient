@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
@@ -162,21 +163,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tvChipTemp"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:gravity="center_horizontal|top"
-                android:textColor="@color/red"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.2" />
-
-<!--            <Space-->
+            <!--            <Space-->
 <!--                android:id="@+id/space_top_left"-->
 <!--                android:layout_width="0dp"-->
 <!--                android:layout_height="0dp"-->
@@ -185,6 +172,22 @@
 <!--                app:layout_constraintStart_toStartOf="parent"-->
 <!--                app:layout_constraintTop_toTopOf="parent"-->
 <!--                app:layout_constraintWidth_percent="0.2" />-->
+
+            <TextView
+                android:id="@+id/tvChipTemp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:gravity="top"
+                android:paddingStart="8dp"
+                android:textColor="@color/red"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintWidth_percent="0.2" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/pitch_indicator_up"
@@ -264,15 +267,16 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="345dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:paddingStart="8dp"
+                android:paddingStart="4dp"
+                android:paddingTop="8dp"
                 android:paddingEnd="8dp"
-                android:text="Вольтаж"
+                android:text="вольтаж ручки газа"
                 android:textColor="#E02828"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <androidx.appcompat.widget.AppCompatImageButton
@@ -281,7 +285,8 @@
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/mode_off_on_24px"
-                android:tint="#E02828" />
+                android:tint="#E02828"
+                android:visibility="visible" />
         </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
@@ -295,116 +300,124 @@
             app:strokeColor="#E02828"
             app:strokeWidth="1dp">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/vInText"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="8dp"
+                    android:text="вход"
+                    android:textColor="#E02828"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/tvThrottleIn"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvThrottleIn"
+                    app:layout_constraintEnd_toStartOf="@id/progressVoltageOut" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.25"
-                        android:gravity="start|center_vertical"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp"
-                        android:text="Вход"
-                        android:textColor="#E02828"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <ProgressBar
-                        android:id="@+id/progressVoltageIn"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="0dp"
-                        android:layout_height="16dp"
-                        android:layout_weight="0.55"
-                        android:progressDrawable="@drawable/progress_bar_throttle" />
-
-                    <TextView
-                        android:id="@+id/tvThrottleIn"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.2"
-                        android:gravity="end|center_vertical"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp"
-                        android:text="0.00"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="start"
-                        android:paddingEnd="4dp"
-                        android:text="v"
-                        android:textColor="#E02828"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <ProgressBar
+                    android:id="@+id/progressVoltageIn"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
+                    android:progressDrawable="@drawable/progress_bar_throttle"
+                    app:layout_constraintBottom_toBottomOf="@id/tvThrottleIn"
+                    app:layout_constraintEnd_toStartOf="@id/tvThrottleIn"
+                    app:layout_constraintStart_toEndOf="@id/vOutText"
+                    app:layout_constraintTop_toTopOf="@id/tvThrottleIn" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.25"
-                        android:gravity="start|center_vertical"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp"
-                        android:text="Выход"
-                        android:textColor="#E02828"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/tvThrottleIn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end|center_vertical"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="4dp"
+                    android:text="0.00"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/unitIn"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    <ProgressBar
-                        android:id="@+id/progressVoltageOut"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="0dp"
-                        android:layout_height="16dp"
-                        android:layout_weight="0.55"
-                        android:progressDrawable="@drawable/progress_bar_throttle" />
+                <TextView
+                    android:id="@+id/unitIn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|center_vertical"
+                    android:paddingEnd="4dp"
+                    android:text="v"
+                    android:textColor="#E02828"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/tvThrottleIn"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvThrottleIn" />
 
-                    <TextView
-                        android:id="@+id/tvThrottleOut"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.2"
-                        android:gravity="end|center_vertical"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp"
-                        android:text="0.00"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                <!-- Вторая строка -->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="start"
-                        android:paddingEnd="4dp"
-                        android:text="v"
-                        android:textColor="#E02828"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/vOutText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="8dp"
+                    android:text="выход"
+                    android:textColor="#E02828"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/tvThrottleOut"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvThrottleOut"
+                    app:layout_constraintEnd_toStartOf="@id/progressVoltageOut" />
 
-                </LinearLayout>
-            </LinearLayout>
+                <ProgressBar
+                    android:id="@+id/progressVoltageOut"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:progressDrawable="@drawable/progress_bar_throttle"
+                    app:layout_constraintBottom_toBottomOf="@id/tvThrottleOut"
+                    app:layout_constraintEnd_toStartOf="@id/tvThrottleOut"
+                    app:layout_constraintStart_toEndOf="@id/vOutText"
+                    app:layout_constraintTop_toTopOf="@id/tvThrottleOut" />
+
+                <TextView
+                    android:id="@+id/tvThrottleOut"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="end|center_vertical"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="4dp"
+                    android:text="0.00"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/unitOut"
+                    app:layout_constraintTop_toBottomOf="@+id/tvThrottleIn" />
+
+                <TextView
+                    android:id="@+id/unitOut"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|center_vertical"
+                    android:paddingEnd="4dp"
+                    android:text="v"
+                    android:textColor="#E02828"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/tvThrottleOut"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvThrottleOut" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
