@@ -15,6 +15,8 @@ object Defaults {
 
   const val MIN_VOLTAGE: Float = 1.5f
 
+  const val CHIP_FREQ: Int = 80
+
   const val MIN_STEP: Int = 1
   const val MAX_STEP: Int = 4
 
@@ -45,6 +47,9 @@ object Limits {
 
   const val MIN_VOLTAGE_MIN: Float = 0.0f
   const val MIN_VOLTAGE_MAX: Float = 5.0f
+
+  const val CHIP_FREQ_MIN: Int = 80
+  const val CHIP_FREQ_MAX: Int = 240
 
   const val STEP_MIN: Int = 1
   const val STEP_MAX: Int = 10
@@ -91,6 +96,7 @@ enum class BTParam {
   B_VOLTAGE_OUT,
   B_VOLTAGE_MIN,
   B_VOLTAGE_MAX,
+  B_CHIP_FREQ,
   B_CHIP_TEMP,
 
   B_GET_SETTINGS,

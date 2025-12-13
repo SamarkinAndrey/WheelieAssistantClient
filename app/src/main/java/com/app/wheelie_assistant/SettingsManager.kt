@@ -13,6 +13,7 @@ data class Settings(
   var exit_threshold: Float = Defaults.EXIT_THRESHOLD,
   var emerg_threshold: Float = Defaults.EMERG_THRESHOLD,
   var min_voltage: Float = Defaults.MIN_VOLTAGE,
+  var chip_freq: Int = Defaults.CHIP_FREQ,
   var min_step: Int = Defaults.MIN_STEP,
   var max_step: Int = Defaults.MAX_STEP,
   var hysteresis: Float = Defaults.HYSTERESIS,
@@ -43,6 +44,8 @@ data class Settings(
       emerg_threshold = parser.getFloat(B_EMERG_THRESHOLD)
     if (!checkParams || parser.hasParam(B_MIN_VOLTAGE))
       min_voltage = parser.getFloat(B_MIN_VOLTAGE)
+    if (!checkParams || parser.hasParam(B_CHIP_FREQ))
+      chip_freq = parser.getInt(B_CHIP_FREQ)
     if (!checkParams || parser.hasParam(B_MIN_STEP))
       min_step = parser.getInt(B_MIN_STEP)
     if (!checkParams || parser.hasParam(B_MAX_STEP))
@@ -72,6 +75,7 @@ data class Settings(
     parser.setFloat(B_EXIT_THRESHOLD, exit_threshold)
     parser.setFloat(B_EMERG_THRESHOLD, emerg_threshold)
     parser.setFloat(B_MIN_VOLTAGE, min_voltage)
+    parser.setInt(B_CHIP_FREQ, chip_freq)
     parser.setInt(B_MIN_STEP, min_step)
     parser.setInt(B_MAX_STEP, max_step)
     parser.setFloat(B_HYSTERESIS, hysteresis)
@@ -90,6 +94,7 @@ data class Settings(
         (exit_threshold in Limits.EXIT_THRESHOLD_MIN..Limits.EXIT_THRESHOLD_MAX) &&
         (emerg_threshold in Limits.EMERG_THRESHOLD_MIN..Limits.EMERG_THRESHOLD_MAX) &&
         (min_voltage in Limits.MIN_VOLTAGE_MIN..Limits.MIN_VOLTAGE_MAX) &&
+        (chip_freq in Limits.CHIP_FREQ_MIN..Limits.CHIP_FREQ_MAX) &&
         (min_step in Limits.STEP_MIN..Limits.STEP_MAX) &&
         (max_step in min_step..Limits.STEP_MAX) &&
         (hysteresis in Limits.HYSTERESIS_MIN..Limits.HYSTERESIS_MAX) &&
@@ -112,6 +117,7 @@ data class Settings(
     exit_threshold = 0f
     emerg_threshold = 0f
     min_voltage = 0f
+    chip_freq = 0
     min_step = 0
     max_step = 0
     hysteresis = 0f
@@ -133,6 +139,7 @@ data class Settings(
     exit_threshold = Defaults.EXIT_THRESHOLD
     emerg_threshold = Defaults.EMERG_THRESHOLD
     min_voltage = Defaults.MIN_VOLTAGE
+    chip_freq = Defaults.CHIP_FREQ
     min_step = Defaults.MIN_STEP
     max_step = Defaults.MAX_STEP
     hysteresis = Defaults.HYSTERESIS
