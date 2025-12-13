@@ -118,6 +118,9 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
   private val handler = Handler(Looper.getMainLooper())
   private val PERMISSION_REQUEST_CODE = 123
 
+  private val CHIP_TEMP_MIN = 55
+  private val CHIP_TEMP_MAX = 85
+
   private val bleManager: AppBleManager
     get() = (application as App).bleManager
 
@@ -506,12 +509,13 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.Callback {
 
       tvChipTemp.setTextColor(
         when (chipTemp) {
-          in 1..49 -> {
+          in 1..< CHIP_TEMP_MIN -> {
             getColor(R.color.holo_green_light)
           }
-          in 50..79 -> {
+          in CHIP_TEMP_MIN..< CHIP_TEMP_MAX -> {
             getGradientColor(
-              position = (chipTemp - 50).toFloat() / (79 - 50).toFloat(),
+              position = (chipTemp - CHIP_TEMP_MIN).toFloat() /
+                           (CHIP_TEMP_MAX - CHIP_TEMP_MIN).toFloat(),
               startColor = getColor(R.color.holo_green_light),
               endColor = getColor(R.color.holo_red_light))
           }
