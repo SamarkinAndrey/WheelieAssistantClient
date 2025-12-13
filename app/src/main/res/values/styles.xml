@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Text">
+        <item name="android:fontFamily">@font/roboto</item>
+    </style>
+
     <style name="MaterialSwitchStyle" parent="Widget.Material3.CompoundButton.MaterialSwitch">
         <item name="android:layout_gravity">center</item>
         <item name="android:background">@null</item>
@@ -60,6 +64,31 @@
     <style name="TabTextAppearance" parent="TextAppearance.AppCompat.Button">
         <item name="android:textSize">12sp</item>
         <item name="fontFamily">sans-serif</item>
+    </style>
+
+    <style name="Text.ToolbarTitle" parent="Text">
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontWeight">500</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Text.SettingLabel" parent="Text">
+        <item name="android:fontWeight">400</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="Text.SettingValue" parent="Text">
+        <item name="android:fontWeight">500</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Text.Button" parent="Text">
+        <item name="android:fontWeight">500</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
 </resources>

@@ -11,5 +11,6 @@
         <item name="sliderStyle">@style/MaterialSliderStyle</item>
         <item name='tabStyle'>@style/MaterialTabStyle</item>
         <item name="imageButtonStyle">@style/MaterialImageButtonStyle</item>
+        <item name="android:fontFamily">@font/roboto</item>
     </style>
 </resources>
