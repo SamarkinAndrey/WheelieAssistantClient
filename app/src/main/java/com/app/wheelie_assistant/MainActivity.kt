@@ -593,6 +593,19 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
+  fun calculateAlpha(min: Float, mid: Float, max: Float, cur: Float): Float {
+    return when {
+      cur <= min -> 0f
+      cur >= max -> 0f
+      cur <= mid -> {
+        (cur - min) / (mid - min)
+      }
+      else -> {
+        1f - (cur - mid) / (max - mid)
+      }
+    }
+  }
+
   private fun updateWheelieIndicator(pitch: Float) {
     if (!wheelieIndicator.isVisible)
       return
