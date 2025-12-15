@@ -8,15 +8,17 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.ParcelUuid
+import android.util.Log
 import androidx.core.content.ContextCompat
 import no.nordicsemi.android.support.v18.scanner.*
 import java.util.UUID
 
 class AppBleScanManager(
   private val context: Context,
-  private val serviceUuid: UUID
+  private val serviceUuid: UUID,
+  private val callback: ICallback
 ) {
-  interface Callback {
+  interface ICallback {
     fun onDeviceFound(device: BluetoothDevice, rssi: Int)
     fun onScanStarted()
     fun onScanStopped()
@@ -25,7 +27,6 @@ class AppBleScanManager(
 
   private val bluetoothManager: BluetoothManager? = context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
   private val bluetoothAdapter: BluetoothAdapter? = bluetoothManager?.adapter
-  private var callback: Callback? = null
   private var isScanning = false
 
   private val scanCallback = object : ScanCallback() {
@@ -34,7 +35,7 @@ class AppBleScanManager(
       val serviceUuids = scanRecord?.serviceUuids
 
       if (serviceUuids?.any { it.uuid == serviceUuid } == true) {
-        callback?.onDeviceFound(result.device, result.rssi)
+        callback.onDeviceFound(result.device, result.rssi)
       }
     }
 
@@ -46,12 +47,11 @@ class AppBleScanManager(
 
     override fun onScanFailed(errorCode: Int) {
       isScanning = false
-      callback?.onScanFailed(errorCode)
-      callback = null
+      callback.onScanFailed(errorCode)
     }
   }
 
-  fun startScan(callback: Callback): Boolean {
+  fun startScan(): Boolean {
     if (isScanning) {
       callback.onScanFailed(ScanCallback.SCAN_FAILED_ALREADY_STARTED)
       return false
@@ -67,8 +67,6 @@ class AppBleScanManager(
       callback.onScanFailed(ScanCallback.SCAN_FAILED_INTERNAL_ERROR)
       return false
     }
-
-    this.callback = callback
 
     val scanner = BluetoothLeScannerCompat.getScanner()
 
@@ -105,10 +103,9 @@ class AppBleScanManager(
       scanner.stopScan(scanCallback)
       isScanning = false
     } catch (e: Exception) {
-      //
+      Log.e("AppBleScanManager", "stopScan error: ${e.message}")
     } finally {
-      callback?.onScanStopped()
-      callback = null
+      callback.onScanStopped()
     }
   }
 
