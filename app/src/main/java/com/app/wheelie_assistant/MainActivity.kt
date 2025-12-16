@@ -122,6 +122,8 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.ICallback {
   private val isDisconnected: Boolean
     get() = connectionState == ConnectionState.DISCONNECTED
 
+  private var isDisconnectManually = false
+
   private val handler = Handler(Looper.getMainLooper())
   private val PERMISSION_REQUEST_CODE = 123
 
@@ -196,10 +198,8 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.ICallback {
     isActivityVisible = true
     Log.d("MainActivity", "Activity resumed")
 
-    if (!isConnected && !isConnecting) {
-      Log.d("MainActivity", "Attempting reconnection after resume")
-      startBleScan()
-    }
+    Log.d("MainActivity", "Attempting reconnection after resume")
+    startBleScan()
   }
 
   override fun onPause() {
@@ -397,11 +397,16 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.ICallback {
       true
     }
   }
+
   private fun setupConnectionIndicator() {
     connectionIndicator.setOnClickListener {
       if (isConnected || isConnecting) {
+        isDisconnectManually = true
+
         disconnectManually()
       } else {
+        isDisconnectManually = false
+
         if (hasAllPermissions() && isBluetoothEnabled()) {
           startBleScan()
         } else if (!isBluetoothEnabled()) {
@@ -764,14 +769,17 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.ICallback {
   }
 
   private fun startBleScan(delay: Long = 0) {
-    if (isConnecting || isConnected) {
-      Log.d("MainActivity", "Already connecting/connected, skipping scan")
+    if (isDisconnectManually)
+      return
+
+    if (!isActivityVisible) {
+      Log.d("MainActivity", "Activity not visible, skipping scan")
       return
     }
 
     handler.postDelayed({
-      if (!isActivityVisible) {
-        Log.d("MainActivity", "Activity not visible, skipping scan")
+      if (isConnecting || isConnected) {
+        Log.d("MainActivity", "Already connecting/connected, skipping scan")
         return@postDelayed
       }
 
@@ -783,13 +791,6 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.ICallback {
       }
     }, delay)
   }
-
-//  private fun startBleScan(delay: Long = 0) {
-//    handler.postDelayed({
-//      if (hasAllPermissions() && isBluetoothEnabled())
-//        scanManager.startScan()
-//    }, delay)
-//  }
 
   private fun onDisconnected() {
     if (isDisconnected)
@@ -836,7 +837,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.ICallback {
       }
     }
 
-    if (!progressIsShowing()) {
+    if (isActivityVisible && !progressIsShowing()) {
       pitch = round(params.getFloat(B_PITCH, pitch) * 10) / 10
       roll = round(params.getFloat(B_ROLL, roll) * 10) / 10
       voltageIn = params.getFloat(B_VOLTAGE_IN, voltageIn)
