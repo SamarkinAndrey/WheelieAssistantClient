@@ -5,6 +5,7 @@ import kotlin.String
 object Defaults {
   const val SYSTEM_TICK: Int = 10
   const val PREDICT_HORIZONT: Int = 90
+  const val REACTION_PERIOD: Int = 10
 
   const val GYRO_HYSTERESIS: Float = 0.2f
 
@@ -32,6 +33,9 @@ object Limits {
 
   const val PREDICT_HORIZONT_MIN: Int = SYSTEM_TICK_MIN
   const val PREDICT_HORIZONT_MAX: Int = 250
+
+  const val REACTION_PERIOD_MIN: Int = 10
+  const val REACTION_PERIOD_MAX: Int = 100
 
   const val TARGET_PITCH_MIN: Float = 15.0f
   const val TARGET_PITCH_MAX: Float = 65.0f
@@ -73,6 +77,7 @@ object Limits {
 enum class BTParam {
   B_SYSTEM_TICK,
   B_PREDICTION_HORIZONT,
+  B_REACTION_PERIOD,
   B_GYRO_HYSTERESIS,
   B_REVERSED_PITCH,
   B_REVERSED_ROLL,

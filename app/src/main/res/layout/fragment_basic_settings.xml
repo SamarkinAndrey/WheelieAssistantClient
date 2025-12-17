@@ -117,45 +117,44 @@
                     android:valueFrom="10.0"
                     android:valueTo="100.0" />
 
-                <!-- Время реакции мотора -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:paddingStart="8dp"
-                        android:text="Время реакции мотора"
+                        android:text="Скорость реакции"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/reaction_period_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:gravity="right"
                         android:paddingEnd="8dp"
-                        android:text="80 мс"
+                        android:text="10 мс"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <com.google.android.material.slider.Slider
+                    android:id="@+id/reaction_period_slider"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
                     android:elevation="0dp"
                     android:stepSize="5.0"
                     android:value="10.0"
-                    android:valueFrom="0.0"
-                    android:valueTo="250.0"
-                    android:visibility="gone" />
+                    android:valueFrom="10.0"
+                    android:valueTo="100.0" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

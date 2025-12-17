@@ -5,6 +5,7 @@ import com.app.wheelie_assistant.BTParam.*
 data class Settings(
   var system_tick: Int = Defaults.SYSTEM_TICK,
   var prediction_horizont: Int = Defaults.PREDICT_HORIZONT,
+  var reaction_period: Int = Defaults.REACTION_PERIOD,
   var gyro_hysteresis: Float = Defaults.GYRO_HYSTERESIS,
   var reversed_pitch: Boolean = false,
   var reversed_roll: Boolean = false,
@@ -28,6 +29,8 @@ data class Settings(
       system_tick = parser.getInt(B_SYSTEM_TICK)
     if (!checkParams || parser.hasParam(B_PREDICTION_HORIZONT))
       prediction_horizont = parser.getInt(B_PREDICTION_HORIZONT)
+    if (!checkParams || parser.hasParam(B_REACTION_PERIOD))
+      reaction_period = parser.getInt(B_REACTION_PERIOD)
     if (!checkParams || parser.hasParam(B_GYRO_HYSTERESIS))
       gyro_hysteresis = parser.getFloat(B_GYRO_HYSTERESIS)
     if (!checkParams || parser.hasParam(B_REVERSED_PITCH))
@@ -67,6 +70,7 @@ data class Settings(
   fun saveTo(parser: JsonParamParser) {
     parser.setInt(B_SYSTEM_TICK, system_tick)
     parser.setInt(B_PREDICTION_HORIZONT, prediction_horizont)
+    parser.setInt(B_REACTION_PERIOD, reaction_period)
     parser.setFloat(B_GYRO_HYSTERESIS, gyro_hysteresis)
     parser.setBoolean(B_REVERSED_PITCH, reversed_pitch)
     parser.setBoolean(B_REVERSED_ROLL, reversed_roll)
@@ -88,6 +92,7 @@ data class Settings(
     return try {
       (system_tick in Limits.SYSTEM_TICK_MIN..Limits.SYSTEM_TICK_MAX) &&
         (prediction_horizont in Limits.PREDICT_HORIZONT_MIN..Limits.PREDICT_HORIZONT_MAX) &&
+        (reaction_period in Limits.REACTION_PERIOD_MIN..Limits.REACTION_PERIOD_MAX) &&
         (gyro_hysteresis in Limits.GYRO_HYSTERESIS_MIN..Limits.GYRO_HYSTERESIS_MAX) &&
         (target_pitch in Limits.TARGET_PITCH_MIN..Limits.TARGET_PITCH_MAX) &&
         (dead_zone in Limits.DEAD_ZONE_MIN..Limits.DEAD_ZONE_MAX) &&
@@ -109,6 +114,7 @@ data class Settings(
   fun clear() {
     system_tick = 0
     prediction_horizont = 0
+    reaction_period = 0
     gyro_hysteresis = 0f
     reversed_pitch = false
     reversed_roll = false
@@ -131,6 +137,7 @@ data class Settings(
   fun default() {
     system_tick = Defaults.SYSTEM_TICK
     prediction_horizont = Defaults.PREDICT_HORIZONT
+    reaction_period = Defaults.REACTION_PERIOD
     gyro_hysteresis = Defaults.GYRO_HYSTERESIS
     reversed_pitch = false
     reversed_roll = false
