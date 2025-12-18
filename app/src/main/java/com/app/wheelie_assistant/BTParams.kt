@@ -9,17 +9,23 @@ object Defaults {
 
   const val GYRO_HYSTERESIS: Float = 0.2f
 
+  const val REVERSED_PITCH: Boolean = false
+  const val REVERSED_ROLL: Boolean = false
+
   const val TARGET_PITCH: Float = 25.0f
   const val DEAD_ZONE: Float = 0.5f
   const val EXIT_THRESHOLD: Float = 5.0f
   const val EMERG_THRESHOLD: Float = 5.0f
 
-  const val MIN_VOLTAGE: Float = 1.5f
+  const val VOLTAGE_RANGE_MIN: Float = Float.POSITIVE_INFINITY
+  const val VOLTAGE_RANGE_MAX: Float = Float.NEGATIVE_INFINITY
+
+  const val VOLTAGE_MIN: Float = 1.0f
 
   const val CHIP_FREQ: Int = 80
 
-  const val MIN_STEP: Int = 1
-  const val MAX_STEP: Int = 4
+  const val STEP_MIN: Int = 1
+  const val STEP_MAX: Int = 4
 
   const val HYSTERESIS: Float = 0.3f
   const val MAX_SPEED: Int = 200
@@ -49,8 +55,8 @@ object Limits {
   const val EMERG_THRESHOLD_MIN: Float = 0.0f
   const val EMERG_THRESHOLD_MAX: Float = 10.0f
 
-  const val MIN_VOLTAGE_MIN: Float = 0.0f
-  const val MIN_VOLTAGE_MAX: Float = 5.0f
+  const val VOLTAGE_RANGE_MIN: Float = 0.0f
+  const val VOLTAGE_RANGE_MAX: Float = 5.0f
 
   const val CHIP_FREQ_MIN: Int = 80
   const val CHIP_FREQ_MAX: Int = 240
@@ -85,9 +91,9 @@ enum class BTParam {
   B_DEAD_ZONE,
   B_EXIT_THRESHOLD,
   B_EMERG_THRESHOLD,
-  B_MIN_VOLTAGE,
-  B_MIN_STEP,
-  B_MAX_STEP,
+  B_VOLTAGE_MIN,
+  B_STEP_MIN,
+  B_STEP_MAX,
   B_HYSTERESIS,
   B_MAX_SPEED,
   B_TREND_DURATION,
@@ -99,8 +105,8 @@ enum class BTParam {
   B_PITCH,
   B_VOLTAGE_IN,
   B_VOLTAGE_OUT,
-  B_VOLTAGE_MIN,
-  B_VOLTAGE_MAX,
+  B_VOLTAGE_RANGE_MIN,
+  B_VOLTAGE_RANGE_MAX,
   B_CHIP_FREQ,
   B_CHIP_TEMP,
 

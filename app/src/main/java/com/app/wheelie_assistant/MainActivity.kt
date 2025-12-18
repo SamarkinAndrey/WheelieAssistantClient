@@ -83,9 +83,6 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.ICallback {
 
   private var chipTemp: Int = 0
 
-  private var voltageMin: Float = Float.POSITIVE_INFINITY
-  private var voltageMax: Float = Float.NEGATIVE_INFINITY
-
   private var settingsRequested = false
 
   private var isActivityVisible = false
@@ -327,8 +324,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.ICallback {
   }
 
   private fun clearVoltage() {
-    voltageMin = Float.POSITIVE_INFINITY
-    voltageMax = Float.NEGATIVE_INFINITY
+    SettingsManager.voltageRangeClear()
   }
 
   private fun clearAll() {
@@ -518,7 +514,14 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.ICallback {
       tvThrottleIn.text = "${String.format("%.2f", voltageIn)}"
       tvThrottleOut.text = "${String.format("%.2f", voltageOut)}"
 
-      // avoid division by zero
+      var voltageMin: Float
+      var voltageMax: Float
+
+      SettingsManager.settings.let {
+        voltageMin = it.voltage_range_min
+        voltageMax = it.voltage_range_max
+      }
+
       val denom = (voltageMax - voltageMin).let { if (it == 0f || it.isInfinite() || it.isNaN()) 1f else it }
 
       val normalizedThrottleIn = (voltageIn - voltageMin) / denom
@@ -859,11 +862,11 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.ICallback {
     if (params.getInt(B_RESET_VOLTAGE, 0) == 1)
       clearVoltage()
 
-    if (params.hasParam(B_VOLTAGE_MIN))
-      voltageMin = params.getFloat(B_VOLTAGE_MIN)
+    if (params.hasParam(B_VOLTAGE_RANGE_MIN))
+      SettingsManager.settings.voltage_range_min = params.getFloat(B_VOLTAGE_RANGE_MIN)
 
-    if (params.hasParam(B_VOLTAGE_MAX))
-      voltageMax = params.getFloat(B_VOLTAGE_MAX)
+    if (params.hasParam(B_VOLTAGE_RANGE_MAX))
+      SettingsManager.settings.voltage_range_max = params.getFloat(B_VOLTAGE_RANGE_MAX)
 
     if (params.hasParam(B_CALIBRATE_GYRO)) {
       val value = params.getInt(B_CALIBRATE_GYRO)

@@ -7,16 +7,18 @@ data class Settings(
   var prediction_horizont: Int = Defaults.PREDICT_HORIZONT,
   var reaction_period: Int = Defaults.REACTION_PERIOD,
   var gyro_hysteresis: Float = Defaults.GYRO_HYSTERESIS,
-  var reversed_pitch: Boolean = false,
-  var reversed_roll: Boolean = false,
+  var reversed_pitch: Boolean = Defaults.REVERSED_PITCH,
+  var reversed_roll: Boolean = Defaults.REVERSED_ROLL,
   var target_pitch: Float = Defaults.TARGET_PITCH,
   var dead_zone: Float = Defaults.DEAD_ZONE,
   var exit_threshold: Float = Defaults.EXIT_THRESHOLD,
   var emerg_threshold: Float = Defaults.EMERG_THRESHOLD,
-  var min_voltage: Float = Defaults.MIN_VOLTAGE,
+  var voltage_range_min: Float = Defaults.VOLTAGE_RANGE_MIN,
+  var voltage_range_max: Float = Defaults.VOLTAGE_RANGE_MAX,
+  var voltage_min: Float = Defaults.VOLTAGE_MIN,
   var chip_freq: Int = Defaults.CHIP_FREQ,
-  var min_step: Int = Defaults.MIN_STEP,
-  var max_step: Int = Defaults.MAX_STEP,
+  var step_min: Int = Defaults.STEP_MIN,
+  var step_max: Int = Defaults.STEP_MAX,
   var hysteresis: Float = Defaults.HYSTERESIS,
   var max_speed: Int = Defaults.MAX_SPEED,
   var trend_duration: Int = Defaults.TREND_DURATION,
@@ -45,14 +47,18 @@ data class Settings(
       exit_threshold = parser.getFloat(B_EXIT_THRESHOLD)
     if (!checkParams || parser.hasParam(B_EMERG_THRESHOLD))
       emerg_threshold = parser.getFloat(B_EMERG_THRESHOLD)
-    if (!checkParams || parser.hasParam(B_MIN_VOLTAGE))
-      min_voltage = parser.getFloat(B_MIN_VOLTAGE)
+    if (!checkParams || parser.hasParam(B_VOLTAGE_RANGE_MIN))
+      voltage_range_min = parser.getFloat(B_VOLTAGE_RANGE_MIN)
+    if (!checkParams || parser.hasParam(B_VOLTAGE_RANGE_MAX))
+      voltage_range_max = parser.getFloat(B_VOLTAGE_RANGE_MAX)
+    if (!checkParams || parser.hasParam(B_VOLTAGE_MIN))
+      voltage_min = parser.getFloat(B_VOLTAGE_MIN)
     if (!checkParams || parser.hasParam(B_CHIP_FREQ))
       chip_freq = parser.getInt(B_CHIP_FREQ)
-    if (!checkParams || parser.hasParam(B_MIN_STEP))
-      min_step = parser.getInt(B_MIN_STEP)
-    if (!checkParams || parser.hasParam(B_MAX_STEP))
-      max_step = parser.getInt(B_MAX_STEP)
+    if (!checkParams || parser.hasParam(B_STEP_MIN))
+      step_min = parser.getInt(B_STEP_MIN)
+    if (!checkParams || parser.hasParam(B_STEP_MAX))
+      step_max = parser.getInt(B_STEP_MAX)
     if (!checkParams || parser.hasParam(B_HYSTERESIS))
       hysteresis = parser.getFloat(B_HYSTERESIS)
     if (!checkParams || parser.hasParam(B_MAX_SPEED))
@@ -78,10 +84,10 @@ data class Settings(
     parser.setFloat(B_DEAD_ZONE, dead_zone)
     parser.setFloat(B_EXIT_THRESHOLD, exit_threshold)
     parser.setFloat(B_EMERG_THRESHOLD, emerg_threshold)
-    parser.setFloat(B_MIN_VOLTAGE, min_voltage)
+    parser.setFloat(B_VOLTAGE_MIN, voltage_min)
     parser.setInt(B_CHIP_FREQ, chip_freq)
-    parser.setInt(B_MIN_STEP, min_step)
-    parser.setInt(B_MAX_STEP, max_step)
+    parser.setInt(B_STEP_MIN, step_min)
+    parser.setInt(B_STEP_MAX, step_max)
     parser.setFloat(B_HYSTERESIS, hysteresis)
     parser.setInt(B_MAX_SPEED, max_speed)
     parser.setInt(B_TREND_DURATION, trend_duration)
@@ -98,10 +104,10 @@ data class Settings(
         (dead_zone in Limits.DEAD_ZONE_MIN..Limits.DEAD_ZONE_MAX) &&
         (exit_threshold in Limits.EXIT_THRESHOLD_MIN..Limits.EXIT_THRESHOLD_MAX) &&
         (emerg_threshold in Limits.EMERG_THRESHOLD_MIN..Limits.EMERG_THRESHOLD_MAX) &&
-        (min_voltage in Limits.MIN_VOLTAGE_MIN..Limits.MIN_VOLTAGE_MAX) &&
+        (voltage_min in Limits.VOLTAGE_RANGE_MIN..Limits.VOLTAGE_RANGE_MAX) &&
         (chip_freq in Limits.CHIP_FREQ_MIN..Limits.CHIP_FREQ_MAX) &&
-        (min_step in Limits.STEP_MIN..Limits.STEP_MAX) &&
-        (max_step in min_step..Limits.STEP_MAX) &&
+        (step_min in Limits.STEP_MIN..Limits.STEP_MAX) &&
+        (step_max in step_min..Limits.STEP_MAX) &&
         (hysteresis in Limits.HYSTERESIS_MIN..Limits.HYSTERESIS_MAX) &&
         (max_speed in Limits.MAX_SPEED_MIN..Limits.MAX_SPEED_MAX) &&
         (trend_duration in Limits.TREND_DURATION_MIN..Limits.TREND_DURATION_MAX) &&
@@ -122,10 +128,12 @@ data class Settings(
     dead_zone = 0f
     exit_threshold = 0f
     emerg_threshold = 0f
-    min_voltage = 0f
+    voltage_range_min = 0f
+    voltage_range_max = 0f
+    voltage_min = 0f
     chip_freq = 0
-    min_step = 0
-    max_step = 0
+    step_min = 0
+    step_max = 0
     hysteresis = 0f
     max_speed = 0
     trend_duration = 0
@@ -139,20 +147,33 @@ data class Settings(
     prediction_horizont = Defaults.PREDICT_HORIZONT
     reaction_period = Defaults.REACTION_PERIOD
     gyro_hysteresis = Defaults.GYRO_HYSTERESIS
-    reversed_pitch = false
-    reversed_roll = false
+    reversed_pitch = Defaults.REVERSED_PITCH
+    reversed_roll = Defaults.REVERSED_ROLL
     target_pitch = Defaults.TARGET_PITCH
     dead_zone = Defaults.DEAD_ZONE
     exit_threshold = Defaults.EXIT_THRESHOLD
     emerg_threshold = Defaults.EMERG_THRESHOLD
-    min_voltage = Defaults.MIN_VOLTAGE
+    voltage_range_min = Defaults.VOLTAGE_RANGE_MIN
+    voltage_range_max = Defaults.VOLTAGE_RANGE_MAX
+    voltage_min = Defaults.VOLTAGE_MIN
     chip_freq = Defaults.CHIP_FREQ
-    min_step = Defaults.MIN_STEP
-    max_step = Defaults.MAX_STEP
+    step_min = Defaults.STEP_MIN
+    step_max = Defaults.STEP_MAX
     hysteresis = Defaults.HYSTERESIS
     max_speed = Defaults.MAX_SPEED
     trend_duration = Defaults.TREND_DURATION
     stable_duration = Defaults.STABLE_DURATION
+  }
+
+  fun voltageRangeValid(): Boolean {
+    return voltage_range_min != Defaults.VOLTAGE_RANGE_MIN &&
+           voltage_range_max != Defaults.VOLTAGE_RANGE_MAX &&
+           voltage_range_min >= 0 && voltage_range_max > voltage_range_min
+  }
+
+  fun voltageRangeClear() {
+    voltage_range_min = Defaults.VOLTAGE_RANGE_MIN
+    voltage_range_max = Defaults.VOLTAGE_RANGE_MAX
   }
 }
 
@@ -181,6 +202,14 @@ object SettingsManager {
   fun default() {
     settings.default()
     loaded = false
+  }
+
+  fun voltageRangeValid(): Boolean {
+    return settings.voltageRangeValid()
+  }
+
+  fun voltageRangeClear() {
+    settings.voltageRangeClear()
   }
 
   //  fun settings(): Settings = settings

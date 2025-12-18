@@ -4,6 +4,7 @@ import android.view.View
 import com.google.android.material.slider.RangeSlider
 import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
+import kotlin.math.round
 
 class VoltageSettingsFragment : SettingsFragment() {
   private lateinit var minVoltageValue: MaterialTextView
@@ -42,9 +43,18 @@ class VoltageSettingsFragment : SettingsFragment() {
   }
 
   override fun onLoadSettings(settings: Settings) {
-    minVoltageSlider.apply { value = settings.min_voltage.coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
-    stepRangeSlider.apply { values = listOf(settings.min_step.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)),
-                                            settings.max_step.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo))) }
+    minVoltageSlider.apply {
+      if (settings.voltageRangeValid()) {
+        valueFrom = round(settings.voltage_range_min * 10) / 10
+        valueTo = round(settings.voltage_range_max * 10) / 10
+      } else {
+        valueFrom = Limits.VOLTAGE_RANGE_MIN
+        valueTo = Limits.VOLTAGE_RANGE_MAX
+      }
+      value = settings.voltage_min.coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo))
+    }
+    stepRangeSlider.apply { values = listOf(settings.step_min.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)),
+                                            settings.step_max.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo))) }
   }
 
   override fun onUpdateTextValues() {
@@ -58,8 +68,8 @@ class VoltageSettingsFragment : SettingsFragment() {
   }
 
   override fun onSaveSettings(settings: Settings) {
-    settings.min_voltage = minVoltageSlider.value
-    settings.min_step = stepRangeSlider.values[0].toInt()
-    settings.max_step = stepRangeSlider.values[1].toInt()
+    settings.voltage_min = minVoltageSlider.value
+    settings.step_min = stepRangeSlider.values[0].toInt()
+    settings.step_max = stepRangeSlider.values[1].toInt()
   }
 }
