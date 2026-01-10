@@ -8,15 +8,14 @@ class SettingsPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStateAd
 
   private val fragments = mutableListOf<Fragment>()
 
-  override fun getItemCount(): Int = 5
+  override fun getItemCount(): Int = 4
 
   override fun createFragment(position: Int): Fragment {
     val fragment = when (position) {
       0 -> BasicSettingsFragment()
       1 -> AngleSettingsFragment()
-      2 -> VoltageSettingsFragment()
-      3 -> SpeedSettingsFragment()
-      4 -> OtaUpdateFragment()
+      2 -> TrendSettingsFragment()
+      3 -> OtaUpdateFragment()
       else -> BasicSettingsFragment()
     }
 

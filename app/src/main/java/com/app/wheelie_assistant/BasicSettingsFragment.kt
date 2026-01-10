@@ -4,21 +4,20 @@ import android.view.View
 import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
 import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.android.material.slider.RangeSlider
 
 class BasicSettingsFragment : SettingsFragment() {
 
   private lateinit var chipFreqValue: MaterialTextView
-  private lateinit var systemTickValue: MaterialTextView
   private lateinit var predictionHorizontValue: MaterialTextView
-  private lateinit var reactionPeriodValue: MaterialTextView
+  private lateinit var speedRangeValue: MaterialTextView
   private lateinit var gyroHysteresisValue: MaterialTextView
   private lateinit var reversedPitchValue: MaterialSwitch
   private lateinit var reversedRollValue: MaterialSwitch
 
   private lateinit var chipFreqSlider: Slider
-  private lateinit var systemTickSlider: Slider
   private lateinit var predictionHorizontSlider: Slider
-  private lateinit var reactionPeriodSlider: Slider
+  private lateinit var speedRangeSlider: RangeSlider
   private lateinit var gyroHysteresisSlider: Slider
 
   override fun getFragmentID(): Int = R.layout.fragment_basic_settings
@@ -30,17 +29,15 @@ class BasicSettingsFragment : SettingsFragment() {
 
   private fun initViews(view: View) {
     chipFreqValue = view.findViewById(R.id.chip_freq_value)
-    systemTickValue = view.findViewById(R.id.system_tick_value)
-    predictionHorizontValue = view.findViewById(R.id.prediction_horizont_value)
-    reactionPeriodValue = view.findViewById(R.id.reaction_period_value)
+    predictionHorizontValue = view.findViewById(R.id.prediction_horizon_value)
+    speedRangeValue = view.findViewById(R.id.speed_range_value)
     gyroHysteresisValue = view.findViewById(R.id.gyro_hysteresis_value)
     reversedPitchValue = view.findViewById(R.id.reversed_pitch_value)
     reversedRollValue = view.findViewById(R.id.reversed_roll_value)
 
     chipFreqSlider = view.findViewById(R.id.chip_freq_slider)
-    systemTickSlider = view.findViewById(R.id.system_tick_slider)
-    predictionHorizontSlider = view.findViewById(R.id.prediction_horizont_slider)
-    reactionPeriodSlider = view.findViewById(R.id.reaction_period_slider)
+    predictionHorizontSlider = view.findViewById(R.id.prediction_horizon_slider)
+    speedRangeSlider = view.findViewById(R.id.speed_range_slider)
     gyroHysteresisSlider = view.findViewById(R.id.gyro_hysteresis_slider)
   }
 
@@ -49,18 +46,20 @@ class BasicSettingsFragment : SettingsFragment() {
       chipFreqValue.text = "${value.toInt()} Mhz"
     }
 
-    systemTickSlider.addOnChangeListener { _, value, _ ->
-      systemTickValue.text = "${value.toInt()} мс"
-      updatePredictionHorizont()
-      updateReactionPeriod()
-    }
-
     predictionHorizontSlider.addOnChangeListener { _, value, _ ->
       predictionHorizontValue.text = "${value.toInt()} мс"
     }
 
-    reactionPeriodSlider.addOnChangeListener { _, value, _ ->
-      reactionPeriodValue.text = "${value.toInt()} мс"
+    speedRangeSlider.addOnChangeListener { _, value, fromUser ->
+      val values = speedRangeSlider.values
+      val strVal = { v: Float ->
+        val intVal = v.toInt()
+        if (intVal > 0) "+$intVal" else "$intVal"
+      }
+      if (values[0] != values[1])
+        speedRangeValue.text = "${strVal(values[0])} .. ${strVal(values[1])}"
+      else
+        speedRangeValue.text = strVal(values[0])
     }
 
     gyroHysteresisSlider.addOnChangeListener { _, value, _ ->
@@ -68,37 +67,16 @@ class BasicSettingsFragment : SettingsFragment() {
     }
   }
 
-  private fun updatePredictionHorizont() {
-    val valueFrom = systemTickSlider.value
-    if (predictionHorizontSlider.value < valueFrom) {
-      predictionHorizontSlider.value = valueFrom
-      predictionHorizontValue.text = "${predictionHorizontSlider.value.toInt()} мс"
-    }
-    predictionHorizontSlider.valueFrom = valueFrom
-  }
-
-  private fun updateReactionPeriod() {
-    val valueFrom = systemTickSlider.value
-    if (reactionPeriodSlider.value < valueFrom) {
-      reactionPeriodSlider.value = valueFrom
-      reactionPeriodValue.text = "${reactionPeriodSlider.value.toInt()} мс"
-    }
-    reactionPeriodSlider.valueFrom = valueFrom
-  }
-
   override fun onLoadSettings(settings: Settings) {
     chipFreqSlider.apply { value = settings.chip_freq.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
 
-    systemTickSlider.apply { value = settings.system_tick.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
-
     predictionHorizontSlider.apply {
-      valueFrom = settings.system_tick.toFloat()
-      value = settings.prediction_horizont.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo))
+      value = settings.prediction_horizon.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo))
     }
 
-    reactionPeriodSlider.apply {
-      valueFrom = settings.system_tick.toFloat()
-      value = settings.reaction_period.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo))
+    speedRangeSlider.apply {
+      values = listOf(settings.speed_min.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)),
+                      settings.speed_max.toFloat().coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)))
     }
 
     gyroHysteresisSlider.apply { value = settings.gyro_hysteresis.coerceIn(minOf(valueFrom, valueTo), maxOf(valueFrom, valueTo)) }
@@ -109,17 +87,26 @@ class BasicSettingsFragment : SettingsFragment() {
 
   override fun onUpdateTextValues() {
     chipFreqValue.text = "${chipFreqSlider.value.toInt()} Mhz"
-    systemTickValue.text = "${systemTickSlider.value.toInt()} мс"
     predictionHorizontValue.text = "${predictionHorizontSlider.value.toInt()} мс"
-    reactionPeriodValue.text = "${reactionPeriodSlider.value.toInt()} мс"
+
+    val values = speedRangeSlider.values
+    val strVal = { v: Float ->
+      val intVal = v.toInt()
+      if (intVal > 0) "+$intVal" else "$intVal"
+    }
+    if (values[0] != values[1])
+      speedRangeValue.text = "${strVal(values[0])} .. ${strVal(values[1])}"
+    else
+      speedRangeValue.text = strVal(values[0])
+
     gyroHysteresisValue.text = "${"%.1f".format(gyroHysteresisSlider.value)}°"
   }
 
   override fun onSaveSettings(settings: Settings) {
     settings.chip_freq = chipFreqSlider.value.toInt()
-    settings.system_tick = systemTickSlider.value.toInt()
-    settings.prediction_horizont = predictionHorizontSlider.value.toInt()
-    settings.reaction_period = reactionPeriodSlider.value.toInt()
+    settings.prediction_horizon = predictionHorizontSlider.value.toInt()
+    settings.speed_min = speedRangeSlider.values[0].toInt()
+    settings.speed_max = speedRangeSlider.values[1].toInt()
     settings.gyro_hysteresis = gyroHysteresisSlider.value
     settings.reversed_pitch = reversedPitchValue.isChecked
     settings.reversed_roll = reversedRollValue.isChecked

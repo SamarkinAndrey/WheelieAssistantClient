@@ -292,7 +292,7 @@
     <!--                                android:textStyle="bold" />-->
 
     <!--                            <TextView-->
-    <!--                                android:id="@+id/prediction_horizont_value"-->
+    <!--                                android:id="@+id/prediction_horizon_value"-->
     <!--                                android:layout_width="wrap_content"-->
     <!--                                android:layout_height="wrap_content"-->
     <!--                                android:layout_weight="0.5"-->
@@ -305,7 +305,7 @@
     <!--                        </LinearLayout>-->
 
     <!--                        <com.google.android.material.slider.Slider-->
-    <!--                            android:id="@+id/prediction_horizont_slider"-->
+    <!--                            android:id="@+id/prediction_horizon_slider"-->
     <!--                            android:layout_width="match_parent"-->
     <!--                            android:layout_height="wrap_content"-->
     <!--                            android:layout_marginBottom="12dp"-->
@@ -574,7 +574,7 @@
     <!--                                android:textStyle="bold" />-->
 
     <!--                            <TextView-->
-    <!--                                android:id="@+id/exit_threshold_value"-->
+    <!--                                android:id="@+id/enter_threshold_value"-->
     <!--                                android:layout_width="wrap_content"-->
     <!--                                android:layout_height="wrap_content"-->
     <!--                                android:layout_weight="0.5"-->
@@ -587,7 +587,7 @@
     <!--                        </LinearLayout>-->
 
     <!--                        <com.google.android.material.slider.Slider-->
-    <!--                            android:id="@+id/exit_threshold_slider"-->
+    <!--                            android:id="@+id/enter_threshold_slider"-->
     <!--                            android:layout_width="match_parent"-->
     <!--                            android:layout_height="wrap_content"-->
     <!--                            android:layout_marginBottom="12dp"-->

@@ -3,45 +3,40 @@ package com.app.wheelie_assistant
 import kotlin.String
 
 object Defaults {
-  const val SYSTEM_TICK: Int = 10
-  const val PREDICT_HORIZONT: Int = 90
-  const val REACTION_PERIOD: Int = 10
+  const val CHIP_FREQ: Int = 80
+  const val PREDICTION_HORIZON: Int = 90
+
+  const val SPEED_MIN: Int = -5
+  const val SPEED_MAX: Int = 5
 
   const val GYRO_HYSTERESIS: Float = 0.2f
 
-  const val REVERSED_PITCH: Boolean = false
-  const val REVERSED_ROLL: Boolean = false
-
-  const val TARGET_PITCH: Float = 25.0f
+  const val TARGET_PITCH: Float = 30.0f
   const val DEAD_ZONE: Float = 0.5f
-  const val EXIT_THRESHOLD: Float = 5.0f
-  const val EMERG_THRESHOLD: Float = 5.0f
+  const val ENTER_THRESHOLD: Float = 10.0f
+  const val EMERG_THRESHOLD: Float = 10.0f
 
   const val VOLTAGE_RANGE_MIN: Float = Float.POSITIVE_INFINITY
   const val VOLTAGE_RANGE_MAX: Float = Float.NEGATIVE_INFINITY
-
-  const val VOLTAGE_MIN: Float = 1.0f
-
-  const val CHIP_FREQ: Int = 80
-
-  const val STEP_MIN: Int = 1
-  const val STEP_MAX: Int = 4
 
   const val HYSTERESIS: Float = 0.3f
   const val MAX_SPEED: Int = 200
   const val TREND_DURATION: Int = 50
   const val STABLE_DURATION: Int = 300
+
+  const val REVERSED_PITCH: Boolean = false
+  const val REVERSED_ROLL: Boolean = false
 }
 
 object Limits {
-  const val SYSTEM_TICK_MIN: Int = 10
-  const val SYSTEM_TICK_MAX: Int = 100
+  const val CHIP_FREQ_MIN: Int = 80
+  const val CHIP_FREQ_MAX: Int = 240
 
-  const val PREDICT_HORIZONT_MIN: Int = SYSTEM_TICK_MIN
-  const val PREDICT_HORIZONT_MAX: Int = 250
+  const val PREDICTION_HORIZON_MIN: Int = 10
+  const val PREDICTION_HORIZON_MAX: Int = 250
 
-  const val REACTION_PERIOD_MIN: Int = 10
-  const val REACTION_PERIOD_MAX: Int = 100
+  const val SPEED_MIN: Int = -10
+  const val SPEED_MAX: Int = 10
 
   const val TARGET_PITCH_MIN: Float = 15.0f
   const val TARGET_PITCH_MAX: Float = 65.0f
@@ -49,21 +44,15 @@ object Limits {
   const val DEAD_ZONE_MIN: Float = 0.0f
   const val DEAD_ZONE_MAX: Float = 5.0f
 
-  const val EXIT_THRESHOLD_MIN: Float = 0.0f
-  const val EXIT_THRESHOLD_MAX: Float = 10.0f
+  const val ENTER_THRESHOLD_MIN: Float = 0.0f
+  const val ENTER_THRESHOLD_MAX: Float = 10.0f
 
   const val EMERG_THRESHOLD_MIN: Float = 0.0f
   const val EMERG_THRESHOLD_MAX: Float = 10.0f
 
   const val VOLTAGE_RANGE_MIN: Float = 0.0f
   const val VOLTAGE_RANGE_MAX: Float = 5.0f
-
-  const val CHIP_FREQ_MIN: Int = 80
-  const val CHIP_FREQ_MAX: Int = 240
-
-  const val STEP_MIN: Int = 1
-  const val STEP_MAX: Int = 10
-
+  
   const val HYSTERESIS_MIN: Float = 0.0f
   const val HYSTERESIS_MAX: Float = 1.0f
 
@@ -75,29 +64,24 @@ object Limits {
 
   const val STABLE_DURATION_MIN: Int = 0
   const val STABLE_DURATION_MAX: Int = 500
-
-  const val GYRO_HYSTERESIS_MIN: Float = 0.0f
-  const val GYRO_HYSTERESIS_MAX: Float = 5.0f
 }
 
 enum class BTParam {
-  B_SYSTEM_TICK,
-  B_PREDICTION_HORIZONT,
-  B_REACTION_PERIOD,
+  B_CHIP_FREQ,
+  B_PREDICTION_HORIZON,
+  B_SPEED_MIN,
+  B_SPEED_MAX,
   B_GYRO_HYSTERESIS,
-  B_REVERSED_PITCH,
-  B_REVERSED_ROLL,
   B_TARGET_PITCH,
   B_DEAD_ZONE,
-  B_EXIT_THRESHOLD,
+  B_ENTER_THRESHOLD,
   B_EMERG_THRESHOLD,
-  B_VOLTAGE_MIN,
-  B_STEP_MIN,
-  B_STEP_MAX,
   B_HYSTERESIS,
   B_MAX_SPEED,
   B_TREND_DURATION,
   B_STABLE_DURATION,
+  B_REVERSED_PITCH,
+  B_REVERSED_ROLL,
 
   B_CONNECTED,
 
@@ -107,7 +91,6 @@ enum class BTParam {
   B_VOLTAGE_OUT,
   B_VOLTAGE_RANGE_MIN,
   B_VOLTAGE_RANGE_MAX,
-  B_CHIP_FREQ,
   B_CHIP_TEMP,
 
   B_GET_SETTINGS,

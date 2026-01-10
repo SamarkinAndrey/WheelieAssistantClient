@@ -47,7 +47,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:paddingStart="8dp"
                         android:text="Гистерезис"
                         android:textColor="@color/white"
@@ -56,9 +55,8 @@
 
                     <TextView
                         android:id="@+id/hysteresis_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:gravity="right"
                         android:paddingEnd="8dp"
                         android:text="0.3 Kp"
@@ -87,7 +85,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:paddingStart="8dp"
                         android:text="Макс. угловая скорость"
                         android:textColor="@color/white"
@@ -96,9 +93,8 @@
 
                     <TextView
                         android:id="@+id/max_speed_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:gravity="right"
                         android:paddingEnd="8dp"
                         android:text="25.0 °/с"
@@ -126,7 +122,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:paddingStart="8dp"
                         android:text="Время определение тренда"
                         android:textColor="@color/white"
@@ -135,9 +130,8 @@
 
                     <TextView
                         android:id="@+id/trend_duration_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:gravity="right"
                         android:paddingEnd="8dp"
                         android:text="0.3 Kp"
@@ -166,7 +160,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:paddingStart="8dp"
                         android:text="Время определение покоя"
                         android:textColor="@color/white"
@@ -175,9 +168,8 @@
 
                     <TextView
                         android:id="@+id/stable_duration_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:gravity="right"
                         android:paddingEnd="8dp"
                         android:text="25.0 °/с"

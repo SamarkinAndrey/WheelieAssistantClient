@@ -374,7 +374,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.ICallback {
 
   private fun setupPositionCard() {
     positionCard.setOnLongClickListener {
-      if (isConnected) {
+      if (isConnected && stateIsIdle) {
         showConfirmation(message = "Начать калибровку гироскопа?", onPositive = {
           bleManager.send("${B_CALIBRATE_GYRO}=1")
         })
@@ -385,7 +385,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.ICallback {
 
   private fun setupVoltageCard() {
     voltageCard.setOnLongClickListener {
-      if (isConnected) {
+      if (isConnected && stateIsIdle) {
         showConfirmation(message = "Сбросить вольтаж?", onPositive = {
           bleManager.send("${B_RESET_VOLTAGE}=1")
         })
@@ -636,7 +636,7 @@ class MainActivity : AppCompatActivity(), AppBleScanManager.ICallback {
 
     val settings = SettingsManager.settings
 
-    val min = settings.target_pitch - settings.exit_threshold
+    val min = settings.target_pitch - settings.enter_threshold
     val mid = settings.target_pitch
     val max = settings.target_pitch + settings.emerg_threshold
     val cur = pitch

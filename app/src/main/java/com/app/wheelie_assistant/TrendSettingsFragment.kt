@@ -4,7 +4,7 @@ import android.view.View
 import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
 
-class SpeedSettingsFragment : SettingsFragment() {
+class TrendSettingsFragment : SettingsFragment() {
   private lateinit var hysteresisValue: MaterialTextView
   private lateinit var maxSpeedValue: MaterialTextView
   private lateinit var trendDurationValue: MaterialTextView
@@ -15,7 +15,7 @@ class SpeedSettingsFragment : SettingsFragment() {
   private lateinit var trendDurationSlider: Slider
   private lateinit var stableDurationSlider: Slider
 
-  override fun getFragmentID(): Int = R.layout.fragment_speed_settings
+  override fun getFragmentID(): Int = R.layout.fragment_trend_settings
 
   override fun onInit(view: View) {
     initViews(view)

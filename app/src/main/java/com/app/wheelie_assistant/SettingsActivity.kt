@@ -68,9 +68,8 @@ class SettingsActivity : AppCompatActivity() {
       tab.text = when (position) {
         0 -> "Основные"
         1 -> "Угловые"
-        2 -> "Напряжение"
-        3 -> "Скорость"
-        4 -> "Прошивка"
+        2 -> "Тренд"
+        3 -> "Прошивка"
         else -> "Раздел"
       }
     }.attach()
