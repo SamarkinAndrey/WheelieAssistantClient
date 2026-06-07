@@ -19,13 +19,11 @@ class BLEParser {
               val id = data[offset].toUByte()
               val type = data[offset + 1].toUByte()
               
-              // РУЧНОЙ разбор float для СОВМЕСТИМОСТИ с C++
               val value = bytesToFloat(data, offset + 2)
               
               params.add(BLEParameter(id, type, value))
               offset += PARAM_SIZE
           } catch (e: Exception) {
-              // При любой ошибке - пропускаем этот блок и двигаемся к следующему
               offset += PARAM_SIZE
               continue
           }
